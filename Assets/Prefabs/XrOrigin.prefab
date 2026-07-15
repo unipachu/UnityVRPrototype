@@ -1092,7 +1092,7 @@ GameObject:
   - component: {fileID: 1875108646948479369}
   - component: {fileID: 322996327799227938}
   - component: {fileID: 5855775957999856253}
-  m_Layer: 2
+  m_Layer: 6
   m_Name: XrOrigin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1344,6 +1344,10 @@ PrefabInstance:
     - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
       propertyPath: m_Parameters.numCapVertices
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
+      propertyPath: m_Parameters.widthMultiplier
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 2761784063978902504, guid: c1800acf6366418a9b5f610249000331, type: 3}
       propertyPath: m_Parameters.numCornerVertices
