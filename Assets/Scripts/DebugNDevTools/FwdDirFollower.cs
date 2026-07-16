@@ -7,10 +7,18 @@ using UnityEngine;
 /// </summary>
 public class FwdDirFollower : MonoBehaviour
 {
+    enum FollowSmoothingMode
+    {
+        SmoothMvmt,
+        SmoothDist,
+        NoSmoothing
+    }
+
+
     [Header("Box Check Settings")]
     [Tooltip("Default size of the checkbox, used to check if there's room for the follower object. " +
         "This should match with the default size of this game object (or its visuals we want to fit in the world).")]
-    [SerializeField] Vector3 ChkBoxSz = new(0.15f, 0.15f, 0.02f);
+    [SerializeField] Vector3 ChkBoxSz = new(0.3f, 0.3f, 0.02f);
 
     [Header("Target Direction Offset")]
     [Tooltip("Default target direction is forward of the hmd. This offsets the follower target direction")]
@@ -32,20 +40,20 @@ public class FwdDirFollower : MonoBehaviour
     [SerializeField] float lockedDist = 2f;
 
     [Header("Smoothing")]
-    [Tooltip("Should this object smoothly follow the target pos/rot/ with linear interpolation (instead of snapping to target pos/rot)?")]
-    [SerializeField] bool smoothMvmt = true;
+    [Tooltip("Should this object smoothly follow the target pos/rot with linear interpolation (instead of snapping to target pos/rot)?")]
+    [SerializeField] FollowSmoothingMode smoothingMode = FollowSmoothingMode.SmoothDist;
     [SerializeField] float posInterpFollowSpd = 12f;
     [SerializeField] float rotInterpFollowSpd = 10f;
     [SerializeField] float sclInterpFollowSpd = 12f;
 
     [Header("Physics")]
     [Tooltip("Min distance between CheckBox query steps.")]
-    [SerializeField] float minBoxChkStepLen = 0.05f;
+    [SerializeField] float minChkBoxStepLen = 0.05f;
     [Tooltip("Scales CheckBox query step length by previous CheckBox distance times this.")]
     [Range(0.01f, 0.99f)]
-    [SerializeField] float boxStepScaler = 0.1f;
+    [SerializeField] float chkBoxStepScaler = 0.1f;
     [Tooltip("Maximum amount of CheckBox queries per frame. Used as a failsafe for while-loop.")]
-    [SerializeField] int maxBoxChks = 100;
+    [SerializeField] int maxChkBoxQryAmt = 100;
     [Tooltip("Used for all physics checks.\n" +
         "NOTE: Should likely exclude layer of the target game object.")]
     [SerializeField] LayerMask collisionMask = ~0;
@@ -68,8 +76,8 @@ public class FwdDirFollower : MonoBehaviour
         minDistFromTgtObj = Mathf.Max(0.01f, minDistFromTgtObj);
         maxDistFromTgtObj = Mathf.Max(minDistFromTgtObj, maxDistFromTgtObj);
         tgtDistPadding = Mathf.Max(0f, tgtDistPadding);
-        minBoxChkStepLen = Mathf.Max(0.001f, minBoxChkStepLen);
-        maxBoxChks = Mathf.Max(1, maxBoxChks);
+        minChkBoxStepLen = Mathf.Max(0.001f, minChkBoxStepLen);
+        maxChkBoxQryAmt = Mathf.Max(1, maxChkBoxQryAmt);
         lockedDist = Mathf.Max(0.01f, lockedDist);
     }
 
@@ -99,20 +107,35 @@ public class FwdDirFollower : MonoBehaviour
         float targetScaleFactor = Mathf.Max(0.01f, tgtDist / minDistFromTgtObj);
         Vector3 targetScale = initialScale * targetScaleFactor;
 
-        if (smoothMvmt)
-        {
-            float posLerp = 1f - Mathf.Exp(-posInterpFollowSpd * Time.deltaTime);
-            float rotLerp = 1f - Mathf.Exp(-rotInterpFollowSpd * Time.deltaTime);
-            float scaleLerp = 1f - Mathf.Exp(-sclInterpFollowSpd * Time.deltaTime);
+        float posLerp = 1f - Mathf.Exp(-posInterpFollowSpd * Time.deltaTime);
+        float rotLerp = 1f - Mathf.Exp(-rotInterpFollowSpd * Time.deltaTime);
+        float scaleLerp = 1f - Mathf.Exp(-sclInterpFollowSpd * Time.deltaTime);
 
-            transform.position = Vector3.Lerp(transform.position, objTgtPos, posLerp);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotLerp);
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
-        }
-        else
+        switch (smoothingMode)
         {
-            transform.SetPositionAndRotation(objTgtPos, targetRotation);
-            transform.localScale = targetScale;
+            case FollowSmoothingMode.SmoothMvmt:
+                transform.position = Vector3.Lerp(transform.position, objTgtPos, posLerp);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotLerp);
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
+                break;
+            case FollowSmoothingMode.SmoothDist:
+                // Snap rotation immediately.
+                transform.rotation = targetRotation;
+
+                // Preserve the current perpendicular offset, but smoothly move only along the target forward direction.
+                Vector3 currentPos = transform.position;
+                Vector3 delta = currentPos - origin;
+                float currentForwardDist = Vector3.Dot(delta, tgtDir);
+                float smoothedForwardDist = Mathf.Lerp(currentForwardDist, tgtDist, posLerp);
+                Vector3 perpendicularOffset = delta - tgtDir * currentForwardDist;
+
+                transform.position = origin + perpendicularOffset + tgtDir * smoothedForwardDist;
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
+                break;
+            case FollowSmoothingMode.NoSmoothing:
+                transform.SetPositionAndRotation(objTgtPos, targetRotation);
+                transform.localScale = targetScale;
+                break;
         }
     }
 
@@ -132,11 +155,11 @@ public class FwdDirFollower : MonoBehaviour
         {
             tgtDist = Mathf.Max(minDistFromTgtObj, rayHit.distance - tgtDistPadding);
 
-            Debug.Log(
-                $"Canvas ray hit: {rayHit.collider.name}\n" +
-                $"Layer: {LayerMask.LayerToName(rayHit.collider.gameObject.layer)}\n" +
-                $"Distance: {rayHit.distance}\n" +
-                $"Point: {rayHit.point}");
+            //Debug.Log(
+            //    $"Canvas ray hit: {rayHit.collider.name}\n" +
+            //    $"Layer: {LayerMask.LayerToName(rayHit.collider.gameObject.layer)}\n" +
+            //    $"Distance: {rayHit.distance}\n" +
+            //    $"Point: {rayHit.point}");
         }
         bool foundValidPos = false;
         Quaternion chkBoxRot = Quaternion.LookRotation(-tgtDir, Vector3.up);
@@ -166,10 +189,10 @@ public class FwdDirFollower : MonoBehaviour
                 break;
             }
             
-            float stepLength = Mathf.Max(minBoxChkStepLen, testDist * boxStepScaler);
+            float stepLength = Mathf.Max(minChkBoxStepLen, testDist * chkBoxStepScaler);
             testDist -= stepLength;
             
-            if (chks == maxBoxChks)
+            if (chks == maxChkBoxQryAmt)
             {
                 Debug.LogWarning("Max CheckBox steps reached! Debug HUD might not display properly!", this);
                 break;
