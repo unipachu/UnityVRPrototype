@@ -5,10 +5,8 @@ using UnityEngine;
 /// NOTE: The scale of this object during Awake is the scale the object is displayed at min distance from player.
 /// The scale gets larger the further the object moves from player gaze.
 /// </summary>
-public class FwdDirFollower : MonoBehaviour
-{
-    enum FollowSmoothingMode
-    {
+public class FwdDirFollower : MonoBehaviour {
+    enum FollowSmoothingMode {
         SmoothMvmt,
         SmoothDist,
         NoSmoothing
@@ -56,9 +54,9 @@ public class FwdDirFollower : MonoBehaviour
     [SerializeField] int maxChkBoxQryAmt = 100;
     [Tooltip("Used for all physics checks.\n" +
         "NOTE: Should likely exclude layer of the target game object.")]
-    [SerializeField] LayerMask collisionMask = ~0;
+    [SerializeField] LayerMask colMask = ~0;
     [Tooltip("Used for all physics checks.")]
-    [SerializeField] QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Ignore;
+    [SerializeField] QueryTriggerInteraction trgIxn = QueryTriggerInteraction.Ignore;
 
     [Header("Refs")]
     [Tooltip("Transform of the target object whose forward direction we want to follow, e.g. camera transform.")]
@@ -66,13 +64,11 @@ public class FwdDirFollower : MonoBehaviour
 
     Vector3 initialScale;
 
-    void Awake()
-    {
+    void Awake() {
         initialScale = transform.localScale;
     }
 
-    void OnValidate()
-    {
+    void OnValidate() {
         minDistFromTgtObj = Mathf.Max(0.01f, minDistFromTgtObj);
         maxDistFromTgtObj = Mathf.Max(minDistFromTgtObj, maxDistFromTgtObj);
         tgtDistPadding = Mathf.Max(0f, tgtDistPadding);
@@ -81,8 +77,7 @@ public class FwdDirFollower : MonoBehaviour
         lockedDist = Mathf.Max(0.01f, lockedDist);
     }
 
-    void LateUpdate()
-    {
+    void LateUpdate() {
         if (tgtObjTrf == null)
             return;
 
@@ -91,12 +86,10 @@ public class FwdDirFollower : MonoBehaviour
         Vector3 tgtDir = (tgtObjTrf.rotation * offsetRot) * Vector3.forward;
         float tgtDist;
 
-        if (lockDist)
-        {
+        if (lockDist) {
             tgtDist = lockedDist;
         }
-        else
-        {
+        else {
             tgtDist = FindTgtDist(origin, tgtDir);
         }
 
@@ -111,8 +104,7 @@ public class FwdDirFollower : MonoBehaviour
         float rotLerp = 1f - Mathf.Exp(-rotInterpFollowSpd * Time.deltaTime);
         float scaleLerp = 1f - Mathf.Exp(-sclInterpFollowSpd * Time.deltaTime);
 
-        switch (smoothingMode)
-        {
+        switch (smoothingMode) {
             case FollowSmoothingMode.SmoothMvmt:
                 transform.position = Vector3.Lerp(transform.position, objTgtPos, posLerp);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotLerp);
@@ -142,17 +134,16 @@ public class FwdDirFollower : MonoBehaviour
     /// <summary>
     /// Finds target distance from target transform with a Raycast and interative CheckBoxes.
     /// </summary>
-    float FindTgtDist(Vector3 origin, Vector3 tgtDir)
-    {
+    float FindTgtDist(Vector3 origin, Vector3 tgtDir) {
         float tgtDist = maxDistFromTgtObj;
         if (Physics.Raycast(
             origin,
             tgtDir,
             out RaycastHit rayHit,
             maxDistFromTgtObj,
-            collisionMask,
-            triggerInteraction))
-        {
+            colMask,
+            trgIxn)
+        ) {
             tgtDist = Mathf.Max(minDistFromTgtObj, rayHit.distance - tgtDistPadding);
 
             //Debug.Log(
@@ -167,8 +158,7 @@ public class FwdDirFollower : MonoBehaviour
         int chks = 0;
 
         // We iteratively make CheckBox queries to find target position (and scale) for this object.
-        while (testDist >= minDistFromTgtObj)
-        {
+        while (testDist >= minDistFromTgtObj) {
             chks++;
             Vector3 testPosition = origin + tgtDir * testDist;
             float scaleFactor = testDist / minDistFromTgtObj;
@@ -179,11 +169,11 @@ public class FwdDirFollower : MonoBehaviour
                     testPosition,
                     halfExtents,
                     chkBoxRot,
-                    collisionMask,
-                    triggerInteraction);
+                    colMask,
+                    trgIxn
+                );
 
-            if (!blocked)
-            {
+            if (!blocked) {
                 tgtDist = testDist;
                 foundValidPos = true;
                 break;
@@ -192,26 +182,24 @@ public class FwdDirFollower : MonoBehaviour
             float stepLength = Mathf.Max(minChkBoxStepLen, testDist * chkBoxStepScaler);
             testDist -= stepLength;
             
-            if (chks == maxChkBoxQryAmt)
-            {
+            if (chks == maxChkBoxQryAmt) {
                 Debug.LogWarning("Max CheckBox steps reached! Debug HUD might not display properly!", this);
                 break;
             }
         }
 
-        if (!foundValidPos)
-        {
+        if (!foundValidPos) {
             tgtDist = minDistFromTgtObj;
         }
 
         return tgtDist;
     }
 
-    Vector3 GetHalfExtents(float scaleFactor)
-    {
+    Vector3 GetHalfExtents(float scaleFactor) {
         return new Vector3(
             ChkBoxSz.x * initialScale.x * scaleFactor * 0.5f,
             ChkBoxSz.y * initialScale.y * scaleFactor * 0.5f,
-            ChkBoxSz.z * initialScale.z * scaleFactor * 0.5f);
+            ChkBoxSz.z * initialScale.z * scaleFactor * 0.5f
+        );
     }
 }
