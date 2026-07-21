@@ -803,7 +803,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -837,14 +837,10 @@ MonoBehaviour:
   targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
   enableLinear: 1
   linearSpring: 20
-  linearDamper: 20
-  maxForce: 100
-  preventLinDampingOvershoot: 1
+  maxForce: 99999
   enableAngular: 1
   angularSpring: 1
-  angularDamper: 1
-  maxTorque: 9999
-  preventAngDampingOvershoot: 1
+  maxTorque: 99999
 --- !u!1 &650004211
 GameObject:
   m_ObjectHideFlags: 0

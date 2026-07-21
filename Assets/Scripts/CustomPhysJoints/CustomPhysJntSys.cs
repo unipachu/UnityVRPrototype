@@ -75,9 +75,7 @@ public partial struct CustomPhysJntSys : ISystem
                 worldAnchor,
                 anchorVelocity,
                 jnt.linSpring,
-                jnt.linDamper,
-                jnt.maxForce,
-                jnt.preventLinDampingOvershoot
+                jnt.maxForce
             );
             // NOTE: Apparently when a force is applied to a point on a real world rigidbody,
             // NOTE C: the impulse is divided between linear and angular impulses like this.
@@ -96,9 +94,7 @@ public partial struct CustomPhysJntSys : ISystem
                 tgt.Rot,
                 physVel.Angular,
                 jnt.angSpring,
-                jnt.angDamper,
-                jnt.maxTq,
-                jnt.preventAngDampingOvershoot
+                jnt.maxTq
             );
             angImpulse += torque * deltaTime;
         }

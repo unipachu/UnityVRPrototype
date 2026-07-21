@@ -21,17 +21,13 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     [Tooltip("Whether the linear target is active.")]
     public bool enableLinear = true;
     public float linearSpring = 100f;
-    public float linearDamper = 10f;
     public float maxForce = 1000f;
-    public bool preventLinDampingOvershoot = true;
 
     [Header("Angular Drive")]
     [Tooltip("Whether the angular target is active.")]
     public bool enableAngular = true;
     public float angularSpring = 100f;
-    public float angularDamper = 10f;
     public float maxTorque = 1000f;
-    public bool preventAngDampingOvershoot = true;
 
     /// <summary>
     /// DOTS NOTE: Baker class adds components to the entity based on the authoring MonoBehaviour.
@@ -45,13 +41,9 @@ public class CustomPhysJntAuthoring : MonoBehaviour
                 new CustomPhysJnt {
                     localAnchor = authoring.localAnchor,
                     linSpring = authoring.linearSpring,
-                    linDamper = authoring.linearDamper,
                     maxForce = authoring.maxForce,
-                    preventLinDampingOvershoot = authoring.preventLinDampingOvershoot,
                     angSpring = authoring.angularSpring,
-                    angDamper = authoring.angularDamper,
                     maxTq = authoring.maxTorque,
-                    preventAngDampingOvershoot = authoring.preventAngDampingOvershoot,
                     enableLin = authoring.enableLinear,
                     enableAng = authoring.enableAngular
                 }
@@ -93,14 +85,10 @@ public struct CustomPhysJnt : IComponentData {
     public float3 localAnchor;
     // Linear drive
     public float linSpring;
-    public float linDamper;
     public float maxForce;
-    public bool preventLinDampingOvershoot;
     // Angular drive
     public float angSpring;
-    public float angDamper;
     public float maxTq;
-    public bool preventAngDampingOvershoot;
     // Enable flags
     public bool enableLin;
     public bool enableAng;

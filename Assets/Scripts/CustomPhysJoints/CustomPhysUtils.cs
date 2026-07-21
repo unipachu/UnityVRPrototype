@@ -49,9 +49,9 @@ public static class CustomPhysUtils {
         float3 currPos,
         float3 currVel,
         float spring,
-        float damper,
-        float maxForce,
-        bool preventDampingOvershoot
+        //float damper,
+        float maxForce
+        //bool preventDampingOvershoot
     ) {
         float3 displacement = tgtPos - currPos;
         float dist = math.length(displacement);
@@ -62,26 +62,19 @@ public static class CustomPhysUtils {
         float3 springForce = displacement * spring;
         // Only damp velocity along the spring axis.
         float velAlongSpring = math.dot(currVel, springDir);
-        float3 dampingForce = -springDir * velAlongSpring * damper;
-        // Prevent damping from reversing spring direction
-        if (preventDampingOvershoot) {
-            float springForceMag = math.length(springForce);
-            float dampingForceMag = math.length(dampingForce);
-            if (dampingForceMag > springForceMag)
-                dampingForce = -springDir * springForceMag;
-        }
-        float3 force = springForce + dampingForce;
+        //float3 dampingForce = -springDir * velAlongSpring * damper;
+        //if (preventDampingOvershoot) {
+        //    float springForceMag = math.length(springForce);
+        //    float dampingForceMag = math.length(dampingForce);
+        //    if (dampingForceMag > springForceMag)
+        //        dampingForce = -springDir * springForceMag;
+        //}
+        float3 force = springForce; //+ dampingForce;
         // Clamp maximum force
         float mag = math.length(force);
         if (mag > maxForce)
             force *= maxForce / mag;
         return force;
-
-        //float3 force = (targetPosition - currentPosition) * spring - currentVelocity * damper;
-        //float magnitude = math.length(force);
-        //if (magnitude > maxForce && magnitude > 0f)
-        //    force *= maxForce / magnitude;
-        //return force;
     }
 
     /// <summary>
@@ -92,9 +85,9 @@ public static class CustomPhysUtils {
         quaternion tgtRot,
         float3 angVel,
         float spring,
-        float damper,
-        float maxTq,
-        bool preventDampingOvershoot
+        //float damper,
+        float maxTq
+        //bool preventDampingOvershoot
     ) {
         float3 rotError = GetRotErr(currRot, tgtRot);
         float errorAngle = math.length(rotError);
@@ -106,25 +99,18 @@ public static class CustomPhysUtils {
         float3 springTq = springAxis * springTqScalar;
         // Damping torque. Only damp angular velocity around the spring axis.
         float angVelAlongAxis = math.dot(angVel, springAxis);
-        float dampingTqScalar = -angVelAlongAxis * damper;
-        // Prevent damping from reversing spring direction
-        if (preventDampingOvershoot && dampingTqScalar < -springTqScalar)
-            dampingTqScalar = -springTqScalar;
-        float3 dampingTq = springAxis * dampingTqScalar;
+        //float dampingTqScalar = -angVelAlongAxis * damper;
+        //if (preventDampingOvershoot && dampingTqScalar < -springTqScalar)
+        //    dampingTqScalar = -springTqScalar;
+        //float3 dampingTq = springAxis * dampingTqScalar;
         // Final torque
-        float3 tq = springTq + dampingTq;
+        float3 tq = springTq; //+ dampingTq;
         // Clamp maximum torque
         float mag = math.length(tq);
         if (mag > maxTq && mag > 0f)
             tq *= maxTq / mag;
         return tq;
-        
-        //float3 rotError = GetRotErr(currRot, tgtRot);
-        //float3 tq = rotError * spring - angVel * damper;
-        //float mag = math.length(tq);
-        //if (mag > maxTq && mag > 0f)
-        //    tq *= maxTq / mag;
-        //return tq;
+       
     }
 
     /// <summary>
