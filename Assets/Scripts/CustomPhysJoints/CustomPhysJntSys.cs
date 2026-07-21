@@ -52,7 +52,7 @@ public partial struct CustomPhysJntSys : ISystem
         in LocalTransform trf,
         ref PhysicsVelocity physVel,
         in PhysicsMass physMass,
-        float deltaTime)
+        float dt)
     {
         float3 worldAnchor = CustomPhysUtils.GetWorldAnchor(trf, jnt.localAnchor);
         float3 worldCenterOfMass = trf.Position + math.rotate(trf.Rotation, physMass.CenterOfMass);
@@ -79,7 +79,7 @@ public partial struct CustomPhysJntSys : ISystem
             );
             // NOTE: Apparently when a force is applied to a point on a real world rigidbody,
             // NOTE C: the impulse is divided between linear and angular impulses like this.
-            linImpulse = force * deltaTime;
+            linImpulse = force * dt;
             float3 leverArm = worldAnchor - worldCenterOfMass;
             angImpulse += math.cross(leverArm, linImpulse);
         }
@@ -89,14 +89,14 @@ public partial struct CustomPhysJntSys : ISystem
         //-------------------------------------------------
 
         if (jnt.enableAng) {
-            float3 torque = CustomPhysUtils.CalculateAngTq(
+            float3 tq = CustomPhysUtils.CalculateAngTq(
                 trf.Rotation,
                 tgt.Rot,
                 physVel.Angular,
                 jnt.angSpring,
                 jnt.maxTq
             );
-            angImpulse += torque * deltaTime;
+            angImpulse += tq * dt;
         }
 
         //-------------------------------------------------

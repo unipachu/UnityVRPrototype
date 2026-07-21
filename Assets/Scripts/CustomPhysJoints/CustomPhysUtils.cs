@@ -49,9 +49,7 @@ public static class CustomPhysUtils {
         float3 currPos,
         float3 currVel,
         float spring,
-        //float damper,
         float maxForce
-        //bool preventDampingOvershoot
     ) {
         float3 displacement = tgtPos - currPos;
         float dist = math.length(displacement);
@@ -59,17 +57,7 @@ public static class CustomPhysUtils {
             return float3.zero;
         float3 springDir = displacement / dist;
         // Spring force
-        float3 springForce = displacement * spring;
-        // Only damp velocity along the spring axis.
-        float velAlongSpring = math.dot(currVel, springDir);
-        //float3 dampingForce = -springDir * velAlongSpring * damper;
-        //if (preventDampingOvershoot) {
-        //    float springForceMag = math.length(springForce);
-        //    float dampingForceMag = math.length(dampingForce);
-        //    if (dampingForceMag > springForceMag)
-        //        dampingForce = -springDir * springForceMag;
-        //}
-        float3 force = springForce; //+ dampingForce;
+        float3 force = displacement * spring;
         // Clamp maximum force
         float mag = math.length(force);
         if (mag > maxForce)
@@ -85,9 +73,7 @@ public static class CustomPhysUtils {
         quaternion tgtRot,
         float3 angVel,
         float spring,
-        //float damper,
         float maxTq
-        //bool preventDampingOvershoot
     ) {
         float3 rotError = GetRotErr(currRot, tgtRot);
         float errorAngle = math.length(rotError);
@@ -96,21 +82,12 @@ public static class CustomPhysUtils {
         float3 springAxis = rotError / errorAngle;
         // Spring torque
         float springTqScalar = errorAngle * spring;
-        float3 springTq = springAxis * springTqScalar;
-        // Damping torque. Only damp angular velocity around the spring axis.
-        float angVelAlongAxis = math.dot(angVel, springAxis);
-        //float dampingTqScalar = -angVelAlongAxis * damper;
-        //if (preventDampingOvershoot && dampingTqScalar < -springTqScalar)
-        //    dampingTqScalar = -springTqScalar;
-        //float3 dampingTq = springAxis * dampingTqScalar;
-        // Final torque
-        float3 tq = springTq; //+ dampingTq;
+        float3 tq = springAxis * springTqScalar;
         // Clamp maximum torque
         float mag = math.length(tq);
         if (mag > maxTq && mag > 0f)
             tq *= maxTq / mag;
         return tq;
-       
     }
 
     /// <summary>
@@ -121,11 +98,14 @@ public static class CustomPhysUtils {
         quaternion currRot,
         quaternion tgtRot
     ) {
+        // From current rot to target rot.
         quaternion dRot = math.normalize(math.mul(tgtRot, math.inverse(currRot)));
-        // Ensure shortest path. NOTE: I do not understand how this quaternion black magic works.
+        // Ensure shortest path.
+        // NOTE: This is supposed keep the quaternion on the same hemisphere, thus preventing > 180 degree rotation errors.
         if (dRot.value.w < 0f)
             dRot.value *= -1f;
         float w = math.clamp(dRot.value.w, -1f, 1f);
+        // Quaternion to angle axis conversion.
         float ang = 2f * math.acos(w);
         float sinHalfAng = math.sqrt(math.max(1f - w * w, 0f));
         if (sinHalfAng < 0.0001f)
