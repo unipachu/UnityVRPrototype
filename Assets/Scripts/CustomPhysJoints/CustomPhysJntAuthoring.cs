@@ -11,6 +11,10 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     [Tooltip("Completely disables forces applied by the joint.")]
     public bool jntEnabled = true;
 
+    [Header("Identification")]
+    [Tooltip("Unique identifier used by GameObject proxies.")]
+    public int jointId;
+
     [Header("Anchor")]
     [Tooltip("Joint anchor attached to the entity, in entiy local space.")]
     public Vector3 localAnchor;
@@ -20,8 +24,8 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     public Vector3 targetPosition;
     [Tooltip("Desired world rotation.")]
     public Quaternion targetRotation = Quaternion.identity;
-    [Tooltip("Optional Transform used as runtime joint target.")]
-    public GameObject targetObject;
+    //[Tooltip("Optional Transform used as runtime joint target.")]
+    //public GameObject targetObject;
 
     [Header("Linear Drive")]
     [Tooltip("Whether the linear target is active.")]
@@ -48,7 +52,7 @@ public class CustomPhysJntAuthoring : MonoBehaviour
             // DOTS NOTE: TransformUsageFlags let's us optimize the entity's world space behavior - choose the most restrictive flag you need!
             Entity entity = GetEntity(TransformUsageFlags.None);
             Entity bodyEntity = GetEntity(authoring.connectedBody, TransformUsageFlags.Dynamic);
-            Entity targetEntity = GetEntity(authoring.targetObject, TransformUsageFlags.Dynamic);
+            //Entity targetEntity = GetEntity(authoring.targetObject, TransformUsageFlags.Dynamic);
 
             AddComponent(
                 entity,
@@ -91,10 +95,17 @@ public class CustomPhysJntAuthoring : MonoBehaviour
                     Body = bodyEntity
                 }
             );
+            //AddComponent(
+            //    entity,
+            //    new CustomPhysJntTgtSync {
+            //        Target = targetEntity
+            //    }
+            //);
+            AddComponent<CustomPhysJntControlled>(entity);
             AddComponent(
                 entity,
-                new CustomPhysJntTgtSync {
-                    Target = targetEntity
+                new CustomPhysJntId {
+                    Value = authoring.jointId
                 }
             );
         }
@@ -147,9 +158,24 @@ public struct CustomPhysJntTgtVel : IComponentData {
     public float3 angVel;
 }
 
+// TODO: Is this needed?
 /// <summary>
 /// References the Entity whose transform drives a CustomPhysJnt target.
 /// </summary>
 public struct CustomPhysJntTgtSync : IComponentData {
     public Entity Target;
+}
+
+/// <summary>
+/// Identifies a custom physics joint that can be controlled externally.
+/// </summary>
+public struct CustomPhysJntControlled : IComponentData {
+}
+
+/// <summary>
+/// Uniquely identifies a custom physics joint.
+/// Used by GameObject proxies to locate the correct joint entity.
+/// </summary>
+public struct CustomPhysJntId : IComponentData {
+    public int Value;
 }

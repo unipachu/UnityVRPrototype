@@ -112,28 +112,4 @@ public static class CustomPhysUtils {
         float3 axis = dRot.value.xyz / sinHalfAng;
         return axis * ang;
     }
-
-    //public static float3 CalculateTargetVelocity(
-    //    float3 currPos,
-    //    float3 prevPos,
-    //    float dt
-    //) {
-    //    if (dt <= 0f)
-    //        return float3.zero;
-    //    return (currPos - prevPos) / dt;
-    //}
-
-    //public static float3 CalculateTargetAngularVelocity(
-    //    quaternion currRot,
-    //    quaternion prevRot,
-    //    float dt
-    //) {
-    //    if (dt <= 0f)
-    //        return float3.zero;
-    //    float3 rotError = GetRotErr(
-    //        prevRot,
-    //        currRot
-    //    );
-    //    return rotError / dt;
-    //}
 }

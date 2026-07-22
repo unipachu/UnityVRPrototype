@@ -119,6 +119,24 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &352609203 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6467104617800468116, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &352609209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352609203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
+  jointId: 0
 --- !u!1 &404934484
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,6 +637,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2074549148 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7867866332845635224, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2074549154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074549148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
+  jointId: 1
 --- !u!1001 &2770057963128997500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,7 +771,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6467104617800468116, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 352609209}
+    - targetCorrespondingSourceObject: {fileID: 7867866332845635224, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2074549154}
   m_SourcePrefab: {fileID: 100100000, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
 --- !u!4 &6246790631621771707 stripped
 Transform:

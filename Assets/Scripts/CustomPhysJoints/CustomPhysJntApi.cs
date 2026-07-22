@@ -1,6 +1,8 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
+// TODO: Is this class needed?
+
 /// <summary>
 /// Helper functions for controlling CustomPhysJnt targets.
 /// NOTE: These are for MAIN THREAD ONLY, not for burst jobs!

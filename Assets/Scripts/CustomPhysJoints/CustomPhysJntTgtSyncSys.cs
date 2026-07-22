@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 
+// TODO: Is this struct needed?
 [BurstCompile]
 [UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateBefore(typeof(CustomPhysJntSys))]
@@ -16,7 +17,6 @@ public partial struct CustomPhysJntTgtSyncSys : ISystem {
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         float dt = SystemAPI.Time.DeltaTime;
-
         foreach (
             var (
                 tgtSync,
@@ -34,8 +34,7 @@ public partial struct CustomPhysJntTgtSyncSys : ISystem {
             float3 newPos = targetTransform.Position;
             quaternion newRot = targetTransform.Rotation;
             tgtVel.ValueRW.linVel = (newPos - tgt.ValueRO.pos) / dt;
-            tgtVel.ValueRW.angVel =
-                CustomPhysUtils.GetRotErr(tgt.ValueRO.rot, newRot) / dt;
+            tgtVel.ValueRW.angVel = CustomPhysUtils.GetRotErr(tgt.ValueRO.rot, newRot) / dt;
             tgt.ValueRW.pos = newPos;
             tgt.ValueRW.rot = newRot;
         }
