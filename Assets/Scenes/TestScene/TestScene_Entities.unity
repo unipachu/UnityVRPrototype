@@ -802,8 +802,8 @@ Rigidbody:
   m_GameObject: {fileID: 575700792}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 1
-  m_AngularDamping: 2
+  m_LinearDamping: 0
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -829,18 +829,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 575700792}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2f881f94ff50e468b25253dce7af40, type: 3}
+  m_Script: {fileID: 11500000, guid: 69f51ddee63d87246944772643a51b2a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
-  localAnchor: {x: 0, y: 0, z: 0}
-  targetPosition: {x: -0.43, y: 3.5, z: 1.667}
-  targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
-  enableLinear: 1
-  linearSpring: 20
-  maxForce: 99999
-  enableAngular: 1
-  angularSpring: 1
-  maxTorque: 99999
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntBodyAuthoring
 --- !u!1 &650004211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,6 +1006,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800615329}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1170712588
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1170712590}
+  - component: {fileID: 1170712589}
+  m_Layer: 0
+  m_Name: PhysJoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1170712589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1170712588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2f881f94ff50e468b25253dce7af40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
+  jntEnabled: 1
+  localAnchor: {x: 0, y: 0, z: 0}
+  targetPosition: {x: 4.96, y: 3.5, z: 1.667}
+  targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
+  enableLinear: 1
+  linearSpring: 20
+  linearDamper: 1
+  maxForce: 99999
+  enableAngular: 1
+  angularSpring: 10
+  angularDamper: 1
+  maxTorque: 99999
+  connectedBody: {fileID: 575700792}
+--- !u!4 &1170712590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1170712588}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1303880712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,6 +1658,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2043898408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2043898410}
+  - component: {fileID: 2043898409}
+  m_Layer: 0
+  m_Name: PhysJoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2043898409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043898408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2f881f94ff50e468b25253dce7af40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
+  jntEnabled: 1
+  localAnchor: {x: 0, y: 0, z: 0}
+  targetPosition: {x: -0.43, y: 3.5, z: 1.667}
+  targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
+  enableLinear: 1
+  linearSpring: 20
+  linearDamper: 1
+  maxForce: 99999
+  enableAngular: 1
+  angularSpring: 10
+  angularDamper: 1
+  maxTorque: 99999
+  connectedBody: {fileID: 575700792}
+--- !u!4 &2043898410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043898408}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2125110424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,5 +1958,7 @@ SceneRoots:
   - {fileID: 800615330}
   - {fileID: 1916574461}
   - {fileID: 716074864}
+  - {fileID: 2043898410}
+  - {fileID: 1170712590}
   - {fileID: 575700796}
   - {fileID: 650004212}

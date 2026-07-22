@@ -47,18 +47,21 @@ public static class CustomPhysUtils {
     public static float3 CalculateLinForce(
         float3 tgtPos,
         float3 currPos,
-        float3 currVel,
+        float3 relativeVel,
         float spring,
+        float damper,
         float maxForce
     ) {
         float3 displacement = tgtPos - currPos;
         float dist = math.length(displacement);
+        // TODO: Do we want a deadzone?
         if (dist < 0.0001f)
             return float3.zero;
-        float3 springDir = displacement / dist;
-        // Spring force
-        float3 force = displacement * spring;
-        // Clamp maximum force
+        float3 springForce = displacement * spring;
+        // NOTE: We only damp relative velocity, allowing the velocities of the
+        // NOTE C: target and the local anchor to match.
+        float3 dampingForce = -relativeVel * damper;
+        float3 force = springForce + dampingForce;
         float mag = math.length(force);
         if (mag > maxForce)
             force *= maxForce / mag;
@@ -71,21 +74,17 @@ public static class CustomPhysUtils {
     public static float3 CalculateAngTq(
         quaternion currRot,
         quaternion tgtRot,
-        float3 angVel,
+        float3 relativeAngVel,
         float spring,
+        float damper,
         float maxTq
     ) {
         float3 rotError = GetRotErr(currRot, tgtRot);
-        float errorAngle = math.length(rotError);
-        if (errorAngle < 0.0001f)
-            return float3.zero;
-        float3 springAxis = rotError / errorAngle;
-        // Spring torque
-        float springTqScalar = errorAngle * spring;
-        float3 tq = springAxis * springTqScalar;
-        // Clamp maximum torque
+        float3 springTq = rotError * spring;
+        float3 dampingTq = -relativeAngVel * damper;
+        float3 tq = springTq + dampingTq;
         float mag = math.length(tq);
-        if (mag > maxTq && mag > 0f)
+        if (mag > maxTq)
             tq *= maxTq / mag;
         return tq;
     }
@@ -113,4 +112,28 @@ public static class CustomPhysUtils {
         float3 axis = dRot.value.xyz / sinHalfAng;
         return axis * ang;
     }
+
+    //public static float3 CalculateTargetVelocity(
+    //    float3 currPos,
+    //    float3 prevPos,
+    //    float dt
+    //) {
+    //    if (dt <= 0f)
+    //        return float3.zero;
+    //    return (currPos - prevPos) / dt;
+    //}
+
+    //public static float3 CalculateTargetAngularVelocity(
+    //    quaternion currRot,
+    //    quaternion prevRot,
+    //    float dt
+    //) {
+    //    if (dt <= 0f)
+    //        return float3.zero;
+    //    float3 rotError = GetRotErr(
+    //        prevRot,
+    //        currRot
+    //    );
+    //    return rotError / dt;
+    //}
 }
