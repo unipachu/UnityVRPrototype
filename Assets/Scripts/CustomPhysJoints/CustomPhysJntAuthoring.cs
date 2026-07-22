@@ -20,6 +20,8 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     public Vector3 targetPosition;
     [Tooltip("Desired world rotation.")]
     public Quaternion targetRotation = Quaternion.identity;
+    [Tooltip("Optional Transform used as runtime joint target.")]
+    public GameObject targetObject;
 
     [Header("Linear Drive")]
     [Tooltip("Whether the linear target is active.")]
@@ -46,6 +48,8 @@ public class CustomPhysJntAuthoring : MonoBehaviour
             // DOTS NOTE: TransformUsageFlags let's us optimize the entity's world space behavior - choose the most restrictive flag you need!
             Entity entity = GetEntity(TransformUsageFlags.None);
             Entity bodyEntity = GetEntity(authoring.connectedBody, TransformUsageFlags.Dynamic);
+            Entity targetEntity = GetEntity(authoring.targetObject, TransformUsageFlags.Dynamic);
+
             AddComponent(
                 entity,
                 new CustomPhysJnt {
@@ -85,6 +89,12 @@ public class CustomPhysJntAuthoring : MonoBehaviour
                 entity,
                 new CustomPhysJntBody {
                     Body = bodyEntity
+                }
+            );
+            AddComponent(
+                entity,
+                new CustomPhysJntTgtSync {
+                    Target = targetEntity
                 }
             );
         }
@@ -135,4 +145,11 @@ public struct CustomPhysJntBody : IComponentData {
 public struct CustomPhysJntTgtVel : IComponentData {
     public float3 linVel;
     public float3 angVel;
+}
+
+/// <summary>
+/// References the Entity whose transform drives a CustomPhysJnt target.
+/// </summary>
+public struct CustomPhysJntTgtSync : IComponentData {
+    public Entity Target;
 }

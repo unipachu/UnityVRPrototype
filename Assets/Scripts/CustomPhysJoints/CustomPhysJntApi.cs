@@ -67,6 +67,27 @@ public static class CustomPhysJntApi {
     }
 
     /// <summary>
+    /// Sets target transform and target velocity.
+    /// </summary>
+    public static void SetTarget(
+        EntityManager entityManager,
+        Entity jntEntity,
+        float3 pos,
+        quaternion rot,
+        float3 linVel,
+        float3 angVel
+    ) {
+        CustomPhysJntTgt tgt = entityManager.GetComponentData<CustomPhysJntTgt>(jntEntity);
+        tgt.pos = pos;
+        tgt.rot = rot;
+        entityManager.SetComponentData(jntEntity, tgt);
+        CustomPhysJntTgtVel tgtVel = entityManager.GetComponentData<CustomPhysJntTgtVel>(jntEntity);
+        tgtVel.linVel = linVel;
+        tgtVel.angVel = angVel;
+        entityManager.SetComponentData(jntEntity, tgtVel);
+    }
+
+    /// <summary>
     /// Enables or disables the entire joint.
     /// </summary>
     public static void SetEnabled(

@@ -455,6 +455,64 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 239984801}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &267553668
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 267553670}
+  - component: {fileID: 267553669}
+  m_Layer: 0
+  m_Name: PhysJoint1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &267553669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267553668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b2f881f94ff50e468b25253dce7af40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
+  jntEnabled: 1
+  localAnchor: {x: 0, y: 0, z: 0}
+  targetPosition: {x: -0.43, y: 3.5, z: 1.667}
+  targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
+  targetObject: {fileID: 1147581672}
+  enableLinear: 1
+  linearSpring: 20
+  linearDamper: 1
+  maxForce: 99999
+  enableAngular: 1
+  angularSpring: 10
+  angularDamper: 1
+  maxTorque: 99999
+  connectedBody: {fileID: 575700792}
+--- !u!4 &267553670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267553668}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &304289822
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,6 +625,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 304289822}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &406985982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 406985983}
+  m_Layer: 0
+  m_Name: JntTgt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &406985983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 406985982}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.10507297, y: 0.039179705, z: 0.34717828, w: 0.93107027}
+  m_LocalPosition: {x: -2.07, y: 3.133, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: -12.877, y: 0, z: 40.899}
 --- !u!1 &428672135
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,7 +1095,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800615329}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1170712588
+--- !u!1 &1147581672
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1014,55 +1103,29 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1170712590}
-  - component: {fileID: 1170712589}
+  - component: {fileID: 1147581673}
   m_Layer: 0
-  m_Name: PhysJoint
+  m_Name: JntTgt1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1170712589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1170712588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b2f881f94ff50e468b25253dce7af40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
-  jntEnabled: 1
-  localAnchor: {x: 0, y: 0, z: 0}
-  targetPosition: {x: 4.96, y: 3.5, z: 1.667}
-  targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
-  enableLinear: 1
-  linearSpring: 20
-  linearDamper: 1
-  maxForce: 99999
-  enableAngular: 1
-  angularSpring: 10
-  angularDamper: 1
-  maxTorque: 99999
-  connectedBody: {fileID: 575700792}
---- !u!4 &1170712590
+--- !u!4 &1147581673
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1170712588}
+  m_GameObject: {fileID: 1147581672}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.10507297, y: 0.039179705, z: 0.34717828, w: 0.93107027}
+  m_LocalPosition: {x: 1.89, y: 2.14, z: 3.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -12.877, y: 0, z: 40.899}
 --- !u!1 &1303880712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1691,6 +1754,7 @@ MonoBehaviour:
   localAnchor: {x: 0, y: 0, z: 0}
   targetPosition: {x: -0.43, y: 3.5, z: 1.667}
   targetRotation: {x: 0.5, y: 0.49999997, z: -0.49999997, w: 0.5}
+  targetObject: {fileID: 406985982}
   enableLinear: 1
   linearSpring: 20
   linearDamper: 1
@@ -1958,7 +2022,9 @@ SceneRoots:
   - {fileID: 800615330}
   - {fileID: 1916574461}
   - {fileID: 716074864}
+  - {fileID: 406985983}
+  - {fileID: 1147581673}
   - {fileID: 2043898410}
-  - {fileID: 1170712590}
+  - {fileID: 267553670}
   - {fileID: 575700796}
   - {fileID: 650004212}
