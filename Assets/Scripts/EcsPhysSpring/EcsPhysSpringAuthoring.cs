@@ -5,18 +5,18 @@ using Unity.Mathematics;
 /// <summary>
 /// DOTS NOTE: Authoring scripts allow for changing ECS component values through inspector.
 /// </summary>
-public class CustomPhysJntAuthoring : MonoBehaviour
+public class EcsPhysSpringAuthoring : MonoBehaviour
 {
     [Header("General")]
-    [Tooltip("Completely disables forces applied by the joint.")]
-    public bool jntEnabled = true;
+    [Tooltip("Completely disables forces applied by the spring.")]
+    public bool springEnabled = true;
 
     [Header("Identification")]
     [Tooltip("Unique identifier used by GameObject proxies.")]
-    public int jointId;
+    public int springId;
 
     [Header("Anchor")]
-    [Tooltip("Joint anchor attached to the entity, in entiy local space.")]
+    [Tooltip("Spring anchor attached to the entity, in entiy local space.")]
     public Vector3 localAnchor;
 
     [Header("Target")]
@@ -24,8 +24,6 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     public Vector3 targetPosition;
     [Tooltip("Desired world rotation.")]
     public Quaternion targetRotation = Quaternion.identity;
-    //[Tooltip("Optional Transform used as runtime joint target.")]
-    //public GameObject targetObject;
 
     [Header("Linear Drive")]
     [Tooltip("Whether the linear target is active.")]
@@ -47,17 +45,16 @@ public class CustomPhysJntAuthoring : MonoBehaviour
     /// <summary>
     /// DOTS NOTE: Baker class adds components to the entity based on the authoring MonoBehaviour.
     /// </summary>
-    public class CustomPhysJntBaker : Baker<CustomPhysJntAuthoring> {
-        public override void Bake(CustomPhysJntAuthoring authoring) {
+    public class EcsPhysSpringBaker : Baker<EcsPhysSpringAuthoring> {
+        public override void Bake(EcsPhysSpringAuthoring authoring) {
             // DOTS NOTE: TransformUsageFlags let's us optimize the entity's world space behavior - choose the most restrictive flag you need!
             Entity entity = GetEntity(TransformUsageFlags.None);
             Entity bodyEntity = GetEntity(authoring.connectedBody, TransformUsageFlags.Dynamic);
-            //Entity targetEntity = GetEntity(authoring.targetObject, TransformUsageFlags.Dynamic);
 
             AddComponent(
                 entity,
-                new CustomPhysJnt {
-                    enabled = authoring.jntEnabled,
+                new EcsPhysSpring {
+                    enabled = authoring.springEnabled,
                     localAnchor = authoring.localAnchor,
                     linSpring = authoring.linearSpring,
                     linDamper = authoring.linearDamper,
@@ -77,35 +74,29 @@ public class CustomPhysJntAuthoring : MonoBehaviour
             );
             AddComponent(
                 entity,
-                new CustomPhysJntTgt {
+                new EcsPhysSpringTgt {
                     pos = authoring.targetPosition,
                     rot = rot
                 }
             );
             AddComponent(
                 entity,
-                new CustomPhysJntTgtVel {
+                new EcsPhysSpringTgtVel {
                     linVel = float3.zero,
                     angVel = float3.zero
                 }
             );
             AddComponent(
                 entity,
-                new CustomPhysJntBody {
-                    Body = bodyEntity
+                new EcsPhysSpringBody {
+                    body = bodyEntity
                 }
             );
-            //AddComponent(
-            //    entity,
-            //    new CustomPhysJntTgtSync {
-            //        Target = targetEntity
-            //    }
-            //);
-            AddComponent<CustomPhysJntControlled>(entity);
+            AddComponent<EcsPhysSpringControlled>(entity);
             AddComponent(
                 entity,
-                new CustomPhysJntId {
-                    Value = authoring.jointId
+                new EcsPhysSpringId {
+                    value = authoring.springId
                 }
             );
         }
@@ -113,18 +104,18 @@ public class CustomPhysJntAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// The world-space target of a custom physics joint.
+/// The world-space target of a custom physics spring.
 /// </summary>
-public struct CustomPhysJntTgt : IComponentData {
+public struct EcsPhysSpringTgt : IComponentData {
     public float3 pos;
     public quaternion rot;
 }
 
 /// <summary>
-/// Custom physics joint. Requires a joint target component to work.
+/// Custom physics spring. Requires a spring target component to work.
 /// DOTS NOTE: Components are structs which only hold data.
 /// </summary>
-public struct CustomPhysJnt : IComponentData {
+public struct EcsPhysSpring : IComponentData {
     public bool enabled;
     public float3 localAnchor;
     // Linear drive
@@ -142,40 +133,32 @@ public struct CustomPhysJnt : IComponentData {
 }
 
 /// <summary>
-/// References the rigidbody entity affected by this custom physics joint.
+/// References the rigidbody entity affected by this custom physics spring.
 /// </summary>
-public struct CustomPhysJntBody : IComponentData {
-    public Entity Body;
+public struct EcsPhysSpringBody : IComponentData {
+    public Entity body;
 }
 
 /// <summary>
-/// Runtime velocity of the custom physics joint target.
-/// Used for moving targets. Allows the joint to compensate
+/// Runtime velocity of the custom physics spring target.
+/// Used for moving targets. Allows the spring to compensate
 /// for target motion instead of treating it as teleportation.
 /// </summary>
-public struct CustomPhysJntTgtVel : IComponentData {
+public struct EcsPhysSpringTgtVel : IComponentData {
     public float3 linVel;
     public float3 angVel;
 }
 
-// TODO: Is this needed?
 /// <summary>
-/// References the Entity whose transform drives a CustomPhysJnt target.
+/// Identifies a custom physics spring that can be controlled externally.
 /// </summary>
-public struct CustomPhysJntTgtSync : IComponentData {
-    public Entity Target;
+public struct EcsPhysSpringControlled : IComponentData {
 }
 
 /// <summary>
-/// Identifies a custom physics joint that can be controlled externally.
+/// Uniquely identifies a custom physics spring.
+/// Used by GameObject proxies to locate the correct spring entity.
 /// </summary>
-public struct CustomPhysJntControlled : IComponentData {
-}
-
-/// <summary>
-/// Uniquely identifies a custom physics joint.
-/// Used by GameObject proxies to locate the correct joint entity.
-/// </summary>
-public struct CustomPhysJntId : IComponentData {
-    public int Value;
+public struct EcsPhysSpringId : IComponentData {
+    public int value;
 }
