@@ -1180,33 +1180,9 @@ PrefabInstance:
       value: DebugHud
       objectReference: {fileID: 0}
     - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: lockDist
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
       propertyPath: tgtObjTrf
       value: 
       objectReference: {fileID: 6246790631621771707}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: lockedDist
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: smoothingMode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: posInterpFollowSpd
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: rotInterpFollowSpd
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2428448692871624191, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
-      propertyPath: sclInterpFollowSpd
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 6563258690430927760, guid: d7ce27503566a1a4bbd7000488cba17a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.05

@@ -12,7 +12,6 @@ public class FwdDirFollower : MonoBehaviour {
         NoSmoothing
     }
 
-
     [Header("Box Check Settings")]
     [Tooltip("Default size of the checkbox, used to check if there's room for the follower object. " +
         "This should match with the default size of this game object (or its visuals we want to fit in the world).")]
@@ -27,8 +26,8 @@ public class FwdDirFollower : MonoBehaviour {
     [SerializeField] float minDistFromTgtObj = 0.2f;
     [Tooltip("Max distance of the follower obj from the target transform.")]
     [SerializeField] float maxDistFromTgtObj = 10f;
-    [Tooltip("When raycast from target object towards target object forward direction hits an obstacle, " +
-        "we use this distance from the object for the first check box.")]
+    [Tooltip("When raycast from target game object towards the target direction hits an obstacle, " +
+        "we use this distance from the hit obstacle back towards the target obj for the first check box.")]
     [SerializeField] float tgtDistPadding = 0.05f;
 
     [Header("Locked Distance")]
@@ -80,30 +79,24 @@ public class FwdDirFollower : MonoBehaviour {
     void LateUpdate() {
         if (tgtObjTrf == null)
             return;
-
         Vector3 origin = tgtObjTrf.position;
         Quaternion offsetRot = Quaternion.Euler(tgtDirOffsetEuler);
         Vector3 tgtDir = (tgtObjTrf.rotation * offsetRot) * Vector3.forward;
         float tgtDist;
-
         if (lockDist) {
             tgtDist = lockedDist;
         }
         else {
             tgtDist = FindTgtDist(origin, tgtDir);
         }
-
         Vector3 objTgtPos = origin + tgtDir * tgtDist;
-
         // Target rotation for this game object.
         Quaternion targetRotation = Quaternion.LookRotation(objTgtPos - origin, Vector3.up);
         float targetScaleFactor = Mathf.Max(0.01f, tgtDist / minDistFromTgtObj);
         Vector3 targetScale = initialScale * targetScaleFactor;
-
         float posLerp = 1f - Mathf.Exp(-posInterpFollowSpd * Time.deltaTime);
         float rotLerp = 1f - Mathf.Exp(-rotInterpFollowSpd * Time.deltaTime);
         float scaleLerp = 1f - Mathf.Exp(-sclInterpFollowSpd * Time.deltaTime);
-
         switch (smoothingMode) {
             case FollowSmoothingMode.SmoothMvmt:
                 transform.position = Vector3.Lerp(transform.position, objTgtPos, posLerp);
@@ -113,15 +106,9 @@ public class FwdDirFollower : MonoBehaviour {
             case FollowSmoothingMode.SmoothDist:
                 // Snap rotation immediately.
                 transform.rotation = targetRotation;
-
-                // Preserve the current perpendicular offset, but smoothly move only along the target forward direction.
-                Vector3 currentPos = transform.position;
-                Vector3 delta = currentPos - origin;
-                float currentForwardDist = Vector3.Dot(delta, tgtDir);
-                float smoothedForwardDist = Mathf.Lerp(currentForwardDist, tgtDist, posLerp);
-                Vector3 perpendicularOffset = delta - tgtDir * currentForwardDist;
-
-                transform.position = origin + perpendicularOffset + tgtDir * smoothedForwardDist;
+                float currentDist = Vector3.Distance(origin, transform.position);
+                float smoothedDist = Mathf.Lerp(currentDist, tgtDist, posLerp);
+                transform.position = origin + tgtDir * smoothedDist;
                 transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
                 break;
             case FollowSmoothingMode.NoSmoothing:
@@ -129,6 +116,15 @@ public class FwdDirFollower : MonoBehaviour {
                 transform.localScale = targetScale;
                 break;
         }
+    }
+
+    void OnDrawGizmos() {
+        Gizmos.color = Color.cyan;
+        Matrix4x4 oldMatrix = Gizmos.matrix;
+        Gizmos.matrix = transform.localToWorldMatrix;
+        // Draw the CheckBox at the initial (min distance) size.
+        Gizmos.DrawWireCube(Vector3.zero, Vector3.Scale(ChkBoxSz, transform.localScale));
+        Gizmos.matrix = oldMatrix;
     }
 
     /// <summary>
@@ -156,14 +152,12 @@ public class FwdDirFollower : MonoBehaviour {
         Quaternion chkBoxRot = Quaternion.LookRotation(-tgtDir, Vector3.up);
         float testDist = Mathf.Max(minDistFromTgtObj, tgtDist);
         int chks = 0;
-
         // We iteratively make CheckBox queries to find target position (and scale) for this object.
         while (testDist >= minDistFromTgtObj) {
             chks++;
             Vector3 testPosition = origin + tgtDir * testDist;
             float scaleFactor = testDist / minDistFromTgtObj;
             Vector3 halfExtents = GetHalfExtents(scaleFactor);
-
             bool blocked =
                 Physics.CheckBox(
                     testPosition,
@@ -172,26 +166,21 @@ public class FwdDirFollower : MonoBehaviour {
                     colMask,
                     trgIxn
                 );
-
             if (!blocked) {
                 tgtDist = testDist;
                 foundValidPos = true;
                 break;
             }
-            
             float stepLength = Mathf.Max(minChkBoxStepLen, testDist * chkBoxStepScaler);
             testDist -= stepLength;
-            
             if (chks == maxChkBoxQryAmt) {
                 Debug.LogWarning("Max CheckBox steps reached! Debug HUD might not display properly!", this);
                 break;
             }
         }
-
         if (!foundValidPos) {
             tgtDist = minDistFromTgtObj;
         }
-
         return tgtDist;
     }
 

@@ -14,7 +14,7 @@ public class PerfInfoToTmpText : MonoBehaviour {
     [Tooltip("Duration, in seconds, over which the lowest FPS (highest frame time) is measured.")]
     [SerializeField] float lowestFpsMeasurementWindow = 5;
     [Tooltip("Duration, in seconds, over which the average FPS and frame time are calculated.")]
-    [SerializeField] float avgFpsMeasurementWindow = 10;
+    [SerializeField] float avgFpsMeasurementWindow = 5;
 
     [Header("Refs")]
     [Tooltip("Text where we want to display performance info.")]
@@ -29,42 +29,32 @@ public class PerfInfoToTmpText : MonoBehaviour {
 
     void Update() {
         float deltaTime = Time.unscaledDeltaTime;
-
         // Age existing samples.
         for (int i = 0; i < frameSamples.Count; i++)
             frameSamples[i].age += deltaTime;
-
         // Remove samples no longer needed by either time window.
         float maxWindow = Mathf.Max(lowestFpsMeasurementWindow, avgFpsMeasurementWindow);
         for (int i = frameSamples.Count - 1; i >= 0; i--) {
             if (frameSamples[i].age > maxWindow)
                 frameSamples.RemoveAt(i);
         }
-
         // Add current frame.
         frameSamples.Add(new FrameSample{frameTime = deltaTime, age = 0f});
-
         perfInfoText.text = CreatePerfInfoText();
     }
 
     string CreatePerfInfoText() {
         StringBuilder stringBuilder = new();
-
         float currentFrameTime = Time.unscaledDeltaTime;
         float currentFps = currentFrameTime > 0f ? 1f / currentFrameTime : 0f;
-
         if (showCurrentFps)
             stringBuilder.AppendLine($"FPS: {currentFps:F1}");
-
         if (showCurrentFrameTime)
             stringBuilder.AppendLine($"Frame: {currentFrameTime * 1000f:F2} ms");
-
         float worstFrameTime = 0f;
         bool hasWorst = false;
-
         float avgFrameTimeSum = 0f;
         int avgFrameCount = 0;
-
         for (int i = frameSamples.Count - 1; i >= 0; i--) {
             FrameSample sample = frameSamples[i];
             if (sample.age <= lowestFpsMeasurementWindow) {
@@ -78,7 +68,6 @@ public class PerfInfoToTmpText : MonoBehaviour {
                 avgFrameCount++;
             }
         }
-
         if (hasWorst) {
             float lowestFps = 1f / worstFrameTime;
             if (showLowestFps)
@@ -86,7 +75,6 @@ public class PerfInfoToTmpText : MonoBehaviour {
             if (showLowestFrameTime)
                 stringBuilder.AppendLine($"Worst Frame ({lowestFpsMeasurementWindow:F0}s): {worstFrameTime * 1000f:F2} ms");
         }
-
         if (avgFrameCount > 0) {
             float avgFrameTime = avgFrameTimeSum / avgFrameCount;
             float avgFps = 1f / avgFrameTime;
@@ -95,7 +83,6 @@ public class PerfInfoToTmpText : MonoBehaviour {
             if (showAvgFrameTime)
                 stringBuilder.AppendLine($"Avg Frame ({avgFpsMeasurementWindow:F0}s): {avgFrameTime * 1000f:F2} ms");
         }
-
         return stringBuilder.ToString().TrimEnd();
     }
 }

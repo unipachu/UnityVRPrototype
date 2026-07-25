@@ -50,21 +50,21 @@ MonoBehaviour:
   ChkBoxSz: {x: 0.3, y: 0.3, z: 0.02}
   tgtDirOffsetEuler: {x: 0, y: 0, z: 0}
   minDistFromTgtObj: 0.2
-  maxDistFromTgtObj: 10
+  maxDistFromTgtObj: 3
   tgtDistPadding: 0.05
-  lockDist: 0
-  lockedDist: 2
-  smoothingMode: 1
-  posInterpFollowSpd: 12
+  lockDist: 1
+  lockedDist: 1
+  smoothingMode: 2
+  posInterpFollowSpd: 10
   rotInterpFollowSpd: 10
-  sclInterpFollowSpd: 12
-  minBoxChkStepLen: 0.05
-  boxStepScaler: 0.1
-  maxBoxChks: 200
-  collisionMask:
+  sclInterpFollowSpd: 10
+  minChkBoxStepLen: 0.05
+  chkBoxStepScaler: 0.1
+  maxChkBoxQryAmt: 100
+  colMask:
     serializedVersion: 2
     m_Bits: 1
-  triggerInteraction: 1
+  trgIxn: 1
   tgtObjTrf: {fileID: 0}
 --- !u!114 &4078829873491322770
 MonoBehaviour:
@@ -104,7 +104,7 @@ MonoBehaviour:
   showAvgFps: 0
   showAvgFrameTime: 1
   lowestFpsMeasurementWindow: 5
-  avgFpsMeasurementWindow: 10
+  avgFpsMeasurementWindow: 5
   perfInfoText: {fileID: 2016017214245379119}
 --- !u!1 &6666160118337128058
 GameObject:

@@ -29,11 +29,8 @@ public class ConsoleLogsToTMPText : MonoBehaviour {
     void OnLogMessageRecieved(string logString, string stackTrace, LogType logType) {
         if (!ShouldDisplayLog(logType))
             return;
-
         UpdateConsoleTextColor(logType);
-
         consoleLogsText.text = logString + "\n" + consoleLogsText.text;
-
         if (consoleLogsText.text.Length > MaxConsoleTextLength)
             consoleLogsText.text = consoleLogsText.text.Substring(0, MaxConsoleTextLength);
     }

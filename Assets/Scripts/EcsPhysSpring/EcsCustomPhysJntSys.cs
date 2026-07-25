@@ -82,6 +82,8 @@ public partial struct EcsPhysSpringSys : ISystem {
         // DOTS NOTE: We wait for the job to complete since we will use its newly written data next.
         // DOTS NOTE C: That is also why this job probably does not run parallel with anything and
         // DOTS NOTE C: is probably useless here. But it is good for demonstrative purposes.
+        // TODO: Perhaps it would be better to combine everything in this system update into a single job?
+        // TODO C: Is there a way to ensure that a job finishes before the physics simulation?
         handle.Complete();
 
         // Apply accumulated impulses.
