@@ -37,6 +37,23 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
         return true;
     }
 
+    public bool CanBeReleased(PhysHand physHand) {
+        return true;
+    }
+
+    /// <summary>
+    /// Finds <see cref="Grab"/> by the <see cref="PhysHand"/>.
+    /// If <see cref="PhysHand"/> is not grabbing this, returns null.
+    /// </summary>
+    public Grab FindGrab(PhysHand physHand) {
+        for (int i = 0; i < grabs.Count; i++) {
+            if (grabs[i].physHand == physHand)
+                return grabs[i];
+        }
+        Debug.LogWarning($"{physHand.name} was not grabbing {gameObject.name}!", this);
+        return null;
+    }
+
     public float GetDistanceToGrabPoint(Vector3 physHandWorldGrabPoint) {
         return Vector3.Distance(transform.position, physHandWorldGrabPoint);
     }
@@ -48,8 +65,8 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
         Vector3 grabPointWorldPos = physHand.grabPoint.position;
         var newGrab = new Grab(
             physHand, 
-            GeneralUtils.UnscaledInverseTransformPoint(transform, physHand.grabPoint.position),
-            GeneralUtils.RotationFromWorldToTransformSpace(transform, physHand.grabPoint.rotation)
+            GeneralUtils.UnscaledInverseTransformPoint(transform, physHand.transform.position),
+            GeneralUtils.RotationFromWorldToTransformSpace(transform, physHand.transform.rotation)
         );
         grabs.Add(newGrab);
         // Setup hand proxy visual.
@@ -68,28 +85,21 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
     // PRIVATE METHODS
     // -----------------------------------------
 
-    /// <summary>
-    /// Returns grab by the physHand. If physHand is not grabbing this grabbable, returns null.
-    /// </summary>
-    /// <param name="physHand"></param>
-    /// <returns></returns>
-    Grab FindGrab(PhysHand physHand) {
-        for (int i = 0; i < grabs.Count; i++) {
-            if (grabs[i].physHand == physHand)
-                return grabs[i];
-        }
-        Debug.LogWarning($"{physHand.name} was not grabbing {gameObject.name}!", this);
-        return null;
-    }
-
-
     void ReleaseAllGrabs() {
+        foreach (Grab grab in grabs)
+            grab.physHand.OnGrabReleased(
+                GeneralUtils.UnscaledTransformPoint(transform, grab.initPhysHandPosInGrabbableLocalSpace),
+                GeneralUtils.RotationFromTransformSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
+            );
         grabs.Clear();
         SetJntDrivesToZero();
     }
 
     void ReleaseGrab(Grab grab) {
-        grabs.Remove(grab);
+        grab.physHand.OnGrabReleased(
+            GeneralUtils.UnscaledTransformPoint(transform, grab.initPhysHandPosInGrabbableLocalSpace),
+            GeneralUtils.RotationFromTransformSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
+        ); grabs.Remove(grab);
         if (grabs.Count == 0)
             SetJntDrivesToZero();
     }
@@ -119,11 +129,11 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
 
     void UpdateSingleGrabJnt() {
         Grab grab = grabs[0];
-        Transform ctrlTrf = grab.physHand.ctrlTrf;
+        Transform ctrlTrf = grab.physHand.followTgtTrf;
         Quaternion targetWorldRot =
-            ctrlTrf.rotation * Quaternion.Inverse(grab.initRotFromGrabbableToGrabPt);
+            ctrlTrf.rotation * Quaternion.Inverse(grab.initRotFromGrabbableToPhysHand);
         Vector3 targetWorldPos =
-            ctrlTrf.position - targetWorldRot * grab.initGrabPtPosInGrabbableLocalSpace;
+            ctrlTrf.position - targetWorldRot * grab.initPhysHandPosInGrabbableLocalSpace;
         grabJnt.targetPosition = targetWorldPos;
         grabJnt.targetRotation = targetWorldRot;
         // TODO: We update joint drives every frame. For this grabbable we could just update every time grab configuration changes.

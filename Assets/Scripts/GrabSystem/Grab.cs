@@ -11,19 +11,19 @@ public sealed class Grab {
     /// <summary>
     /// Unscaled position of the hand in grabbable's local space when the grab was initialized.
     /// </summary>
-    public Vector3 initGrabPtPosInGrabbableLocalSpace = Vector3.zero;
+    public Vector3 initPhysHandPosInGrabbableLocalSpace = Vector3.zero;
     /// <summary>
     /// Rotation from the grabbed object to the hand when the grab was initialized.
     /// </summary>
-    public Quaternion initRotFromGrabbableToGrabPt = Quaternion.identity;
+    public Quaternion initRotFromGrabbableToPhysHand = Quaternion.identity;
 
     public Grab(
         PhysHand physHand,
-        Vector3 initialGrabPointPosInGrabbableLocalSpace,
-        Quaternion initialRotFromGrabbableToGrabPoint
+        Vector3 initPhysHandPosInGrabbableLocalSpace,
+        Quaternion initRotFromGrabbableToPhysHand
     ) {
         this.physHand = physHand;
-        this.initGrabPtPosInGrabbableLocalSpace = initialGrabPointPosInGrabbableLocalSpace;
-        this.initRotFromGrabbableToGrabPt = initialRotFromGrabbableToGrabPoint;
+        this.initPhysHandPosInGrabbableLocalSpace = initPhysHandPosInGrabbableLocalSpace;
+        this.initRotFromGrabbableToPhysHand = initRotFromGrabbableToPhysHand;
     }
 }

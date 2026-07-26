@@ -10,13 +10,17 @@ enum PhysHandState {
 /// Controller for one physics hand. 
 /// </summary>
 public class PhysHand : MonoBehaviour {
-    [Header("Read Only Data")]
+    [field: Header("README: \n" +
+        "Template readme text\n" +
+        "The End.")]
+
+    [field: Header("Read Only Data")]
     [field: SerializeField] public PhysHandConfigurableJntData jntData { get; private set; }
     [field: SerializeField] public GrabberData grabberData { get; private set; }
 
-    [Header("Refs")]
-    [Tooltip("Transform of the corresponding VR controller.")]
-    [field: SerializeField] public Transform ctrlTrf { get; private set; }
+    [field: Header("Refs")]
+    [Tooltip("Transform of the follow target of the corresponding VR controller.")]
+    [field: SerializeField] public Transform followTgtTrf { get; private set; }
     [field: SerializeField] public Rigidbody rb { get; private set; }
     [field: SerializeField] public PlrCtrl plrCtrl { get; private set; }
     [Tooltip("Position for grab overlap sphere.")]
@@ -50,20 +54,20 @@ public class PhysHand : MonoBehaviour {
 
         // We move the hand to the pose of the controller.
         // TODO: Test if moving the transform pose is enough.
-        transform.position = ctrlTrf.position;
-        transform.rotation = ctrlTrf.rotation;
-        rb.position = ctrlTrf.position;
-        rb.rotation = ctrlTrf.rotation;
+        transform.position = followTgtTrf.position;
+        transform.rotation = followTgtTrf.rotation;
+        rb.position = followTgtTrf.position;
+        rb.rotation = followTgtTrf.rotation;
         // Set world joint targets.
-        worldJnt.targetPosition = ctrlTrf.position;
-        worldJnt.targetRotation = ctrlTrf.rotation;
+        worldJnt.targetPosition = followTgtTrf.position;
+        worldJnt.targetRotation = followTgtTrf.rotation;
         PhysHandNGrabbableUtils.SetWorldJntDrivesToDflt(worldJnt, jntData);
     }
 
     void FixedUpdate() {
         // Set joint target pose to controller pose.
-        worldJnt.targetPosition = ctrlTrf.position;
-        worldJnt.targetRotation = ctrlTrf.rotation;
+        worldJnt.targetPosition = followTgtTrf.position;
+        worldJnt.targetRotation = followTgtTrf.rotation;
     }
 
     private void Update() {
@@ -79,8 +83,8 @@ public class PhysHand : MonoBehaviour {
             case PhysHandState.Grabbing:
                 // TODO: Should probably do nothing.
                 if (!plrCtrl.GrabButtonHeld()) {
-                    grabbedGrabbable.ReleaseGrab(this);
-                    EnterNotGrabbingState();
+                    if(grabbedGrabbable.CanBeReleased(this))
+                        grabbedGrabbable.ReleaseGrab(this);
                 }
                 break;
             case PhysHandState.Resetting:
@@ -92,6 +96,40 @@ public class PhysHand : MonoBehaviour {
                 Debug.LogError("Switch defaulted.", this);
                 break;
         }
+    }
+
+    private void OnDisable() {
+        if(grabbedGrabbable != null)
+            // NOTE: We force grab release here without checking if the grab can be released
+            // NOTE C: because this hand is about to get disabled/destroyed.
+            grabbedGrabbable.ReleaseGrab(this);
+    }
+
+    // -----------------------------------------
+    // PUBLIC METHODS
+    // -----------------------------------------
+
+    /// <summary>
+    /// Called by <see cref="IGrabbable"/> when grab by THIS hand is released.
+    /// </summary>
+    public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
+        grabbedGrabbable = null;
+        Debug.Assert(vis != null, "What the hell?", this);
+        vis.SetActive(true);
+        rb.isKinematic = false;
+        // NOTE: Setting only rb pose (and not transform pose) causes the object to jerk when grab is released 
+        // NOTE C: (likely because rb movement is solved only during physics simulation steps and visuals are
+        // NOTE C: interpolated) and setting only transform pose in some cases seems to teleport the object where 
+        // NOTE C: the grab was first initialized - likely because the rb pose is frozen where the grab started and 
+        // NOTE C: rb pose overrides the transform pose. So you need to set BOTH transform and rb pose.
+        transform.position = grabReleaseWorldPos;
+        transform.rotation = grabReleaseWorldRot;
+        rb.position = grabReleaseWorldPos;
+        rb.rotation = grabReleaseWorldRot;
+        // TODO: Set velocity to VR controller follow target velocity.
+        foreach (Collider col in cols)
+            col.enabled = true;
+        physHandState = PhysHandState.NotGrabbing;
     }
 
     // -----------------------------------------
@@ -106,38 +144,6 @@ public class PhysHand : MonoBehaviour {
             col.enabled = false;
     }
 
-    void EnterNotGrabbingState() {
-        physHandState = PhysHandState.NotGrabbing;
-        Debug.Assert(vis != null, "What the hell?", this);
-        vis.SetActive(true);
-        rb.isKinematic = false;
-        rb.position = ctrlTrf.position;
-        rb.rotation = ctrlTrf.rotation;
-        // TODO: Set velocity to VR controller velocity.
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        foreach (Collider col in cols)
-            col.enabled = true;
-    }
-
-    // TODO: Maybe you don't need default drives at all if you never change them.
-    // TODO C: Actually you might want them for the grab joint calculations.
-    //void SetWorldJntDrivesToDflt() {
-    //    JointDrive jntDrive = new JointDrive();
-    //    // Linear drives:
-    //    jntDrive.positionSpring = physHandConfigurableJntData.dfltLinDrivePosSpring;
-    //    jntDrive.positionDamper = physHandConfigurableJntData.dfltLinDrivePosDamper;
-    //    jntDrive.maximumForce = physHandConfigurableJntData.dfltLinDriveMaxForce;
-    //    worldJnt.xDrive = jntDrive;
-    //    worldJnt.yDrive = jntDrive;
-    //    worldJnt.zDrive = jntDrive;
-    //    // Angular drive:
-    //    jntDrive.positionSpring = physHandConfigurableJntData.dfltSlerpDrivePosSpring;
-    //    jntDrive.positionDamper = physHandConfigurableJntData.dfltSlerpDriveDamper;
-    //    jntDrive.maximumForce = physHandConfigurableJntData.defaultSlerpDriveMaxForce;
-    //    worldJnt.slerpDrive = jntDrive;
-    //}
-
     /// <summary>
     /// Tries to find an <see cref="IGrabbable"/> implemented by a component on the collider's attached Rigidbody.
     /// Returns <see langword="null"/> if no <see cref="IGrabbable"/> is found.<br/>
@@ -146,14 +152,14 @@ public class PhysHand : MonoBehaviour {
     IGrabbable TryGetPhysicsHandGrabbableObject(Collider otherCollider) {
         IGrabbable grabbable = null;
         Rigidbody otherRb = otherCollider.attachedRigidbody;
-        if (otherRb) {
+        if (otherRb)
             grabbable = otherRb.GetComponent<IGrabbable>();
-        }
         return grabbable;
     }
 
     /// <summary>
-    /// Searches for nearby objects with OverlapSphere and checks if any are eligible for grabbing. If so, grabs the closest grabbable object and returns true, otherwise returns false.
+    /// Searches for nearby objects with OverlapSphere and checks if any are eligible for grabbing.
+    /// If so, grabs the closest <see cref="IGrabbable"/> and returns true, otherwise returns false.
     /// </summary>
     bool TryGrabbing() {
         Collider[] nearbyColliders = Physics.OverlapSphere(
@@ -177,8 +183,6 @@ public class PhysHand : MonoBehaviour {
                 closestGrabbable = grabbable;
                 continue;
             }
-            //Vector3 closestPointOnCollider = collider.ClosestPoint(grabPoint.position);
-            //float grabbableDistance = Vector3.Distance(grabPoint.position, closestPointOnCollider);
             float grabbableDistance = grabbable.GetDistanceToGrabPoint(grabPoint.position);
             if (grabbableDistance < distanceToClosestGrabbable) {
                 closestGrabbable = grabbable;
