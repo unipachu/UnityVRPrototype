@@ -555,7 +555,7 @@ GameObject:
   - component: {fileID: 179130001}
   - component: {fileID: 179130000}
   m_Layer: 7
-  m_Name: GrabbableCubePipe
+  m_Name: GrabbableCubeStick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -874,7 +874,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -903,7 +903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565268878ca444d4b8311ce8f60d7642, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysHand
-  <jntData>k__BackingField: {fileID: 11400000, guid: 4f8beecc41bb5684d898f9943bb9cac8, type: 2}
+  <jntData>k__BackingField: {fileID: 11400000, guid: 531183daf46e01645b136a06ceefa355, type: 2}
   <grabberData>k__BackingField: {fileID: 11400000, guid: 2cfed77784477854eaaffa00eaec772d, type: 2}
   <followTgtTrf>k__BackingField: {fileID: 1766387574}
   <rb>k__BackingField: {fileID: 194671199}

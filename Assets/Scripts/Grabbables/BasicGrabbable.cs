@@ -14,15 +14,19 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
     // UNITY CALLBACKS
     // -----------------------------------------
 
-    protected virtual void FixedUpdate() {
-        if (grabs.Count == 1) {
-            //grabs[0].physicsHand.SetWorldJointTargetToHandController();
-            UpdateSingleGrabJnt();
-        }
-        else {
-            UpdateMultiGrabJnt();
-            //MultigrabJointSetup();
-        }
+    void FixedUpdate() {
+        if (grabs.Count == 1)
+            PhysHandNGrabbableUtils.GrabJntUpdate_SimpleSingleGrabWithAnchorAtPhysHandPos(grabs[0], grabJnt, transform.lossyScale);
+        else
+            PhysHandNGrabbableUtils.GrabJntUpdate_UpdateMultiGrabJnt(grabs, grabJnt);
+    }
+
+    void OnDrawGizmos() {
+        if (grabJnt == null)
+            return;
+        Gizmos.color = Color.yellow;
+        Vector3 worldAnchorPos = grabJnt.transform.TransformPoint(grabJnt.anchor);
+        Gizmos.DrawWireSphere(worldAnchorPos, 0.02f);
     }
 
     void OnDisable() {
@@ -62,7 +66,6 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
         // NOTE: Phys hand should check if the grabbable can be grabbed before calling this method.
         //if (!CanBeGrabbed(physHand))
         //    return false;
-        Vector3 grabPointWorldPos = physHand.grabPoint.position;
         var newGrab = new Grab(
             physHand, 
             GeneralUtils.UnscaledInverseTransformPoint(transform, physHand.transform.position),
@@ -123,20 +126,5 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
         grabJnt.slerpDrive = jntDrive;
     }
 
-    void UpdateMultiGrabJnt() {
-        // TODO
-    }
 
-    void UpdateSingleGrabJnt() {
-        Grab grab = grabs[0];
-        Transform ctrlTrf = grab.physHand.followTgtTrf;
-        Quaternion targetWorldRot =
-            ctrlTrf.rotation * Quaternion.Inverse(grab.initRotFromGrabbableToPhysHand);
-        Vector3 targetWorldPos =
-            ctrlTrf.position - targetWorldRot * grab.initPhysHandPosInGrabbableLocalSpace;
-        grabJnt.targetPosition = targetWorldPos;
-        grabJnt.targetRotation = targetWorldRot;
-        // TODO: We update joint drives every frame. For this grabbable we could just update every time grab configuration changes.
-        PhysHandNGrabbableUtils.SetWorldJntDrivesToDflt(grabJnt, grab.physHand.jntData);
-    }
 }
