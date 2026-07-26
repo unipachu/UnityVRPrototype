@@ -98,6 +98,14 @@ public class PhysHand : MonoBehaviour {
         }
     }
 
+    void OnDrawGizmos() {
+        if (grabPoint == null || grabberData == null)
+            return;
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(grabPoint.position, grabberData.chkSphereR);
+    }
+
     private void OnDisable() {
         if(grabbedGrabbable != null)
             // NOTE: We force grab release here without checking if the grab can be released

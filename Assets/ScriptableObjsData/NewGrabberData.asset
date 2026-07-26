@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0042dd2cc5f152d4482df83f9948e851, type: 3}
   m_Name: NewGrabberData
   m_EditorClassIdentifier: Assembly-CSharp::GrabberData
-  chkSphereR: 0.1
+  chkSphereR: 0.045
   grabLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129

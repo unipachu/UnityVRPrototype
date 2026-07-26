@@ -96,6 +96,37 @@ MonoBehaviour:
   m_BodyPositionEvaluatorObject: {fileID: 0}
   m_ConstrainedBodyManipulatorObject: {fileID: 0}
   m_UseCharacterControllerIfExists: 1
+--- !u!1 &1628792346546962642
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1804113834662196362}
+  m_Layer: 0
+  m_Name: PhysHandFollowTgt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1804113834662196362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628792346546962642}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.2858011, y: -0.3168419, z: 0.5247533, w: 0.7365888}
+  m_LocalPosition: {x: -0.05, y: 0, z: -0.09}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5584139607940015623}
+  m_LocalEulerAnglesHint: {x: 48.9, y: -14.7, z: 64.22}
 --- !u!1 &1817712914432739824
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +394,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6932300364526817077}
+  - {fileID: 1804113834662196362}
   m_Father: {fileID: 4683577641805523500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &920813358625568884
