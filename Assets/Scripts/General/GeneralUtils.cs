@@ -103,7 +103,7 @@ public static class GeneralUtils {
     /// Does not scale the point, in other words: ignores transform.localScale
     /// unlike transform.InverseTransformPoint.
     /// </summary>
-    public static Vector3 UnscaledInvrsTrft(Transform trf, Vector3 pttInWorldSpace) {
+    public static Vector3 UnscaledInvrsTrfPt(Transform trf, Vector3 pttInWorldSpace) {
         return Quaternion.Inverse(trf.rotation) * (pttInWorldSpace - trf.position);
     }
 
@@ -125,9 +125,9 @@ public static class GeneralUtils {
     /// Returns the position and rotation of this grabbable if its child was aligned with target
     /// pos and rot.
     /// </summary>
-    public static (Vector3, Quaternion) AlignChildWithTargetPosRot(Transform parentTrf, Transform childTrf, Vector3 tgtWorldPos, Quaternion tgtWorldRot) {
+    public static (Vector3, Quaternion) AlignChildWithTgtPose(Transform parentTrf, Transform childTrf, Vector3 tgtWorldPos, Quaternion tgtWorldRot) {
         // Compute the child's current local offset (position + rotation) relative to the parent
-        Vector3 childParentSpacePos = UnscaledInvrsTrft(parentTrf, childTrf.position);
+        Vector3 childParentSpacePos = UnscaledInvrsTrfPt(parentTrf, childTrf.position);
         Quaternion childParentSpaceRot = RotFromWorldToTrfSpace(parentTrf, childTrf.rotation);
         // Compute the desired rigidbody transform that would make the child match the target
         Vector3 desiredRbPos = tgtWorldPos - (tgtWorldRot * (Quaternion.Inverse(childParentSpaceRot) * childParentSpacePos));

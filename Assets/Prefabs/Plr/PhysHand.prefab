@@ -188,7 +188,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3129923130106753471}
-  - component: {fileID: 5486863834371886251}
+  - component: {fileID: 1668586537245752111}
   - component: {fileID: 7228727955965025210}
   - component: {fileID: 3455627583413797499}
   m_Layer: 7
@@ -216,7 +216,7 @@ Transform:
   - {fileID: 4429775374545935400}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5486863834371886251
+--- !u!114 &1668586537245752111
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -225,23 +225,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 5548175894078518042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 565268878ca444d4b8311ce8f60d7642, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ed53ea393c1fba43b913df1f4770a5a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PhysHand
+  m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_PhysHand
   <side>k__BackingField: 0
   <jntData>k__BackingField: {fileID: 11400000, guid: 531183daf46e01645b136a06ceefa355, type: 2}
-  <grabberData>k__BackingField: {fileID: 11400000, guid: 2cfed77784477854eaaffa00eaec772d, type: 2}
+  <grbrData>k__BackingField: {fileID: 11400000, guid: 2cfed77784477854eaaffa00eaec772d, type: 2}
   <followTgtTrf>k__BackingField: {fileID: 0}
-  <rb>k__BackingField: {fileID: 7228727955965025210}
+  controllerHapticImpulsePlayer: {fileID: 0}
   <plrCtrl>k__BackingField: {fileID: 0}
-  <grabPoint>k__BackingField: {fileID: 3793855725444168109}
+  <rb>k__BackingField: {fileID: 7228727955965025210}
+  <grbPt>k__BackingField: {fileID: 3793855725444168109}
   <worldJnt>k__BackingField: {fileID: 3455627583413797499}
   <vis>k__BackingField: {fileID: 1233136622387315819}
-  <cols>k__BackingField:
-  - {fileID: 1761344489441458896}
-  - {fileID: 7047134916576098280}
-  - {fileID: 9163458324421298496}
-  controllerHapticImpulsePlayer: {fileID: 0}
+  <cols>k__BackingField: []
 --- !u!54 &7228727955965025210
 Rigidbody:
   m_ObjectHideFlags: 0

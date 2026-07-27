@@ -320,8 +320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110148286306e7247a16a76e2909f08b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicGrabbable
-  singleGrabJntT: 0
-  grabJnt: {fileID: 8394288165473716204}
+  sglGrbJntT: 0
+  grbJnt: {fileID: 8394288165473716204}
   rb: {fileID: 1968701463999069802}
   lHandVisProxy: {fileID: 2830181242276477379}
   rHandVisProxy: {fileID: 5785750693315187779}
