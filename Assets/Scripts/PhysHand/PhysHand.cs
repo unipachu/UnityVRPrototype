@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
+
 
 enum PhysHandState {
     NotGrabbing,
@@ -31,6 +33,8 @@ public class PhysHand : MonoBehaviour {
     [Tooltip("Game object containing hand visuals.")]
     [field: SerializeField] public GameObject vis { get; private set; }
     [field: SerializeField] public Collider[] cols { get; private set; }
+    [Tooltip("HapticImpulsePlayer of the matching controller.")]
+    [SerializeField] HapticImpulsePlayer controllerHapticImpulsePlayer;
 
 
     PhysHandState physHandState;
@@ -202,6 +206,7 @@ public class PhysHand : MonoBehaviour {
         // Found closest grabbable that can be grabbed!
         closestGrabbable.InitiateGrab(this);
         grabbedGrabbable = closestGrabbable;
+        controllerHapticImpulsePlayer.SendHapticImpulse(0.5f, 0.1f);
         return true;
     }
 }

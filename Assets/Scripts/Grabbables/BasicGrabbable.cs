@@ -1,24 +1,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BasicGrabbableSingleGrabJntT {
+    AnchorAtGrabbablePivot,
+    AnchorAtPhysHandPos,
+}
+
 public class BasicGrabbable : MonoBehaviour, IGrabbable {
+    [Header("Settings")]
+    [SerializeField] BasicGrabbableSingleGrabJntT singleGrabJntT = BasicGrabbableSingleGrabJntT.AnchorAtPhysHandPos;
+
+    [Header("Other Refs")]
     [SerializeField] ConfigurableJoint grabJnt;
     [SerializeField] Rigidbody rb;
     [Tooltip("Hand visual used to represent grabbing hand. \n" +
         "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject lHandVisProxy;
+    
+    [HideInInspector] public Fsm grabJntFsm = new();
+    [HideInInspector] public GrabbableJntSt_NoGrab jntSt_NoGrab;
+    [HideInInspector] public GrabbableJntSt_SimpleSingleGrabWithAnchorAtPhysHandPos jntSt_simpleSingleGrabWithAnchorAtPhysHandPos;
+    [HideInInspector] public GrabbableJntSt_SimpleSingleGrabWithAnchorAtPivot jntSt_simpleSingleGrabWithAnchorAtCom;
 
     readonly List<Grab> grabs = new(2);
+
+    public GameObject GrabbableGameObj => gameObject;
+    public ConfigurableJoint GrabJnt => grabJnt;
+    public List<Grab> Grabs => grabs;
+    public Rigidbody Rb => rb;
 
     // -----------------------------------------
     // UNITY CALLBACKS
     // -----------------------------------------
 
+    private void Awake() {
+        // Initialize FSM states.
+        jntSt_NoGrab = new(this);
+        jntSt_simpleSingleGrabWithAnchorAtPhysHandPos = new(this);
+        jntSt_simpleSingleGrabWithAnchorAtCom = new(this);
+    }
+
+    private void Start() {
+        grabJntFsm.SwitchState(jntSt_NoGrab, this);
+    }
+
     void FixedUpdate() {
-        if (grabs.Count == 1)
-            PhysHandNGrabbableUtils.GrabJntUpdate_SimpleSingleGrabWithAnchorAtPhysHandPos(grabs[0], grabJnt, transform.lossyScale);
-        else
-            PhysHandNGrabbableUtils.GrabJntUpdate_UpdateMultiGrabJnt(grabs, grabJnt);
+        grabJntFsm.CurrentState.PhysicsTick();
     }
 
     void OnDrawGizmos() {
@@ -68,14 +95,15 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
         //    return false;
         var newGrab = new Grab(
             physHand, 
-            GeneralUtils.UnscaledInverseTransformPoint(transform, physHand.transform.position),
-            GeneralUtils.RotationFromWorldToTransformSpace(transform, physHand.transform.rotation)
+            GeneralUtils.UnscaledInvrsTrft(transform, physHand.transform.position),
+            GeneralUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation)
         );
         grabs.Add(newGrab);
         // Setup hand proxy visual.
         lHandVisProxy.SetActive(true);
         lHandVisProxy.transform.position = physHand.transform.position;
         lHandVisProxy.transform.rotation = physHand.transform.rotation;
+        SwitchStateBasedOnGrabCount();
     }
 
     public void ReleaseGrab(PhysHand physHand) {
@@ -91,40 +119,35 @@ public class BasicGrabbable : MonoBehaviour, IGrabbable {
     void ReleaseAllGrabs() {
         foreach (Grab grab in grabs)
             grab.physHand.OnGrabReleased(
-                GeneralUtils.UnscaledTransformPoint(transform, grab.initPhysHandPosInGrabbableLocalSpace),
-                GeneralUtils.RotationFromTransformSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
+                GeneralUtils.UnscaledTrfPt(transform, grab.initPhysHandPosInGrabbableLocalSpace),
+                GeneralUtils.RotFromTrfSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
             );
         grabs.Clear();
-        SetJntDrivesToZero();
+        SwitchStateBasedOnGrabCount();
     }
 
     void ReleaseGrab(Grab grab) {
         grab.physHand.OnGrabReleased(
-            GeneralUtils.UnscaledTransformPoint(transform, grab.initPhysHandPosInGrabbableLocalSpace),
-            GeneralUtils.RotationFromTransformSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
-        ); grabs.Remove(grab);
-        if (grabs.Count == 0)
-            SetJntDrivesToZero();
+            GeneralUtils.UnscaledTrfPt(transform, grab.initPhysHandPosInGrabbableLocalSpace),
+            GeneralUtils.RotFromTrfSpaceToWorld(transform, grab.initRotFromGrabbableToPhysHand)
+        );
+        grabs.Remove(grab);
+        SwitchStateBasedOnGrabCount();
     }
 
-    /// <summary>
-    /// E.g. when no hands are grabbing this.
-    /// </summary>
-    void SetJntDrivesToZero() {
-        JointDrive jntDrive = new JointDrive();
-        // Linear drives:
-        jntDrive.positionSpring = 0;
-        jntDrive.positionDamper = 0;
-        jntDrive.maximumForce = 0;
-        grabJnt.xDrive = jntDrive;
-        grabJnt.yDrive = jntDrive;
-        grabJnt.zDrive = jntDrive;
-        // Angular drive:
-        jntDrive.positionSpring = 0;
-        jntDrive.positionDamper = 0;
-        jntDrive.maximumForce = 0;
-        grabJnt.slerpDrive = jntDrive;
+    void SwitchStateBasedOnGrabCount() {
+        IFsmSt nextState = grabs.Count switch {
+            0 => jntSt_NoGrab,
+            1 => singleGrabJntT switch {
+                BasicGrabbableSingleGrabJntT.AnchorAtGrabbablePivot =>
+                    jntSt_simpleSingleGrabWithAnchorAtCom,
+                BasicGrabbableSingleGrabJntT.AnchorAtPhysHandPos =>
+                    jntSt_simpleSingleGrabWithAnchorAtPhysHandPos,
+                _ => throw new System.ArgumentOutOfRangeException(nameof(singleGrabJntT))
+            },
+            _ => null // TODO: Multigrab
+        };
+        if (nextState != grabJntFsm.CurrentState)
+            grabJntFsm.SwitchState(nextState, this);
     }
-
-
 }

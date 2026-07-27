@@ -1,10 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Represents grabbable than can be grabbed by a physics hand.
 /// </summary>
 public interface IGrabbable {
-    
+    GameObject GrabbableGameObj { get; }
+    ConfigurableJoint GrabJnt { get; }
+    List<Grab> Grabs { get; }
+    Rigidbody Rb { get; }
+
     bool CanBeGrabbed(PhysHand physHand);
     
     bool CanBeReleased(PhysHand physHand);
