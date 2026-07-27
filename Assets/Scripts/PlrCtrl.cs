@@ -6,35 +6,48 @@ using UnityEngine.InputSystem;
 /// </summary>
     // TODO: You should set this script to run before any other scripts so that the input can be used the same frame.
 public class PlrCtrl : MonoBehaviour {
-    [SerializeField] InputActionProperty grabInputAction;
+    [SerializeField] InputActionProperty lGrabInputAction;
+    [SerializeField] InputActionProperty rGrabInputAction;
+    [SerializeField] InputActionProperty lTriggerInputAction;
+    [SerializeField] InputActionProperty rTriggerInputAction;
 
     /// <summary>
-    /// Grab pressed this frame.
+    /// Left grab pressed this frame.
     /// </summary>
-    bool grabButtonPressed = false;
-    bool grabButtonHeld = false;
+    bool lGrabButtonPressed = false;
+    bool lGrabButtonHeld = false;
+    /// <summary>
+    /// Right grab pressed this frame.
+    /// </summary>
+    bool rGrabButtonPressed = false;
+    bool rGrabButtonHeld = false;
 
+    public bool LGrabButtonHeld => lGrabButtonHeld;
+    public bool RGrabButtonHeld => rGrabButtonHeld;
+    
     void Update() {
-        //grabButtonPressed = grabInputAction.action.ReadValue<float>() > 0.1f;
-        //grabButtonPressed = grabInputAction.action.WasPressedThisFrame();
-        grabButtonPressed = false;
-        if (!grabButtonHeld && grabInputAction.action.ReadValue<float>() >= 0.5f) {
-            grabButtonHeld = true;
-            grabButtonPressed = true;
-        }
-        else if (grabInputAction.action.ReadValue<float>() < 0.5f)
-            grabButtonHeld = false;
-        //Debug.Log($"Grab button held: {grabButtonHeld}");
+        ReadButton(lGrabInputAction, ref lGrabButtonPressed, ref lGrabButtonHeld);
+        ReadButton(rGrabInputAction, ref rGrabButtonPressed, ref rGrabButtonHeld);
     }
 
-    public bool GrabButtonHeld() => grabButtonHeld;
+    public bool TryConsumeLGrabPressed() => TryConsumeButtonPress(ref lGrabButtonPressed);
+    public bool TryConsumeRGrabPressed() => TryConsumeButtonPress(ref rGrabButtonPressed);
 
-    public bool TryConsumeGrabPressed() {
-        if (grabButtonPressed) {
-            grabButtonPressed = false;
+    private static void ReadButton(InputActionProperty ia, ref bool buttonPressed, ref bool buttonHeld) {
+        buttonPressed = false;
+        if (!buttonHeld && ia.action.ReadValue<float>() >= 0.5f) {
+            buttonHeld = true;
+            buttonPressed = true;
+        }
+        else if (ia.action.ReadValue<float>() < 0.5f)
+            buttonHeld = false;
+    }
+
+    private static bool TryConsumeButtonPress(ref bool buttonPressed) {
+        if (buttonPressed) {
+            buttonPressed = false;
             return true;
         }
         return false;
     }
-
 }

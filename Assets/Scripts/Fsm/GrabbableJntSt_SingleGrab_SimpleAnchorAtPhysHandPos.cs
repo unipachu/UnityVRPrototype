@@ -1,13 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// NOTE: If you want highly stable movement, the grabbable pivot should equal to the center of
-/// mass of the grabbable.
-/// </summary>
-public class GrabbableJntSt_SimpleSingleGrabWithAnchorAtPivot : IFsmSt {
+public class GrabbableJntSt_SingleGrab_SimpleAnchorAtPhysHandPos : IFsmSt {
     IGrabbable grabbable;
 
-    public GrabbableJntSt_SimpleSingleGrabWithAnchorAtPivot(IGrabbable grabbable) {
+    public GrabbableJntSt_SingleGrab_SimpleAnchorAtPhysHandPos(IGrabbable grabbable) {
         this.grabbable = grabbable;
     }
 
@@ -16,9 +12,13 @@ public class GrabbableJntSt_SimpleSingleGrabWithAnchorAtPivot : IFsmSt {
     // -----------------------------------------
 
     public void Enter(IFsmSt previousState) {
-        grabbable.GrabJnt.anchor = Vector3.zero;
-        PhysHandNGrabbableUtils.SetWorldJntDrivesToDflt(
-            grabbable.GrabJnt, 
+        grabbable.GrabJnt.anchor = new Vector3(
+            grabbable.Grabs[0].initPhysHandPosInGrabbableLocalSpace.x / grabbable.GrabbableGameObj.transform.lossyScale.x,
+            grabbable.Grabs[0].initPhysHandPosInGrabbableLocalSpace.y / grabbable.GrabbableGameObj.transform.lossyScale.y,
+            grabbable.Grabs[0].initPhysHandPosInGrabbableLocalSpace.z / grabbable.GrabbableGameObj.transform.lossyScale.z
+        );
+        PhysHandNGrabbableUtils.SetJntDrivesToDflt(
+            grabbable.GrabJnt,
             grabbable.Grabs[0].physHand.jntData
         );
         UpdateJnt(grabbable.Grabs[0], grabbable.GrabJnt);
@@ -42,8 +42,7 @@ public class GrabbableJntSt_SimpleSingleGrabWithAnchorAtPivot : IFsmSt {
         Transform physHandFollowTgt = grab.physHand.followTgtTrf;
         Quaternion targetWorldRot =
             physHandFollowTgt.rotation * Quaternion.Inverse(grab.initRotFromGrabbableToPhysHand);
-        Vector3 targetWorldPos =
-            physHandFollowTgt.position - targetWorldRot * grab.initPhysHandPosInGrabbableLocalSpace;
+        Vector3 targetWorldPos = physHandFollowTgt.position;
         grabJnt.targetPosition = targetWorldPos;
         grabJnt.targetRotation = targetWorldRot;
     }

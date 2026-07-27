@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 
@@ -12,9 +13,8 @@ enum PhysHandState {
 /// Controller for one physics hand. 
 /// </summary>
 public class PhysHand : MonoBehaviour {
-    [field: Header("README: \n" +
-        "Template readme text\n" +
-        "The End.")]
+    [field: Header("Settings")]
+    [field: SerializeField] public Side side { get; private set; }
 
     [field: Header("Read Only Data")]
     [field: SerializeField] public PhysHandConfigurableJntData jntData { get; private set; }
@@ -36,8 +36,7 @@ public class PhysHand : MonoBehaviour {
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
     [SerializeField] HapticImpulsePlayer controllerHapticImpulsePlayer;
 
-
-    PhysHandState physHandState;
+    PhysHandState physHandState = PhysHandState.NotGrabbing;
     IGrabbable grabbedGrabbable = null;
 
     // -----------------------------------------
@@ -65,7 +64,7 @@ public class PhysHand : MonoBehaviour {
         // Set world joint targets.
         worldJnt.targetPosition = followTgtTrf.position;
         worldJnt.targetRotation = followTgtTrf.rotation;
-        PhysHandNGrabbableUtils.SetWorldJntDrivesToDflt(worldJnt, jntData);
+        PhysHandNGrabbableUtils.SetJntDrivesToDflt(worldJnt, jntData);
     }
 
     void FixedUpdate() {
@@ -77,7 +76,10 @@ public class PhysHand : MonoBehaviour {
     private void Update() {
         switch (physHandState) {
             case PhysHandState.NotGrabbing:
-                if (plrCtrl.TryConsumeGrabPressed()) {
+                if (
+                    side == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
+                    side == Side.Right && plrCtrl.TryConsumeRGrabPressed()
+                ) {
                     if (TryGrabbing()) {
                         EnterGrabState();
                         break;
@@ -85,8 +87,10 @@ public class PhysHand : MonoBehaviour {
                 }
                 break;
             case PhysHandState.Grabbing:
-                // TODO: Should probably do nothing.
-                if (!plrCtrl.GrabButtonHeld()) {
+                if (
+                    side == Side.Left && !plrCtrl.LGrabButtonHeld ||
+                    side == Side.Right && !plrCtrl.RGrabButtonHeld
+                ) {
                     if(grabbedGrabbable.CanBeReleased(this))
                         grabbedGrabbable.ReleaseGrab(this);
                 }
@@ -182,6 +186,10 @@ public class PhysHand : MonoBehaviour {
         );
         if (nearbyColliders.Length == 0)
             return false;
+        //Debug.Log(
+        //    $"Found colliders ({nearbyColliders.Length}): " +
+        //    string.Join(", ", Array.ConvertAll(nearbyColliders, c => c.name))
+        //);
         IGrabbable closestGrabbable = null;
         float distanceToClosestGrabbable = 0;
         // Find closest grabbable object.
