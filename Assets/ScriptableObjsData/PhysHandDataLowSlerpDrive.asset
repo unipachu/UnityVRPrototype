@@ -17,9 +17,9 @@ MonoBehaviour:
   obstructionChkLayersMask:
     serializedVersion: 2
     m_Bits: 0
-  dfltLinDrivePosSpring: 10000
+  dfltLinDrivePosSpring: 1000
   dfltLinDrivePosDamper: 50
-  dfltLinDriveMaxForce: 10000
-  dfltSlerpDrivePosSpring: 300
+  dfltLinDriveMaxForce: 99999
+  dfltSlerpDrivePosSpring: 1000
   dfltSlerpDriveDamper: 50
-  defaultSlerpDriveMaxForce: 40
+  defaultSlerpDriveMaxForce: 99999
