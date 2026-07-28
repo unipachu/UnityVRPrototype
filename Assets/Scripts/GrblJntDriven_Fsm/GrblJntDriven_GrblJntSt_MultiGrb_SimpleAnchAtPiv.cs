@@ -8,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     IGrbl grbl;
+
     public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv(IGrbl grbl) {
         this.grbl = grbl;
     }
@@ -18,11 +19,13 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
 
     public void Enter(IFsmSt prevSt) {
         grbl.GrbJnt.anchor = Vector3.zero;
+        // NOTE: A better system would be to use different hand drives to every frame calculate
+        // NOTE C: weights for how much each hand affects the grab joint target pose, but this
+        // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
             grbl.GrbJnt,
             grbl.Grbs
         );
-        UpdateJnt(grbl.Grbs, grbl.GrbJnt);
     }
 
     public void Exit() {
@@ -39,21 +42,19 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     // Private Methods
     // -----------------------------------------
 
-    public void UpdateJnt(List<Grb> grabs, ConfigurableJoint grabJnt) {
+    public void UpdateJnt(List<Grb> grbs, ConfigurableJoint grbJnt) {
         Vector3 avgTgtWorldPos = Vector3.zero;
         Vector4 cumulative = Vector4.zero;
         // Use the first target rotation as the hemisphere reference.
         // TODO: How does this work? Is there a better way to get the hemisphere reference?
         Quaternion refRot = Quaternion.identity;
         bool first = true;
-        foreach (Grb grab in grabs) {
-            Transform physHandFollowTgt = grab.physHand.followTgtTrf;
+        foreach (Grb grb in grbs) {
+            Transform physHandFollowTgt = grb.physHand.followTgtTrf;
             Quaternion tgtWorldRot =
-                physHandFollowTgt.rotation *
-                Quaternion.Inverse(grab.initRotFromGrblToPhysHand);
+                physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
             Vector3 targetWorldPos =
-                physHandFollowTgt.position -
-                tgtWorldRot * grab.initPhysHandPosInGrblLocalSpace;
+                physHandFollowTgt.position - tgtWorldRot * grb.initPhysHandPosInGrblLocalSpace;
             avgTgtWorldPos += targetWorldPos;
             if (first) {
                 refRot = tgtWorldRot;
@@ -72,14 +73,14 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
             cumulative.z += tgtWorldRot.z;
             cumulative.w += tgtWorldRot.w;
         }
-        avgTgtWorldPos /= grabs.Count;
+        avgTgtWorldPos /= grbs.Count;
         Quaternion avgTgtWorldRot = new Quaternion(
             cumulative.x,
             cumulative.y,
             cumulative.z,
             cumulative.w
         ).normalized;
-        grabJnt.targetPosition = avgTgtWorldPos;
-        grabJnt.targetRotation = avgTgtWorldRot;
+        grbJnt.targetPosition = avgTgtWorldPos;
+        grbJnt.targetRotation = avgTgtWorldRot;
     }
 }

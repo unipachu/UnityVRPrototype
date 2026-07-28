@@ -6,9 +6,15 @@ public enum GrblJntDriven_BasicGrblSglGrbJntT {
     AnchAtPhysHandPos,
 }
 
+public enum GrblJntDriven_BasicGrblDblGrbJntT {
+    AxisRot,
+    SimpleAnchAtPiv,
+}
+
 public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     [Header("Settings")]
     [SerializeField] GrblJntDriven_BasicGrblSglGrbJntT sglGrbJntT = GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv;
+    [SerializeField] GrblJntDriven_BasicGrblDblGrbJntT dblGrbJntT = GrblJntDriven_BasicGrblDblGrbJntT.AxisRot;
 
     [Header("Other Refs")]
     [SerializeField] ConfigurableJoint grbJnt;
@@ -19,10 +25,11 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     [SerializeField] GameObject rHandVisProxy;
     
     [HideInInspector] public Fsm grbJntFsm = new();
-    [HideInInspector] public GrblJntDriven_GrblJntSt_NoGrb jntSt_NoGrab;
+    [HideInInspector] public GrblJntDriven_GrblJntSt_DblGrb_AxisRot jntSt_DblGrb_AxisRot;
+    [HideInInspector] public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv jntSt_MultiGrb_SimpleAnchAtPiv;
+    [HideInInspector] public GrblJntDriven_GrblJntSt_NoGrb jntSt_NoGrb;
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos jntSt_SglGrb_SimpleAnchAtPhysHandPos;
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
-    [HideInInspector] public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv jntSt_MultiGrb_SimpleAnchAtPiv;
 
     readonly List<Grb> grbs = new(2);
 
@@ -37,14 +44,15 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
 
     private void Awake() {
         // Initialize FSM states.
-        jntSt_NoGrab = new(this);
+        jntSt_DblGrb_AxisRot = new(this);
+        jntSt_MultiGrb_SimpleAnchAtPiv = new(this);
+        jntSt_NoGrb = new(this);
         jntSt_SglGrb_SimpleAnchAtPhysHandPos = new(this);
         jntSt_SglGrb_SimpleAnchAtPiv = new(this);
-        jntSt_MultiGrb_SimpleAnchAtPiv = new(this);
     }
 
     private void Start() {
-        grbJntFsm.SwitchState(jntSt_NoGrab, this);
+        grbJntFsm.SwitchState(jntSt_NoGrb, this);
     }
 
     void FixedUpdate() {
@@ -69,7 +77,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
 
     public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand) {
         // Can be grabbed by up to one left hand and one right hand simultaneously.
-        return GrabCount(physHand.side) < 2;
+        return GrbCount(physHand.side) < 2;
     }
 
     public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
@@ -96,7 +104,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     /// <summary>
     /// How many <see cref="GrblJntDriven_PhysHand"/>s of the specified side are grabbing this?
     /// </summary>
-    public int GrabCount(Side handSide) {
+    public int GrbCount(Side handSide) {
         int counter = 0;
         foreach (Grb grab in grbs) {
             if(grab.physHand.side == handSide)
@@ -111,8 +119,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
         //    return false;
         var newGrb = new Grb(
             physHand, 
-            GeneralUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position),
-            GeneralUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation)
+            MathUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position),
+            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation)
         );
         grbs.Add(newGrb);
         // Setup hand proxy visual.
@@ -126,8 +134,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {
         Grb grb = FindGrb(physHand);
         grb.physHand.OnGrabReleased(
-            GeneralUtils.UnscaledTrfPt(transform, grb.initPhysHandPosInGrblLocalSpace),
-            GeneralUtils.RotFromTrfSpaceToWorld(transform, grb.initRotFromGrblToPhysHand)
+            MathUtils.UnscaledTrfPt(transform, grb.initPhysHandPosInGrblLocalSpace),
+            MathUtils.RotFromTrfSpaceToWorld(transform, grb.initRotFromGrblToPhysHand)
         );
         grbs.Remove(grb);
         if(physHand.side == Side.Left)
@@ -144,8 +152,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     void ReleaseAllGrbs() {
         foreach (Grb grab in grbs)
             grab.physHand.OnGrabReleased(
-                GeneralUtils.UnscaledTrfPt(transform, grab.initPhysHandPosInGrblLocalSpace),
-                GeneralUtils.RotFromTrfSpaceToWorld(transform, grab.initRotFromGrblToPhysHand)
+                MathUtils.UnscaledTrfPt(transform, grab.initPhysHandPosInGrblLocalSpace),
+                MathUtils.RotFromTrfSpaceToWorld(transform, grab.initRotFromGrblToPhysHand)
             );
         grbs.Clear();
         lHandVisProxy.SetActive(false);
@@ -161,7 +169,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
     
     void SwitchJntStBasedOnGrbCount() {
         IFsmSt nextState = grbs.Count switch {
-            0 => jntSt_NoGrab,
+            0 => jntSt_NoGrb,
             1 => sglGrbJntT switch {
                 GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv =>
                     jntSt_SglGrb_SimpleAnchAtPiv,
@@ -169,7 +177,14 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrbl {
                     jntSt_SglGrb_SimpleAnchAtPhysHandPos,
                 _ => throw new System.ArgumentOutOfRangeException(nameof(sglGrbJntT))
             },
-            _ => jntSt_MultiGrb_SimpleAnchAtPiv
+            2 => dblGrbJntT switch {
+                GrblJntDriven_BasicGrblDblGrbJntT.AxisRot =>
+                    jntSt_DblGrb_AxisRot,
+                GrblJntDriven_BasicGrblDblGrbJntT.SimpleAnchAtPiv =>
+                    jntSt_MultiGrb_SimpleAnchAtPiv,
+                _ => throw new System.ArgumentOutOfRangeException(nameof(dblGrbJntT))
+            },
+            _ => throw new System.ArgumentOutOfRangeException(nameof(grbs.Count))
         };
         if (nextState != grbJntFsm.CurrentState)
             grbJntFsm.SwitchState(nextState, this);

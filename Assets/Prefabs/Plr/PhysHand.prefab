@@ -238,7 +238,10 @@ MonoBehaviour:
   <grbPt>k__BackingField: {fileID: 3793855725444168109}
   <worldJnt>k__BackingField: {fileID: 3455627583413797499}
   <vis>k__BackingField: {fileID: 1233136622387315819}
-  <cols>k__BackingField: []
+  <cols>k__BackingField:
+  - {fileID: 1761344489441458896}
+  - {fileID: 7047134916576098280}
+  - {fileID: 9163458324421298496}
 --- !u!54 &7228727955965025210
 Rigidbody:
   m_ObjectHideFlags: 0

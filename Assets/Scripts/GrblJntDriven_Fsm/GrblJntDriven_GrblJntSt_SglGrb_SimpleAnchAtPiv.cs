@@ -24,7 +24,6 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
             grbl.GrbJnt, 
             grbl.Grbs[0].physHand.jntData
         );
-        UpdateJnt(grbl.Grbs[0], grbl.GrbJnt);
     }
 
     public void Exit() {

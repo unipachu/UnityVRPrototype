@@ -12,7 +12,7 @@ public class PhysHandConfigurableJntData : ScriptableObject {
     public bool useHandPoseReset = true;
     [Tooltip("Distance threshold from the controller which causes the phys hand to teleport to the controller pose.")]
     [Min(0f)]
-    public float handPoseResetDist = 0.4f;
+    public float handPoseResetDist = 0.3f;
     [Tooltip("Layers used to check if the area around the hand controller is free before teleporting. Select all layers the physics hands can collide with.")]
     public LayerMask obstructionChkLayersMask;
     
@@ -25,14 +25,14 @@ public class PhysHandConfigurableJntData : ScriptableObject {
     public float dfltLinDrivePosDamper = 50;
     [Tooltip("Default linear drive max force.")]
     [Min(0f)]
-    public float dfltLinDriveMaxForce = 40;
+    public float dfltLinDriveMaxForce = 50;
     [Tooltip("Default slerp drive position spring.")]
     [Min(0f)]
-    public float dfltSlerpDrivePosSpring = 5000;
+    public float dfltSlerpDrivePosSpring = 3000;
     [Tooltip("Default slerp drive position damper.")]
     [Min(0f)]
     public float dfltSlerpDriveDamper = 50;
     [Tooltip("Default slerp drive max force.")]
     [Min(0f)]
-    public float defaultSlerpDriveMaxForce = 40;
+    public float defaultSlerpDriveMaxForce = 50;
 }

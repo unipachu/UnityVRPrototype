@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 
@@ -39,8 +38,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     [field: SerializeField] public GameObject vis { get; private set; }
     [field: SerializeField] public Collider[] cols { get; private set; }
 
-    PhysHandState physHandState = PhysHandState.NotGrabbing;
-    IGrbl grabbedGrabbable = null;
+    PhysHandState physHandSt = PhysHandState.NotGrabbing;
+    IGrbl grabbedGrbl = null;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -77,7 +76,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     }
 
     private void Update() {
-        switch (physHandState) {
+        switch (physHandSt) {
             case PhysHandState.NotGrabbing:
                 if (
                     side == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
@@ -94,8 +93,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
                     side == Side.Left && !plrCtrl.LGrabButtonHeld ||
                     side == Side.Right && !plrCtrl.RGrabButtonHeld
                 ) {
-                    if(grabbedGrabbable.CanBeReleased(this))
-                        grabbedGrabbable.ReleaseGrb(this);
+                    if(grabbedGrbl.CanBeReleased(this))
+                        grabbedGrbl.ReleaseGrb(this);
                 }
                 break;
             case PhysHandState.Resetting:
@@ -118,10 +117,10 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     }
 
     private void OnDisable() {
-        if(grabbedGrabbable != null)
+        if(grabbedGrbl != null)
             // NOTE: We force grab release here without checking if the grab can be released
             // NOTE C: because this hand is about to get disabled/destroyed.
-            grabbedGrabbable.ReleaseGrb(this);
+            grabbedGrbl.ReleaseGrb(this);
     }
 
     // -----------------------------------------
@@ -132,7 +131,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     /// Called by <see cref="IGrbl"/> when grab by THIS hand is released.
     /// </summary>
     public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
-        grabbedGrabbable = null;
+        grabbedGrbl = null;
         Debug.Assert(vis != null, "What the hell?", this);
         vis.SetActive(true);
         rb.isKinematic = false;
@@ -148,7 +147,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
         // TODO: Set velocity to VR controller follow target velocity.
         foreach (Collider col in cols)
             col.enabled = true;
-        physHandState = PhysHandState.NotGrabbing;
+        physHandSt = PhysHandState.NotGrabbing;
     }
 
     // -----------------------------------------
@@ -156,7 +155,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     // -----------------------------------------
 
     void EnterGrabState() {
-        physHandState = PhysHandState.Grabbing;
+        physHandSt = PhysHandState.Grabbing;
         vis.SetActive(false);
         rb.isKinematic = true;
         foreach (Collider col in cols)
@@ -216,7 +215,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
             return false;
         // Found closest grabbable that can be grabbed!
         closestGrabbable.InitiateGrb(this);
-        grabbedGrabbable = closestGrabbable;
+        grabbedGrbl = closestGrabbable;
         controllerHapticImpulsePlayer.SendHapticImpulse(0.5f, 0.1f);
         return true;
     }
