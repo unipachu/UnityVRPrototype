@@ -21,6 +21,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     [field: Header("XROrigin Refs")]
     [Tooltip("Transform of the follow target of the corresponding VR controller.")]
     [field: SerializeField] public Transform followTgtTrf { get; private set; }
+    [field: SerializeField] public GhostShaderCtlr handGhostShaderCtrl { get; private set; }
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
     [SerializeField] HapticImpulsePlayer controllerHapticImpulsePlayer;
     
@@ -87,20 +88,29 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
                         break;
                     }
                 }
+                UpdateTgtGhostShader(transform.position);
                 break;
             case PhysHandState.Grabbing:
                 if (
                     side == Side.Left && !plrCtrl.LGrabButtonHeld ||
                     side == Side.Right && !plrCtrl.RGrabButtonHeld
                 ) {
-                    if(grabbedGrbl.CanBeReleased(this))
+                    if(grabbedGrbl.CanBeReleased(this)) {
                         grabbedGrbl.ReleaseGrb(this);
+                        return;
+                    }
                 }
+                // TODO: Since grabbable now controls the phys hand visual proxy, it should
+                // TODO C: call the UpdateTgtGhostShader with the correct distance.
+                // TODO C: Then remove the line below:
+                // TODO C: Or actually
+                UpdateTgtGhostShader(new Vector3(99999,99999,99999));
                 break;
             case PhysHandState.Resetting:
                 // TODO: If after hand pose reset, or grab release the new pose of the hand would be blocked,
                 // TODO C: enter state where colliders are disabled until they are not overlapping with anything.
                 // TODO C: Use a red, translucent shader to communicate reset state.
+                UpdateTgtGhostShader(transform.position);
                 break;
             default:
                 Debug.LogError("Switch defaulted.", this);
@@ -111,7 +121,6 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     void OnDrawGizmos() {
         if (grbPt == null || grbrData == null)
             return;
-
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(grbPt.position, grbrData.chkSphereR);
     }
@@ -148,6 +157,16 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
         foreach (Collider col in cols)
             col.enabled = true;
         physHandSt = PhysHandState.NotGrabbing;
+    }
+
+    public void UpdateTgtGhostShader(Vector3 physHandWorldPos) {
+        float dist = Vector3.Distance(followTgtTrf.position, physHandWorldPos);
+        float invisibleDist = 0.001f;
+        float maxTransparencyDist = 0.1f;
+        float maxTransparency = 0.9f;
+        float t = Mathf.InverseLerp(invisibleDist, maxTransparencyDist, dist);
+        float newTransparency = t * maxTransparency;
+        handGhostShaderCtrl.SetTransparency(newTransparency);
     }
 
     // -----------------------------------------
