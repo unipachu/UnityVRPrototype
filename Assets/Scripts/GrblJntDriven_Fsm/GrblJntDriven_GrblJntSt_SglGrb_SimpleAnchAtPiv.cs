@@ -6,9 +6,9 @@ using UnityEngine;
 /// mass of the grabbable.
 /// </summary>
 public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
-    IGrbl grbl;
+    IGrblJntDriven_Grbl grbl;
 
-    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv(IGrbl grbl) {
+    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv(IGrblJntDriven_Grbl grbl) {
         this.grbl = grbl;
     }
 
@@ -19,10 +19,10 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     public void Enter(IFsmSt prevSt) {
         // TODO: You could set the anchor to the grabbable COM but then for joint drive calculations
         // TODO C: you need to offset targets based on that.
-        grbl.GrbJnt.anchor = Vector3.zero;
+        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
         PhysUtils.SetJntDrivesToDflt(
-            grbl.GrbJnt, 
-            grbl.Grbs[0].physHand.jntData
+            grbl.GrblCore.grbJnt, 
+            grbl.GrblCore.grbs[0].physHand.jntData
         );
     }
 
@@ -30,7 +30,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.Grbs[0], grbl.GrbJnt);
+        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrblCore.grbJnt);
     }
 
     public void Tick() {

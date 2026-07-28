@@ -7,9 +7,9 @@ using UnityEngine;
 /// mass of the grabbable.
 /// </summary>
 public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
-    IGrbl grbl;
+    IGrblJntDriven_Grbl grbl;
 
-    public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv(IGrbl grbl) {
+    public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv(IGrblJntDriven_Grbl grbl) {
         this.grbl = grbl;
     }
 
@@ -18,13 +18,13 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     // -----------------------------------------
 
     public void Enter(IFsmSt prevSt) {
-        grbl.GrbJnt.anchor = Vector3.zero;
+        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
         // NOTE: A better system would be to use different hand drives to every frame calculate
         // NOTE C: weights for how much each hand affects the grab joint target pose, but this
         // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
-            grbl.GrbJnt,
-            grbl.Grbs
+            grbl.GrblCore.grbJnt,
+            grbl.GrblCore.grbs
         );
     }
 
@@ -32,7 +32,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.Grbs, grbl.GrbJnt);
+        UpdateJnt(grbl.GrblCore.grbs, grbl.GrblCore.grbJnt);
     }
 
     public void Tick() {

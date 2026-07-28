@@ -5,9 +5,9 @@ using UnityEngine;
 /// originally grabbed the grabbable.
 /// </summary>
 public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
-    IGrbl grbl;
+    IGrblJntDriven_Grbl grbl;
 
-    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos(IGrbl grbl) {
+    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos(IGrblJntDriven_Grbl grbl) {
         this.grbl = grbl;
     }
 
@@ -16,14 +16,14 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
     // -----------------------------------------
 
     public void Enter(IFsmSt previousState) {
-        grbl.GrbJnt.anchor = new Vector3(
-            grbl.Grbs[0].initPhysHandPosInGrblLocalSpace.x / grbl.GrblGameObj.transform.lossyScale.x,
-            grbl.Grbs[0].initPhysHandPosInGrblLocalSpace.y / grbl.GrblGameObj.transform.lossyScale.y,
-            grbl.Grbs[0].initPhysHandPosInGrblLocalSpace.z / grbl.GrblGameObj.transform.lossyScale.z
+        grbl.GrblCore.grbJnt.anchor = new Vector3(
+            grbl.GrblCore.grbs[0].initPhysHandPosInGrblLocalSpace.x / grbl.GrblCore.transform.lossyScale.x,
+            grbl.GrblCore.grbs[0].initPhysHandPosInGrblLocalSpace.y / grbl.GrblCore.transform.lossyScale.y,
+            grbl.GrblCore.grbs[0].initPhysHandPosInGrblLocalSpace.z / grbl.GrblCore.transform.lossyScale.z
         );
         PhysUtils.SetJntDrivesToDflt(
-            grbl.GrbJnt,
-            grbl.Grbs[0].physHand.jntData
+            grbl.GrblCore.grbJnt,
+            grbl.GrblCore.grbs[0].physHand.jntData
         );
     }
 
@@ -31,7 +31,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.Grbs[0], grbl.GrbJnt);
+        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrblCore.grbJnt);
     }
 
     public void Tick() {

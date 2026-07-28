@@ -40,7 +40,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     [field: SerializeField] public Collider[] cols { get; private set; }
 
     PhysHandState physHandSt = PhysHandState.NotGrabbing;
-    IGrbl grabbedGrbl = null;
+    IGrblJntDriven_Grbl grabbedGrbl = null;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -137,7 +137,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     // -----------------------------------------
 
     /// <summary>
-    /// Called by <see cref="IGrbl"/> when grab by THIS hand is released.
+    /// Called by <see cref="IGrblJntDriven_Grbl"/> when grab by THIS hand is released.
     /// </summary>
     public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
         grabbedGrbl = null;
@@ -182,21 +182,21 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     }
 
     /// <summary>
-    /// Tries to find an <see cref="IGrbl"/> implemented by a component on the collider's attached Rigidbody.
-    /// Returns <see langword="null"/> if no <see cref="IGrbl"/> is found.<br/>
-    /// NOTE: The <see cref="IGrbl"/> implementation must be on the same GameObject as the collider's attached Rigidbody.
+    /// Tries to find an <see cref="IGrblJntDriven_Grbl"/> implemented by a component on the collider's attached Rigidbody.
+    /// Returns <see langword="null"/> if no <see cref="IGrblJntDriven_Grbl"/> is found.<br/>
+    /// NOTE: The <see cref="IGrblJntDriven_Grbl"/> implementation must be on the same GameObject as the collider's attached Rigidbody.
     /// </summary>
-    IGrbl TryGetPhysicsHandGrabbableObject(Collider otherCollider) {
-        IGrbl grabbable = null;
+    IGrblJntDriven_Grbl TryGetPhysicsHandGrabbableObject(Collider otherCollider) {
+        IGrblJntDriven_Grbl grabbable = null;
         Rigidbody otherRb = otherCollider.attachedRigidbody;
         if (otherRb)
-            grabbable = otherRb.GetComponent<IGrbl>();
+            grabbable = otherRb.GetComponent<IGrblJntDriven_Grbl>();
         return grabbable;
     }
 
     /// <summary>
     /// Searches for nearby objects with OverlapSphere and checks if any are eligible for grabbing.
-    /// If so, grabs the closest <see cref="IGrbl"/> and returns true, otherwise returns false.
+    /// If so, grabs the closest <see cref="IGrblJntDriven_Grbl"/> and returns true, otherwise returns false.
     /// </summary>
     bool TryGrabbing() {
         Collider[] nearbyColliders = Physics.OverlapSphere(
@@ -211,11 +211,11 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
         //    $"Found colliders ({nearbyColliders.Length}): " +
         //    string.Join(", ", Array.ConvertAll(nearbyColliders, c => c.name))
         //);
-        IGrbl closestGrabbable = null;
+        IGrblJntDriven_Grbl closestGrabbable = null;
         float distanceToClosestGrabbable = 0;
         // Find closest grabbable object.
         foreach (Collider collider in nearbyColliders) {
-            IGrbl grabbable = TryGetPhysicsHandGrabbableObject(collider);
+            IGrblJntDriven_Grbl grabbable = TryGetPhysicsHandGrabbableObject(collider);
             if (grabbable == null)
                 continue;
             if (!grabbable.CanBeGrabbed(this))

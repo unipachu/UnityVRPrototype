@@ -1,11 +1,16 @@
 using UnityEngine;
 
-// TODO: Give this a better name. And a summary.
-public class GrblJntDriven_GrblJntSt_DblGrb_AxisRot : IFsmSt {
-    IGrbl grbl;
+/// <summary>
+/// Orients grabbable according to a line between the positions two grabbing hands and then uses
+/// hands' rotation to determine twist along the grab line.
+/// </summary>
+public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
+    IGrblJntDriven_Grbl grbl;
+    IDblGrb_GrbLineAligned dblGrb_GrbLineAligned;
 
-    public GrblJntDriven_GrblJntSt_DblGrb_AxisRot(IGrbl grbl) {
+    public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned(IGrblJntDriven_Grbl grbl, IDblGrb_GrbLineAligned dblGrb_GrbLineAligned) {
         this.grbl = grbl;
+        this.dblGrb_GrbLineAligned = dblGrb_GrbLineAligned;
     }
 
     // -----------------------------------------
@@ -13,13 +18,13 @@ public class GrblJntDriven_GrblJntSt_DblGrb_AxisRot : IFsmSt {
     // -----------------------------------------
 
     public void Enter(IFsmSt prevSt) {
-        grbl.GrbJnt.anchor = Vector3.zero;
+        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
         // NOTE: A better system would be to use different hand drives to every frame calculate
         // NOTE C: weights for how much each hand affects the grab joint target pose, but this
         // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
-            grbl.GrbJnt,
-            grbl.Grbs
+            grbl.GrblCore.grbJnt,
+            grbl.GrblCore.grbs
         );
     }
 
@@ -27,7 +32,13 @@ public class GrblJntDriven_GrblJntSt_DblGrb_AxisRot : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.Grbs[0], grbl.Grbs[1], grbl.GrbJnt);
+        UpdateJnt(
+            grbl.GrblCore.grbs[0],
+            grbl.GrblCore.grbs[1],
+            grbl.GrblCore.grbJnt,
+            dblGrb_GrbLineAligned.GetPosHand0Wt(),
+            dblGrb_GrbLineAligned.GetRotHand0Wt()
+        );
     }
 
     public void Tick() {
@@ -41,9 +52,9 @@ public class GrblJntDriven_GrblJntSt_DblGrb_AxisRot : IFsmSt {
     /// <summary>
     /// NOTE: hand1Wt should be 0-1. It decides how hands' rotation affects grabbable twist around the axis between the hands.
     /// </summary>
-    public void UpdateJnt(Grb grb0, Grb grb1, ConfigurableJoint grbJnt, float rotHand0Wt = 0.5f, float posHand0Wt = 0.5f) {
-        float rotHand1Wt = 1f - rotHand0Wt;
+    public void UpdateJnt(Grb grb0, Grb grb1, ConfigurableJoint grbJnt, float posHand0Wt = 0.5f, float rotHand0Wt = 0.5f) {
         float posHand1Wt = 1f - posHand0Wt;
+        float rotHand1Wt = 1f - rotHand0Wt;
         // Initial grab positions in grabbable local space.
         Vector3 initLocalPos0 = grb0.initPhysHandPosInGrblLocalSpace;
         Vector3 initLocalPos1 = grb1.initPhysHandPosInGrblLocalSpace;
@@ -73,7 +84,8 @@ public class GrblJntDriven_GrblJntSt_DblGrb_AxisRot : IFsmSt {
         // desiredRot (the hand wants to rotate the grabbable) = twistResidual * lineAlignRot
         // Line align rot is only the rotation that aligns the object with tgtWorldLine,
         // then twistResidual is the remaining rotation to reach hand desired rot.
-        // TODO: I do not understand this.
+        // When we use that to extract the twist angle, only hand twist affects 
+        // the rotation around the grab line.
         Quaternion twistResidual0 = desiredRot0 * Quaternion.Inverse(lineAlignRot);
         Quaternion twistResidual1 = desiredRot1 * Quaternion.Inverse(lineAlignRot);
         float twistAngle1 = MathUtils.ExtractSignedTwistAng(twistResidual0, tgtWorldLine);

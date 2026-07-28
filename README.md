@@ -21,9 +21,9 @@ To distinguish between similar systems, descriptive names became increasingly lo
 |-|-|
 |`dbl`|double|
 |`grb` / `grbs`|grab / grabs|
-|`grbl` / `grabbables`|grabbable / grabbables|
+|`grbl` / `grbls`|grabbable / grabbables|
 |`grbr`|grabber|
-|`Jnt`|joint|
+|`jnt`|joint|
 |`pt`|point|
 |`sgl`|single|
 |`st`|state|

@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class GrblJntDriven_GrblJntSt_NoGrb : IFsmSt {
-    IGrbl grbl;
+    IGrblJntDriven_Grbl grbl;
 
-    public GrblJntDriven_GrblJntSt_NoGrb(IGrbl grbl) {
+    public GrblJntDriven_GrblJntSt_NoGrb(IGrblJntDriven_Grbl grbl) {
         this.grbl = grbl;
     }
 
@@ -12,8 +12,8 @@ public class GrblJntDriven_GrblJntSt_NoGrb : IFsmSt {
     // -----------------------------------------
 
     public void Enter(IFsmSt prevSt) {
-        grbl.GrbJnt.anchor = Vector3.zero;
-        PhysUtils.SetJntDrivesToZero(grbl.GrbJnt);
+        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
+        PhysUtils.SetJntDrivesToZero(grbl.GrblCore.grbJnt);
     }
 
     public void Exit() {

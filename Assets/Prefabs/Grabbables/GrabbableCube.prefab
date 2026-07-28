@@ -280,6 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4834116091902307744}
   - component: {fileID: 814930523894908330}
+  - component: {fileID: 3354224354393770626}
   - component: {fileID: 1968701463999069802}
   - component: {fileID: 8394288165473716204}
   - component: {fileID: 2294382353863357158}
@@ -322,10 +323,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BasicGrabbable
   sglGrbJntT: 0
   dblGrbJntT: 0
-  grbJnt: {fileID: 8394288165473716204}
-  rb: {fileID: 1968701463999069802}
+  grblCore: {fileID: 3354224354393770626}
   lHandVisProxy: {fileID: 2830181242276477379}
   rHandVisProxy: {fileID: 5785750693315187779}
+--- !u!114 &3354224354393770626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8014437991965161171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e514c2e073fb50a449adb226da33783f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_GrblCore
+  rb: {fileID: 1968701463999069802}
+  grbJnt: {fileID: 8394288165473716204}
 --- !u!54 &1968701463999069802
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -346,7 +360,7 @@ Rigidbody:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_ImplicitCom: 1
+  m_ImplicitCom: 0
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
