@@ -13,13 +13,13 @@
 
 Because this project is intended for experimentation, it intentionally contains multiple physics grab systems with overlapping functionality. This is so that different approaches could be compared with each other. These physics grab systems are categorized in high level categories:
 
-* **ECS:** DOTS ECS-based grab system where grabbables are moved using custom spring forces (WIP).
+* **ECS:** DOTS ECS-based grab system where physics hand and grabbables are moved using custom spring forces (WIP).
 * **Grabbable Joint Driven (GrblJntDriven):** GameObject-based system where grabbables are driven directly by ConfigurableJoints connected to the world.
-* **Hand Joint Driven (HandJntDriven):** GameObject-based system where grabbables are attached to physics hands via ConfigurableJoints. The physics hands are then driven by separate ConfigurableJoints connected to the world. This grab system can be less stable than the Grabbable Joint Driven system because it uses more physics constraints.
-
-To distinguish between similar systems, many identifiers became quite long. To keep names manageable, a number of abbreviations are used throughout the project. The table below lists the most common abbreviations.
+* **Hand Joint Driven (HandJntDriven):** GameObject-based system where grabbables are attached to physics hands via ConfigurableJoints. The physics hands are then driven by separate ConfigurableJoints connected to the world. This grab system can be less stable than the Grabbable Joint Driven system because it uses more physics constraints, but its joint setup more closely resembles how a hand grips an object in the real world.
 
 ## Common Abbreviations
+
+To distinguish between similar systems, names for the system features became quite long. To keep names manageable, a many abbreviations are used throughout the project.
 
 |Abbreviation|Meaning|
 |-|-|
@@ -33,6 +33,8 @@ To distinguish between similar systems, many identifiers became quite long. To k
 |`piv`|pivot|
 |`pt`|point|
 |`sgl`|single|
+|`snp`|snap|
+|`snpl`|snappable|
 |`spc`|space|
 |`st`|state|
 |`tgt`|target|

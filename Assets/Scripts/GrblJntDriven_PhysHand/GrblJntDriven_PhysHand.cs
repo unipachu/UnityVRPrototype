@@ -122,7 +122,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
         if (grbPt == null || grbrData == null)
             return;
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(grbPt.position, grbrData.chkSphereR);
+        Gizmos.DrawWireSphere(grbPt.position, grbrData.overlapSphereR);
     }
 
     private void OnDisable() {
@@ -201,7 +201,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     bool TryGrabbing() {
         Collider[] nearbyColliders = Physics.OverlapSphere(
             grbPt.position,
-            grbrData.chkSphereR,
+            grbrData.overlapSphereR,
             grbrData.grbLayers,
             QueryTriggerInteraction.Ignore
         );

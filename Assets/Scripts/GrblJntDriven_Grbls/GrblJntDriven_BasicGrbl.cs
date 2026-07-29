@@ -76,8 +76,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
         return true;
     }
 
-    public float GetDistToGrbPt(Vector3 physHandWorldGrabPoint) {
-        return Vector3.Distance(transform.position, physHandWorldGrabPoint);
+    public float GetDistToGrbPt(Vector3 physHandWldGrbPt) {
+        return Vector3.Distance(transform.position, physHandWldGrbPt);
     }
 
     public float GetRotHand0Wt() => 0.5f;

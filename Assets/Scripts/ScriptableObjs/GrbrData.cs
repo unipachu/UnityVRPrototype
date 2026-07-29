@@ -10,7 +10,7 @@ public class GrbrData : ScriptableObject {
     [Header("Grab Settings")]
     [Tooltip("Radius of the grab overlap sphere.")]
     [Min(0f)]
-    public float chkSphereR = 0.1f;
+    public float overlapSphereR = 0.045f;
     [Tooltip("Layers used by the overlap sphere when searching for grabbable objects.")]
     public LayerMask grbLayers;
 }

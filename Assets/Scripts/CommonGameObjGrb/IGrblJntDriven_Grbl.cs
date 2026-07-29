@@ -4,13 +4,13 @@ using UnityEngine;
 /// Represents grabbable than can be grabbed by a physics hand.
 /// </summary>
 public interface IGrblJntDriven_Grbl {
-    GrblJntDriven_GrblCore GrblCore {  get; }
+    GrblJntDriven_GrblCore GrblCore { get; }
 
     bool CanBeGrabbed(GrblJntDriven_PhysHand physHand);
     
     bool CanBeReleased(GrblJntDriven_PhysHand physHand);
     
-    float GetDistToGrbPt(Vector3 physHandWorldGrbPt);
+    float GetDistToGrbPt(Vector3 physHandWldGrbPt);
     
     /// <summary>
     /// Forces a grab between <see cref="GrblJntDriven_PhysHand"/> and this <see cref="IGrblJntDriven_Grbl"/>.<br/>
