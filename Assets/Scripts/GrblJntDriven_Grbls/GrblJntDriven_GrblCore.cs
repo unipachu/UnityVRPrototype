@@ -17,15 +17,26 @@ public class GrblJntDriven_GrblCore : MonoBehaviour
 
     /// <summary>
     /// Finds <see cref="Grb"/> by the <see cref="GrblJntDriven_PhysHand"/>.
-    /// If <see cref="GrblJntDriven_PhysHand"/> is not grabbing this, returns null.
     /// </summary>
     public Grb FindGrb(GrblJntDriven_PhysHand physHand) {
         for (int i = 0; i < grbs.Count; i++) {
             if (grbs[i].physHand == physHand)
                 return grbs[i];
         }
-        Debug.LogWarning($"{physHand.name} was not grabbing {gameObject.name}!", this);
+        Debug.LogError($"{physHand.name} was not grabbing {gameObject.name}!", this);
         return null;
+    }
+
+    /// <summary>
+    /// Finds the index of the grabbing <see cref="GrblJntDriven_PhysHand"/>.
+    /// </summary>
+    public int FindGrbIndex(GrblJntDriven_PhysHand physHand) {
+        for (int i = 0; i < grbs.Count; i++) {
+            if (grbs[i].physHand == physHand)
+                return i;
+        }
+        Debug.LogError($"{physHand.name} was not grabbing {gameObject.name}!", this);
+        return -1;
     }
 
     /// <summary>
@@ -38,5 +49,16 @@ public class GrblJntDriven_GrblCore : MonoBehaviour
                 counter++;
         }
         return counter;
+    }
+
+    /// <summary>
+    /// Is this <see cref="GrblJntDriven_PhysHand"/> grabbing this grabbable?
+    /// </summary>
+    public bool IsGrabbing(GrblJntDriven_PhysHand physHand) {
+        for (int i = 0; i < grbs.Count; i++) {
+            if (grbs[i].physHand == physHand)
+                return true;
+        }
+        return false;
     }
 }

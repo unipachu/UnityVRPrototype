@@ -56,13 +56,16 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         float posHand1Wt = 1f - posHand0Wt;
         float rotHand1Wt = 1f - rotHand0Wt;
         // Initial grab positions in grabbable local space.
-        Vector3 initLocalPos0 = grb0.initPhysHandPosInGrblLocalSpace;
-        Vector3 initLocalPos1 = grb1.initPhysHandPosInGrblLocalSpace;
+        Vector3 initLocalPos0 = grb0.initPhysHandPosInGrblSpc;
+        Vector3 initLocalPos1 = grb1.initPhysHandPosInGrblSpc;
         // Current hand follow targets.
         Transform followTgt0 = grb0.physHand.followTgtTrf;
         Transform followTgt1 = grb1.physHand.followTgtTrf;
+        // Follow targets (hand controllers') grab point.
+        Vector3 followTgtGrabPtWorld0 = MathUtils.UnscaledTrfPt(followTgt0, grb0.followTgtInitGrabPtInFollowTgtSpc);
+        Vector3 followTgtGrabPtWorld1 = MathUtils.UnscaledTrfPt(followTgt1, grb1.followTgtInitGrabPtInFollowTgtSpc);
         // Current line between hands.
-        Vector3 tgtWorldLine = followTgt1.position - followTgt0.position;
+        Vector3 tgtWorldLine = followTgtGrabPtWorld1 - followTgtGrabPtWorld0;
         // This is a faster and more rounding safe way to check if vector magnitude is 0.
         if (tgtWorldLine.sqrMagnitude < 1e-8f)
             return;
@@ -99,20 +102,11 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         );
         Quaternion avgTwist = Quaternion.AngleAxis(avgTwistRad * Mathf.Rad2Deg, tgtWorldLine);
         Quaternion newTgtWorldRot = avgTwist * lineAlignRot;
-        //// Compute target world position from both grab points and average.
-        //Vector3 posFromGrab1 = followTgt1.position - newTgtWorldRot * initLocalPos1;
-        //Vector3 posFromGrab2 = followTgt2.position - newTgtWorldRot * initLocalPos2;
-        //Vector3 newTgtWorldPos =
-        //    rotHand1Wt * posFromGrab1 + hand2Wt * posFromGrab2;
         // Compute the world position implied by each grab point.
-        Vector3 posFromGrab0 =
-            followTgt0.position - newTgtWorldRot * initLocalPos0;
-        Vector3 posFromGrab1 =
-            followTgt1.position - newTgtWorldRot * initLocalPos1;
+        Vector3 posFromGrab0 = followTgtGrabPtWorld0 - newTgtWorldRot * initLocalPos0;
+        Vector3 posFromGrab1 = followTgtGrabPtWorld1 - newTgtWorldRot * initLocalPos1;
         // Blend between the two positions independently from rotation weighting.
-        Vector3 newTgtWorldPos =
-            posHand0Wt * posFromGrab0 +
-            posHand1Wt * posFromGrab1;
+        Vector3 newTgtWorldPos = posHand0Wt * posFromGrab0 + posHand1Wt * posFromGrab1;
         grbJnt.targetPosition = newTgtWorldPos;
         grbJnt.targetRotation = newTgtWorldRot;
     }

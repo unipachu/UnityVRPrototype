@@ -11,9 +11,13 @@
 
 ## Project Structure
 
-Because this project is intended for experimentation, it intentionally contains multiple systems with overlapping functionality. This is so that different approaches could be compared with each other.
+Because this project is intended for experimentation, it intentionally contains multiple physics grab systems with overlapping functionality. This is so that different approaches could be compared with each other. These physics grab systems are categorized in high level categories:
 
-To distinguish between similar systems, descriptive names became increasingly long. To keep identifiers at a manageable length, a number of abbreviations were used throughout the project, leading to decreased readability. The table below lists some common abbreviations used.
+* **ECS:** DOTS ECS-based grab system where grabbables are moved using custom spring forces (WIP).
+* **Grabbable Joint Driven (GrblJntDriven):** GameObject-based system where grabbables are driven directly by ConfigurableJoints connected to the world.
+* **Hand Joint Driven (HandJntDriven):** GameObject-based system where grabbables are attached to physics hands via ConfigurableJoints. The physics hands are then driven by separate ConfigurableJoints connected to the world. This grab system can be less stable than the Grabbable Joint Driven system because it uses more physics constraints.
+
+To distinguish between similar systems, many identifiers became quite long. To keep names manageable, a number of abbreviations are used throughout the project. The table below lists the most common abbreviations.
 
 ## Common Abbreviations
 
@@ -24,9 +28,14 @@ To distinguish between similar systems, descriptive names became increasingly lo
 |`grbl` / `grbls`|grabbable / grabbables|
 |`grbr`|grabber|
 |`jnt`|joint|
+|`lcl`|local|
+|`phys`|physics|
+|`piv`|pivot|
 |`pt`|point|
 |`sgl`|single|
+|`spc`|space|
 |`st`|state|
 |`tgt`|target|
 |`trf`|transform|
 |`vis`|visual|
+|`wld`|world|

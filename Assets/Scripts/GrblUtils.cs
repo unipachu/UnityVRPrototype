@@ -1,16 +1,39 @@
 using UnityEngine;
 
 public static class GrblUtils {
-    public static void EnableProxyHand(GameObject handVisProxy, Vector3 handPos, Quaternion handRot) {
-        handVisProxy.SetActive(true);
-        handVisProxy.transform.position = handPos;
-        handVisProxy.transform.rotation = handRot;
+    // TODO: Move this to general utils.
+    public static void EnableObjNSetPose(GameObject obj, Vector3 wldPos, Quaternion wldRot) {
+        obj.SetActive(true);
+        obj.transform.position = wldPos;
+        obj.transform.rotation = wldRot;
+    }
+
+    /// <summary>
+    /// Finds follow target grap point expressed in axe local space.
+    /// </summary>
+    public static Vector3 FollowTgtInitGrbPtInGrblSpc(Grb grb, Transform grblTrf) {
+        Vector3 followTgtInitGrabPtWorld = MathUtils.UnscaledTrfPt(
+            grb.physHand.followTgtTrf,
+            grb.followTgtInitGrabPtInFollowTgtSpc
+        );
+        Vector3 followGrabLocal = MathUtils.UnscaledInvrsTrfPt(
+            grblTrf,
+            followTgtInitGrabPtWorld
+        );
+        return followGrabLocal;
+    }
+
+    /// <summary>
+    /// Get the grip point of the phys hand target in world space.
+    /// </summary>
+    public static Vector3 GetTgtGripPtWorld(Grb grb, Vector3 localGripPt) {
+        return grb.physHand.followTgtTrf.TransformPoint(localGripPt);
     }
 
     public static void LRGrab_ReleaseAllGrbs(IGrblJntDriven_Grbl grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
         foreach (Grb grab in grbl.GrblCore.grbs)
             grab.physHand.OnGrabReleased(
-                MathUtils.UnscaledTrfPt(grbl.GrblCore.transform, grab.initPhysHandPosInGrblLocalSpace),
+                MathUtils.UnscaledTrfPt(grbl.GrblCore.transform, grab.initPhysHandPosInGrblSpc),
                 MathUtils.RotFromTrfSpaceToWorld(grbl.GrblCore.transform, grab.initRotFromGrblToPhysHand)
             );
         grbl.GrblCore.grbs.Clear();
@@ -25,15 +48,13 @@ public static class GrblUtils {
         GameObject rHandVisProxy
     ) {
         Grb grb = grbl.GrblCore.FindGrb(physHandToRelease);
+        GameObject correspondingProxyHand = physHandToRelease.side == Side.Left ? lHandVisProxy : rHandVisProxy;
         grb.physHand.OnGrabReleased(
-            MathUtils.UnscaledTrfPt(grbl.GrblCore.transform, grb.initPhysHandPosInGrblLocalSpace),
-            MathUtils.RotFromTrfSpaceToWorld(grbl.GrblCore.transform, grb.initRotFromGrblToPhysHand)
+            correspondingProxyHand.transform.position,
+            correspondingProxyHand.transform.rotation
         );
         grbl.GrblCore.grbs.Remove(grb);
-        if (physHandToRelease.side == Side.Left)
-            lHandVisProxy.SetActive(false);
-        else
-            rHandVisProxy.SetActive(false);
+        correspondingProxyHand.SetActive(false);
     }
 
     public static void OnDrawGizmos_DrawGrbJntAnchor(IGrblJntDriven_Grbl grbl) {

@@ -69,7 +69,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
 
     public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand) {
         // Can be grabbed by up to one left hand and one right hand simultaneously.
-        return grblCore.GrbCount(physHand.side) < 2;
+        return grblCore.GrbCount(physHand.side) == 0;
     }
 
     public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
@@ -85,21 +85,24 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     public float GetPosHand0Wt() => 0.5f;
 
     public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
+        // NOTE: Grab point is set to Vector3, because the grab point offset doesn't meaningfully
+        // NOTE C: affect the grabbale pose.
         var newGrb = new Grb(
             physHand, 
             MathUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position),
-            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation)
+            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation),
+            Vector3.zero
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
         if (physHand.side == Side.Left)
-            GrblUtils.EnableProxyHand(
+            GrblUtils.EnableObjNSetPose(
                 lHandVisProxy,
                 physHand.transform.position,
                 physHand.transform.rotation
             );
         else
-            GrblUtils.EnableProxyHand(
+            GrblUtils.EnableObjNSetPose(
                 rHandVisProxy,
                 physHand.transform.position,
                 physHand.transform.rotation
