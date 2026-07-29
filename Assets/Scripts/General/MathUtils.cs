@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 
 /// <summary>
@@ -15,11 +14,11 @@ public static class MathUtils {
         Quaternion tgtWorldRot
     ) {
         // Compute the child's current local offset (position + rotation) relative to the parent
-        Vector3 childParentSpacePos = UnscaledInvrsTrfPt(parentTrf, childTrf.position);
-        Quaternion childParentSpaceRot = RotFromWorldToTrfSpace(parentTrf, childTrf.rotation);
+        Vector3 childParentSpcPos = UnscaledInvrsTrfPt(parentTrf, childTrf.position);
+        Quaternion childParentSpcRot = RotFromWorldToTrfSpace(parentTrf, childTrf.rotation);
         // Compute the desired rigidbody transform that would make the child match the target
-        Vector3 desiredRbPos = tgtWorldPos - (tgtWorldRot * (Quaternion.Inverse(childParentSpaceRot) * childParentSpacePos));
-        Quaternion desiredRbRot = tgtWorldRot * Quaternion.Inverse(childParentSpaceRot);
+        Vector3 desiredRbPos = tgtWorldPos - (tgtWorldRot * (Quaternion.Inverse(childParentSpcRot) * childParentSpcPos));
+        Quaternion desiredRbRot = tgtWorldRot * Quaternion.Inverse(childParentSpcRot);
         return (desiredRbPos, desiredRbRot);
     }
 
@@ -80,6 +79,19 @@ public static class MathUtils {
         if (Vector3.Dot(twistAxis, axis) < 0f)
             angleDeg = -angleDeg;
         return angleDeg * Mathf.Deg2Rad;
+    }
+
+    /// <summary>
+    /// Interpolates rb's pose with rb.Move to align the specified child transform with a target pose.<br/>
+    /// NOTE: Call this in FixedUpdate().
+    /// </summary>
+    /// <returns>Returns wether the interpolation is finished.</returns>
+    public static void InterpToAlignChildWithTgt(Rigidbody rb, Transform child, Vector3 tgtPos, Quaternion tgtRot, float t) {
+        var targetPose = AlignChildWithTgtPose(rb.transform, child, tgtPos, tgtRot);
+        t = Mathf.Clamp01(t);
+        Vector3 newPos = Vector3.Lerp(rb.position, targetPose.Item1, t);
+        Quaternion newRot = Quaternion.Slerp(rb.rotation, targetPose.Item2, t);
+        rb.Move(newPos, newRot);
     }
 
     public static bool IsInRange(float x, float greaterThanOrEqualTo, float lessThanOrEqualTo) {

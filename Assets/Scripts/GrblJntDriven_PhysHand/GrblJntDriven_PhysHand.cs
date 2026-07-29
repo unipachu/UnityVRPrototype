@@ -23,7 +23,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     [field: SerializeField] public Transform followTgtTrf { get; private set; }
     [field: SerializeField] public GhostShaderCtlr handGhostShaderCtrl { get; private set; }
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
-    [SerializeField] HapticImpulsePlayer controllerHapticImpulsePlayer;
+    public HapticImpulsePlayer controllerHapticImpulsePlayer;
     
     [field: Header("Player Input Refs")]
     [field: SerializeField] public PlrCtrl plrCtrl { get; private set; }

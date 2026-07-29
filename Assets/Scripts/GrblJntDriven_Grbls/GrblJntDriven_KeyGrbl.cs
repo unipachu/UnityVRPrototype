@@ -26,7 +26,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
 
     public GrblJntDriven_GrblCore GrblCore => grblCore;
 
-    public Transform SnpTrf => snpTrf;
+    public Transform KeyTipTrf => snpTrf;
 
     // -----------------------------------------
     // UNITY CALLBACKS
