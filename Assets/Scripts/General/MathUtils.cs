@@ -5,6 +5,15 @@ using UnityEngine;
 /// </summary>
 public static class MathUtils {
     /// <summary>
+    /// Applies a rotation offset to a base rotation.
+    /// </summary>
+    public static Quaternion AddRotOffset(
+        Quaternion baseRot,
+        Quaternion offsetRot) {
+        return offsetRot * baseRot;
+    }
+
+    /// <summary>
     /// Calculates the parent world pose that aligns the child with the target world pose.
     /// </summary>
     public static (Vector3, Quaternion) AlignChildToTgtPose(
@@ -52,9 +61,45 @@ public static class MathUtils {
     /// <summary>
     /// Returns the transform rotation whose local-space rotation matches the given world-space rotation.
     /// Basically, this finds a rotation for the parent where its child (localRot) is aligned with the worldRot.
+    /// NOTE: This is equivalent to <see cref="DeltaRot"/>.
     /// </summary>
     public static Quaternion AlignLclRotToWldRot(Quaternion worldRot, Quaternion localRot) {
         return worldRot * Quaternion.Inverse(localRot);
+    }
+
+    /// <summary>
+    /// Returns the weighted average of angles in radians using circular interpolation.
+    /// Correctly handles wrapping around -PI / PI.
+    /// </summary>
+    public static float AvgAngRad(float ang0, float wt0, float ang1, float wt1) {
+        return Mathf.Atan2(
+            wt0 * Mathf.Sin(ang0) + wt1 * Mathf.Sin(ang1),
+            wt0 * Mathf.Cos(ang0) + wt1 * Mathf.Cos(ang1)
+        );
+    }
+
+    /// <summary>
+    /// Returns a rotation with the twist around <paramref name="axis"/> adjusted
+    /// so that it matches the twist difference from <paramref name="fromRot"/> to
+    /// <paramref name="toRot"/>.<br/>
+    /// Basically takes <paramref name="fromRot"/> and applies the twist around
+    /// <paramref name="axis"/> that exists between <paramref name="fromRot"/>
+    /// and <paramref name="toRot"/>.<br/>
+    public static Quaternion CalculateRelativeTwist(
+        Quaternion fromRot,
+        Quaternion toRot,
+        Vector3 axis
+    ) {
+        float twistDeg = ExtractSignedTwistAng(fromRot, toRot, axis) * Mathf.Rad2Deg;
+        return Quaternion.AngleAxis(twistDeg, axis) * fromRot;
+    }
+
+    /// <summary>
+    /// Compute the relative rotation between two world space orientations.<br/>
+    /// NOTE: This is equivalent to <see cref="AlignLclRotToWldRot"/>.
+    /// </summary>
+    public static Quaternion DeltaRot(Quaternion fromRot, Quaternion toRot) {
+        return toRot * Quaternion.Inverse(fromRot);
     }
 
     /// <summary>
@@ -72,7 +117,8 @@ public static class MathUtils {
     }
 
     // TODO: Perhaps expand this so that parameter takes in the axis and pivot pos and rot instead of
-    // TODO C: the transform. Also write the direction of the rotation.
+    // TODO C: the transform. Or actually create a separate method that doesn't take in pivot transform
+    // TODO C: but instead uses only pivot wld pos and direction of the axis to rotate around.
     /// <summary>
     /// Returns world pos and rot of an object when rotated around the right-axis of a pivot object. 
     /// </summary>
@@ -85,6 +131,7 @@ public static class MathUtils {
         // NOTE: rotMult is used here to rotate the object slightly further.
         float dXAng = rotAroundAxis * rotMult;
         //Debug.Log("delta x angle: " + deltaXAngle);
+        // TODO: Make the local axis of the pivot a parameter.
         Quaternion dRotAroundPivRight = Quaternion.AngleAxis(dXAng, pivTrf.right);
         Vector3 movedTrfPosInPivSpace = InvrsTrfPtUnscaled(pivTrf, movedTrf.position);
         Quaternion movedTrfRotInPivSpace = InvrsTrfRot(pivTrf, movedTrf.rotation);
@@ -96,7 +143,7 @@ public static class MathUtils {
 
     /// <summary>
     /// Returns signed angle around an axis (in radians).<br/>
-    /// Can be used to e.g. see how a hand quaternion rotation affects the rotation of an (axis-locked)
+    /// Can be used to e.g. see how a follow target hand rotation affects the rotation of an (axis-locked)
     /// key in a key hole.
     /// </summary>
     public static float ExtractSignedTwistAng(Quaternion rot, Vector3 axis) {
@@ -124,6 +171,26 @@ public static class MathUtils {
         if (Vector3.Dot(twistAxis, axis) < 0f)
             angleDeg = -angleDeg;
         return angleDeg * Mathf.Deg2Rad;
+    }
+
+    /// <summary>
+    /// Returns signed angle around an axis (in radians) between two rotations.<br/>
+    /// Calculates the relative rotation from <paramref name="fromRot"/> to
+    /// <paramref name="toRot"/> and extracts the twist around the given axis.
+    /// Can be used to e.g. see how a follow target hand rotation affects the
+    /// rotation of an (axis-locked) key in a key hole.<br/>
+    /// In that case <paramref name="fromRot"/> would be the initial key rotation
+    /// and <paramref name="toRot"/> would be the rotation the key would need to
+    /// reach (e.g. based on the follow target hand rotation). The axis would be
+    /// the direction into the keyhole.
+    /// </summary>
+    public static float ExtractSignedTwistAng(
+        Quaternion fromRot,
+        Quaternion toRot,
+        Vector3 axis
+    ) {
+        Quaternion twistResidual = DeltaRot(fromRot, toRot);
+        return ExtractSignedTwistAng(twistResidual, axis);
     }
 
     /// <summary>

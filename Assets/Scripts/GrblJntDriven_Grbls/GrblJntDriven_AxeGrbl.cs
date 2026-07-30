@@ -103,15 +103,16 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
         GameObject proxyHolder = physHand.side == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
-        Quaternion proxyRot = transform.rotation;
-        Quaternion twistResidual = physHand.followTgtTrf.rotation * Quaternion.Inverse(proxyRot);
-        float initTwistDeg = MathUtils.ExtractSignedTwistAng(twistResidual, transform.up) * Mathf.Rad2Deg;
-        // Create rotation around the handle.
-        proxyRot = Quaternion.AngleAxis(initTwistDeg, transform.up) * transform.rotation;
+        // NOTE: Currently proxy holder is already aligned with the handle (transform.up) so this works.
+        Quaternion axeRotWithTwistAroundHandle = MathUtils.CalculateRelativeTwist(
+            transform.rotation,
+            physHand.followTgtTrf.rotation,
+            transform.up
+        );
         ObjUtils.ActivateNSetPose(
             proxyHolder,
             MathUtils.TrfPtUnscaled(transform, initPhysHandPosInGrblSpc),
-            proxyRot
+            axeRotWithTwistAroundHandle
         );
         // TODO: Ugh, here I'm enabling the holder while on release I disable the child visual object.
         // TODO C: This is an easy fix, but is very ugly. Maybe remove the holders entirely and hard code
@@ -228,47 +229,12 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         proxyLocalPos.y = Mathf.Min(followGrabLocal.y, maxGrbPtHandLclY);
         Vector3 proxyWorldPos = MathUtils.TrfPtUnscaled(transform, proxyLocalPos);
         // Twist around handle.
-        Quaternion proxyRot = transform.rotation;
-        Quaternion twistResidual = grb.physHand.followTgtTrf.rotation * Quaternion.Inverse(proxyRot);
-        float twistDeg = MathUtils.ExtractSignedTwistAng(twistResidual, handleAxis) * Mathf.Rad2Deg;
-        proxyRot = Quaternion.AngleAxis(twistDeg, handleAxis) * proxyRot;
+        float twistDeg = MathUtils.ExtractSignedTwistAng(
+            transform.rotation,
+            grb.physHand.followTgtTrf.rotation,
+            handleAxis
+        ) * Mathf.Rad2Deg;
+        Quaternion proxyRot = Quaternion.AngleAxis(twistDeg, handleAxis) * transform.rotation;
         proxy.transform.SetPositionAndRotation(proxyWorldPos, proxyRot);
-    }
-
-    void UpdateProxyHands() {
-        lHandVisProxyHolder.SetActive(false);
-        rHandVisProxyHolder.SetActive(false);
-        if (grblCore.grbs.Count == 0)
-            return;
-        int lowerHandIndex = LowestHandIndex();
-        // Handle axis in world space (+Y of the axe).
-        Vector3 handleAxis = transform.up;
-        for (int i = 0; i < grblCore.grbs.Count; ++i) {
-            Grb grb = grblCore.grbs[i];
-            GameObject proxy = grb.physHand.side == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
-            proxy.SetActive(true);
-            // Visual grab position in the axe's local space.
-            Vector3 proxyLocalPos = grb.initPhysHandPosInGrblSpc;
-            // Only the upper hand is allowed to slide.
-            if (i != lowerHandIndex) {
-                // Controller grip point expressed in axe local space.
-                Vector3 followTgtInitGrabPtWorld = MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
-                Vector3 followGrabLocal = MathUtils.InvrsTrfPtUnscaled(
-                    transform,
-                    followTgtInitGrabPtWorld
-                );
-                // Visually slide along the handle.
-                proxyLocalPos.y = Mathf.Min(followGrabLocal.y, maxGrbPtHandLclY);
-            }
-            Vector3 proxyWorldPos = MathUtils.TrfPtUnscaled(transform, proxyLocalPos);
-            Quaternion proxyRot = transform.rotation;
-            // Only the upper hand twists.
-            if (i != lowerHandIndex) {
-                Quaternion twistResidual = grb.physHand.followTgtTrf.rotation * Quaternion.Inverse(proxyRot);
-                float twistDeg = MathUtils.ExtractSignedTwistAng(twistResidual, handleAxis) * Mathf.Rad2Deg;
-                proxyRot = Quaternion.AngleAxis(twistDeg, handleAxis) * proxyRot;
-            }
-            proxy.transform.SetPositionAndRotation(proxyWorldPos, proxyRot);
-        }
     }
 }

@@ -65,11 +65,11 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         Vector3 followTgtGrabPtWorld0 = MathUtils.TrfPtUnscaled(followTgt0, grb0.followTgtInitGrabPtInFollowTgtSpc);
         Vector3 followTgtGrabPtWorld1 = MathUtils.TrfPtUnscaled(followTgt1, grb1.followTgtInitGrabPtInFollowTgtSpc);
         // Current line between hands.
-        Vector3 tgtWorldLine = followTgtGrabPtWorld1 - followTgtGrabPtWorld0;
+        Vector3 tgtWldLine = followTgtGrabPtWorld1 - followTgtGrabPtWorld0;
         // This is a faster and more rounding safe way to check if vector magnitude is 0.
-        if (tgtWorldLine.sqrMagnitude < 1e-8f)
+        if (tgtWldLine.sqrMagnitude < 1e-8f)
             return;
-        tgtWorldLine.Normalize();
+        tgtWldLine.Normalize();
         // Initial line between grab points.
         Vector3 initLine = initLocalPos1 - initLocalPos0;
         if (initLine.sqrMagnitude < 1e-8f)
@@ -77,34 +77,21 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         initLine.Normalize();
         // Align the initial grab line with the current grab line.
         // TODO: How does this handle 180 rotations?
-        Quaternion lineAlignRot = Quaternion.FromToRotation(initLine, tgtWorldLine);
+        Quaternion lineAlignRot = Quaternion.FromToRotation(initLine, tgtWldLine);
         // Rotation from grab on the grabble to the corresponding follow target.
-        Quaternion desiredRot0 =
-            followTgt0.rotation * Quaternion.Inverse(grb0.initRotFromGrblToPhysHand);
-        Quaternion desiredRot1 =
-            followTgt1.rotation * Quaternion.Inverse(grb1.initRotFromGrblToPhysHand);
-        // This is a bit hard to understand but below equation makes it so that also:
-        // desiredRot (the hand wants to rotate the grabbable) = twistResidual * lineAlignRot
-        // Line align rot is only the rotation that aligns the object with tgtWorldLine,
-        // then twistResidual is the remaining rotation to reach hand desired rot.
-        // When we use that to extract the twist angle, only hand twist affects 
-        // the rotation around the grab line.
-        Quaternion twistResidual0 = desiredRot0 * Quaternion.Inverse(lineAlignRot);
-        Quaternion twistResidual1 = desiredRot1 * Quaternion.Inverse(lineAlignRot);
-        float twistAngle1 = MathUtils.ExtractSignedTwistAng(twistResidual0, tgtWorldLine);
-        float twistAngle2 = MathUtils.ExtractSignedTwistAng(twistResidual1, tgtWorldLine);
+        Quaternion desiredRot0 = MathUtils.DeltaRot(grb0.initRotFromGrblToPhysHand, followTgt0.rotation);
+        Quaternion desiredRot1 = MathUtils.DeltaRot(grb1.initRotFromGrblToPhysHand, followTgt1.rotation);
+        float twistAngle1 = MathUtils.ExtractSignedTwistAng(lineAlignRot, desiredRot0, tgtWldLine);
+        float twistAngle2 = MathUtils.ExtractSignedTwistAng(lineAlignRot, desiredRot1, tgtWldLine);
         // Twist on the unit circle.
-        float avgTwistRad = Mathf.Atan2(
-            rotHand0Wt * Mathf.Sin(twistAngle1) +
-            rotHand1Wt * Mathf.Sin(twistAngle2),
-            rotHand0Wt * Mathf.Cos(twistAngle1) +
-            rotHand1Wt * Mathf.Cos(twistAngle2)
-        );
-        Quaternion avgTwist = Quaternion.AngleAxis(avgTwistRad * Mathf.Rad2Deg, tgtWorldLine);
-        Quaternion newTgtWorldRot = avgTwist * lineAlignRot;
+        float avgTwistRad = MathUtils.AvgAngRad(twistAngle1, rotHand0Wt, twistAngle2, rotHand1Wt);
+        Quaternion avgTwist = Quaternion.AngleAxis(avgTwistRad * Mathf.Rad2Deg, tgtWldLine);
+        Quaternion newTgtWorldRot = MathUtils.AddRotOffset(lineAlignRot, avgTwist);        
         // Compute the world position implied by each grab point.
-        Vector3 posFromGrab0 = followTgtGrabPtWorld0 - newTgtWorldRot * initLocalPos0;
-        Vector3 posFromGrab1 = followTgtGrabPtWorld1 - newTgtWorldRot * initLocalPos1;
+        Vector3 posFromGrab0 =
+            MathUtils.AlignLclPtToWldPt(followTgtGrabPtWorld0, newTgtWorldRot, initLocalPos0);
+        Vector3 posFromGrab1 =
+            MathUtils.AlignLclPtToWldPt(followTgtGrabPtWorld1, newTgtWorldRot, initLocalPos1);
         // Blend between the two positions independently from rotation weighting.
         Vector3 newTgtWorldPos = posHand0Wt * posFromGrab0 + posHand1Wt * posFromGrab1;
         grbJnt.targetPosition = newTgtWorldPos;

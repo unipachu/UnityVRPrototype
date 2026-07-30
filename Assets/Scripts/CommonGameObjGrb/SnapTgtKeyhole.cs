@@ -169,8 +169,10 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     private void MoveSnappedSnpl() {
         Rigidbody snplRb = snpl.GrblCore.rb;
         Grb grb = snpl.GrblCore.grbs[0];
+        float tipDepthInKeyholeSpc = TipPosInKeyholeSpc().z;
         // Find theoretical snappable depth and interpolate towards that.
         Vector3 theoTipWldPos = TheoFolTgtTipWldPos(grb);
+        Quaternion theoTipWldRot = TheoFolTgtTipWldRot(grb);
         float theoTipLclDepth = MathUtils.InvrsTrfPtUnscaled(transform, theoTipWldPos).z;
         // TODO: Could we clamp later?
         float clampedTheoTipLclDepth = Mathf.Clamp(theoTipLclDepth, snplTipMinLclDepth, snplTipMaxLclDepth);
@@ -186,15 +188,14 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             transform.rotation,
             snpl.KeyTipLclPos
         );
-        if (TipPosInKeyholeSpc().z > snplTipMinRotEnabledLclDepth || TipPosInKeyholeSpc().z < 0) {
-            // TODO: Allow the follow target to rotate the key.
-        }
-        // TODO: If snpl abs roll (normalized to +-180deg) in keyholespace is over 5 deg but under 180, do
-        // NOT allow key depth to move below snplTipMinRotEnabledLclDepth if key depth was over
-        // snplTipMinRotEnabledLclDepth, or if the key depth was below 0, do not allow key to move to depth over 0.
-        // TODO: If snpl depth is below snplTipMinRotEnabledLclDepth, interpolate roll to 0 or 180 (which one is closer).
-        
-        snplRb.Move(snplWldTgtPos, transform.rotation);
+        Quaternion snplWldTgtRot = transform.rotation;
+        Quaternion relativeTwist = MathUtils.CalculateRelativeTwist(
+            transform.rotation,
+            theoTipWldRot,
+            transform.forward
+        );
+        snplWldTgtRot = MathUtils.AddRotOffset(transform.rotation, relativeTwist);
+        snplRb.Move(snplWldTgtPos, snplWldTgtRot);
     }
 
     void SnplPhysicsTick() {
@@ -210,9 +211,16 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
         MoveSnappedSnpl();
     }
 
+    // TODO: You should probably just cache tip theoretical world pos and keyhole space pos every update
+    // TODO C: when a snappable is snapped to the keyhole.
     Vector3 TheoFolTgtTipWldPos(Grb grb) {
         var theoPose = GrblUtils.TheoFolTgtGrblPose(grb);
         return MathUtils.TrfPt(theoPose.Item1, theoPose.Item2, snpl.KeyTipLclPos);
+    }
+
+    Quaternion TheoFolTgtTipWldRot(Grb grb) {
+        // Theoretical tip world rotation is same as the grabbable theoretical world rotation...
+        return GrblUtils.TheoFolTgtGrblRot(grb);
     }
 
     Vector3 TipPosInKeyholeSpc() {
