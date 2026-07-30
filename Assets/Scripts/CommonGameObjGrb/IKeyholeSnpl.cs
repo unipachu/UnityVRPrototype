@@ -5,7 +5,8 @@ using UnityEngine;
 /// </summary>
 public interface IKeyholeSnpl {
     /// <summary>
-    /// NOTE: Rb's forward should be the keyhole insertion direction.
+    /// NOTE: Rb's orientation should match with the keyhole
+    /// (rb forward towards the keyhole insertion direction).
     /// </summary>
     GrblJntDriven_GrblCore GrblCore { get; }
     /// <summary>

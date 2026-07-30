@@ -20,11 +20,10 @@ public static class GrblUtils {
     }
 
     /// <summary>
-    /// Get the grip point of the phys hand target in world space.
+    /// Get the grab point of the phys hand target in world space.
     /// </summary>
-    public static Vector3 GetTgtGripPtWorld(Grb grb, Vector3 localGripPt) {
-        //return grb.physHand.followTgtTrf.TransformPoint(localGripPt);
-        return MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, localGripPt);
+    public static Vector3 GetTgtGripPtWorld(Grb grb, Vector3 lclGrbPt) {
+        return MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, lclGrbPt);
     }
 
     public static void LRGrab_ReleaseAllGrbs(IGrblJntDriven_Grbl grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
@@ -60,8 +59,6 @@ public static class GrblUtils {
             return;
         }
         Gizmos.color = Color.yellow;
-        //Vector3 worldAnchorPos =
-        //    grbl.GrblCore.grbJnt.transform.TransformPoint(grbl.GrblCore.grbJnt.anchor);
         Vector3 worldAnchorPos = MathUtils.TrfPtUnscaled(
             grbl.GrblCore.grbJnt.transform,
             grbl.GrblCore.grbJnt.anchor
@@ -74,8 +71,8 @@ public static class GrblUtils {
     /// if the follow target (i.e. hand controller) would be grabbing it like the phys hand's initial grab
     /// of the grabbable.
     /// /// </summary>
-    public static float DistBetweenGrblRbPosNTheoreticalFollowTgtGrblPos(Rigidbody rb, Grb grb) {
-        return Vector3.Distance(rb.position, TheoreticalFollowTgtGrblPos(grb, TheoreticalFollowTgtGrblRot(grb)));
+    public static float DistBetweenGrblRbPosNTheoFolTgtGrblPos(Rigidbody rb, Grb grb) {
+        return Vector3.Distance(rb.position, TheoFolTgtGrblPos(grb, TheoFolTgtGrblRot(grb)));
     }
 
     /// <summary>
@@ -83,12 +80,24 @@ public static class GrblUtils {
     /// would be grabbing it like the phys hand's initial grab of the grabbable.
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
-    /// <param name="theoreticalGrblRot">NOTE: You can use <see cref="TheoreticalFollowTgtGrblRot"/> to get the rot.</param>
-    public static Vector3 TheoreticalFollowTgtGrblPos(Grb grb, Quaternion theoreticalGrblRot) {
-        //return grb.physHand.followTgtTrf.position - theoreticalGrblRot * grb.initPhysHandPosInGrblSpc;
+    /// <param name="theoGrblRot">NOTE: You can use <see cref="TheoFolTgtGrblRot"/> to get the rot.</param>
+    public static Vector3 TheoFolTgtGrblPos(Grb grb, Quaternion theoGrblRot) {
         return MathUtils.AlignLclPtToWldPt(
             grb.physHand.followTgtTrf.position,
-            theoreticalGrblRot,
+            theoGrblRot,
+            grb.initPhysHandPosInGrblSpc
+        );
+    }
+
+    /// <summary>
+    /// Postition of the theoretical grabbable in world space if the follow target (i.e. hand controller)
+    /// would be grabbing it like the phys hand's initial grab of the grabbable.
+    /// </summary>
+    /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
+    public static Vector3 TheoFolTgtGrblPos(Grb grb) {
+        return MathUtils.AlignLclPtToWldPt(
+            grb.physHand.followTgtTrf.position,
+            TheoFolTgtGrblRot(grb),
             grb.initPhysHandPosInGrblSpc
         );
     }
@@ -98,10 +107,10 @@ public static class GrblUtils {
     /// would be grabbing it like the phys hand's initial grab of the grabbable.
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
-    public static (Vector3, Quaternion) TheoreticalFollowTgtGrblPose(Grb grb) {
-        Quaternion theoreticalRot = TheoreticalFollowTgtGrblRot(grb);
-        Vector3 theoreticalPos = TheoreticalFollowTgtGrblPos(grb, theoreticalRot);
-        return (theoreticalPos, theoreticalRot);
+    public static (Vector3, Quaternion) TheoFolTgtGrblPose(Grb grb) {
+        Quaternion theoRot = TheoFolTgtGrblRot(grb);
+        Vector3 theoPos = TheoFolTgtGrblPos(grb, theoRot);
+        return (theoPos, theoRot);
     }
 
     /// <summary>
@@ -109,8 +118,7 @@ public static class GrblUtils {
     /// would be grabbing it like the phys hand's initial grab of the grabbable.
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
-    public static Quaternion TheoreticalFollowTgtGrblRot(Grb grb) {
-        //return grb.physHand.followTgtTrf.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
+    public static Quaternion TheoFolTgtGrblRot(Grb grb) {
         return MathUtils.AlignLclRotToWldRot(
             grb.physHand.followTgtTrf.rotation,
             grb.initRotFromGrblToPhysHand

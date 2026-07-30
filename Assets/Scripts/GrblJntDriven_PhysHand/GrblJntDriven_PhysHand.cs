@@ -11,33 +11,33 @@ enum PhysHandState {
 /// Controller for one physics hand. 
 /// </summary>
 public class GrblJntDriven_PhysHand : MonoBehaviour {
-    [field: Header("Settings")]
-    [field: SerializeField] public Side side { get; private set; }
+    [Header("Settings")]
+    public Side side;
 
-    [field: Header("Read Only Data")]
-    [field: SerializeField] public PhysHandConfigurableJntData jntData { get; private set; }
-    [field: SerializeField] public GrbrData grbrData { get; private set; }
+    [Header("Read Only Data")]
+    public PhysHandConfigurableJntData jntData;
+    public GrbrData grbrData;
 
-    [field: Header("XROrigin Refs")]
+    [Header("XROrigin Refs")]
     [Tooltip("Transform of the follow target of the corresponding VR controller.")]
-    [field: SerializeField] public Transform followTgtTrf { get; private set; }
-    [field: SerializeField] public GhostShaderCtlr handGhostShaderCtrl { get; private set; }
+    public Transform followTgtTrf;
+    public GhostShaderCtlr handGhostShaderCtrl;
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
     public HapticImpulsePlayer controllerHapticImpulsePlayer;
-    
-    [field: Header("Player Input Refs")]
-    [field: SerializeField] public PlrCtrl plrCtrl { get; private set; }
-    [Tooltip("Position for grab overlap sphere.")]
 
-    [field: Header("Other Refs")]
-    [field: SerializeField] public Rigidbody rb { get; private set; }
-    [field: SerializeField] public Transform grbPt { get; private set; }
+    [Header("Player Input Refs")]
+    public PlrCtrl plrCtrl;
+
+    [Header("Other Refs")]
+    public Rigidbody rb;
+    [Tooltip("Position for grabbale search overlap sphere.")]
+    public Transform grblSearchPos;
     [Tooltip("Used to move the phys hand (and follow the corresponding VR controller).\n" +
     "NOTE: Joint's connected body should be null, since the hand should be connected to the 'world'.")]
-    [field: SerializeField] public ConfigurableJoint worldJnt { get; private set; }
+    public ConfigurableJoint worldJnt;
     [Tooltip("Game object containing hand visuals.")]
-    [field: SerializeField] public GameObject vis { get; private set; }
-    [field: SerializeField] public Collider[] cols { get; private set; }
+    public GameObject vis;
+    public Collider[] cols;
 
     PhysHandState physHandSt = PhysHandState.NotGrabbing;
     IGrblJntDriven_Grbl grabbedGrbl = null;
@@ -119,10 +119,10 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     }
 
     void OnDrawGizmos() {
-        if (grbPt == null || grbrData == null)
+        if (grblSearchPos == null || grbrData == null)
             return;
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(grbPt.position, grbrData.overlapSphereR);
+        Gizmos.DrawWireSphere(grblSearchPos.position, grbrData.overlapSphereR);
     }
 
     private void OnDisable() {
@@ -200,7 +200,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
     /// </summary>
     bool TryGrabbing() {
         Collider[] nearbyColliders = Physics.OverlapSphere(
-            grbPt.position,
+            grblSearchPos.position,
             grbrData.overlapSphereR,
             grbrData.grbLayers,
             QueryTriggerInteraction.Ignore
@@ -224,7 +224,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
                 closestGrabbable = grabbable;
                 continue;
             }
-            float grabbableDistance = grabbable.GetDistToGrbPt(grbPt.position);
+            float grabbableDistance = grabbable.GetDistToGrbPt(grblSearchPos.position);
             if (grabbableDistance < distanceToClosestGrabbable) {
                 closestGrabbable = grabbable;
                 distanceToClosestGrabbable = grabbableDistance;

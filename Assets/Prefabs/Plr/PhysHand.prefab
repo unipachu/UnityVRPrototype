@@ -228,17 +228,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ed53ea393c1fba43b913df1f4770a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_PhysHand
-  <side>k__BackingField: 0
-  <jntData>k__BackingField: {fileID: 11400000, guid: 531183daf46e01645b136a06ceefa355, type: 2}
-  <grbrData>k__BackingField: {fileID: 11400000, guid: 2cfed77784477854eaaffa00eaec772d, type: 2}
-  <followTgtTrf>k__BackingField: {fileID: 0}
+  side: 0
+  jntData: {fileID: 11400000, guid: 531183daf46e01645b136a06ceefa355, type: 2}
+  grbrData: {fileID: 11400000, guid: 2cfed77784477854eaaffa00eaec772d, type: 2}
+  followTgtTrf: {fileID: 0}
+  handGhostShaderCtrl: {fileID: 0}
   controllerHapticImpulsePlayer: {fileID: 0}
-  <plrCtrl>k__BackingField: {fileID: 0}
-  <rb>k__BackingField: {fileID: 7228727955965025210}
-  <grbPt>k__BackingField: {fileID: 3793855725444168109}
-  <worldJnt>k__BackingField: {fileID: 3455627583413797499}
-  <vis>k__BackingField: {fileID: 1233136622387315819}
-  <cols>k__BackingField:
+  plrCtrl: {fileID: 0}
+  rb: {fileID: 7228727955965025210}
+  grblSearchPos: {fileID: 3793855725444168109}
+  worldJnt: {fileID: 3455627583413797499}
+  vis: {fileID: 1233136622387315819}
+  cols:
   - {fileID: 1761344489441458896}
   - {fileID: 7047134916576098280}
   - {fileID: 9163458324421298496}
@@ -381,7 +382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3793855725444168109}
   m_Layer: 7
-  m_Name: GrabPoint
+  m_Name: GrblSearchOverlapSpherePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

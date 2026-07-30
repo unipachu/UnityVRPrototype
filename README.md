@@ -19,14 +19,16 @@ Because this project is intended for experimentation, it intentionally contains 
 
 ## Common Abbreviations
 
-To distinguish between similar systems, names for the system features became quite long. To keep names manageable, a many abbreviations are used throughout the project.
+To distinguish between similar systems, names for the system features became quite long. To keep names manageable, a many abbreviations are used throughout the project:
 
 |Abbreviation|Meaning|
 |-|-|
 |`dbl`|double|
+|`fol`|follow|
 |`grb` / `grbs`|grab / grabs|
 |`grbl` / `grbls`|grabbable / grabbables|
 |`grbr`|grabber|
+|`invrs`|inverse|
 |`jnt`|joint|
 |`lcl`|local|
 |`phys`|physics|
@@ -38,6 +40,7 @@ To distinguish between similar systems, names for the system features became qui
 |`spc`|space|
 |`st`|state|
 |`tgt`|target|
+|`theo`|theoretical|
 |`trf`|transform|
 |`vis`|visual|
 |`wld`|world|
