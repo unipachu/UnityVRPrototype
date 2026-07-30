@@ -174,7 +174,6 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
         Vector3 theoTipWldPos = TheoFolTgtTipWldPos(grb);
         Quaternion theoTipWldRot = TheoFolTgtTipWldRot(grb);
         float theoTipLclDepth = MathUtils.InvrsTrfPtUnscaled(transform, theoTipWldPos).z;
-        // TODO: Could we clamp later?
         float clampedTheoTipLclDepth = Mathf.Clamp(theoTipLclDepth, snplTipMinLclDepth, snplTipMaxLclDepth);
         //Debug.Log("local clamped depth: " + clampedTheoTipLclDepth);
         Vector3 tipWldTgtPos = MathUtils.TrfPt(
@@ -188,13 +187,13 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             transform.rotation,
             snpl.KeyTipLclPos
         );
-        Quaternion snplWldTgtRot = transform.rotation;
-        Quaternion relativeTwist = MathUtils.CalculateRelativeTwist(
+        // We find rotation that starts with transform.rotation and then twists around transform.forward
+        // based on the rotation of the theoretical tip world rotation.
+        Quaternion snplWldTgtRot = MathUtils.CalculateRelativeTwist(
             transform.rotation,
             theoTipWldRot,
             transform.forward
         );
-        snplWldTgtRot = MathUtils.AddRotOffset(transform.rotation, relativeTwist);
         snplRb.Move(snplWldTgtPos, snplWldTgtRot);
     }
 

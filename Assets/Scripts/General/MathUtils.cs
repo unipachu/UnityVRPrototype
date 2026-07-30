@@ -84,7 +84,8 @@ public static class MathUtils {
     /// <paramref name="toRot"/>.<br/>
     /// Basically takes <paramref name="fromRot"/> and applies the twist around
     /// <paramref name="axis"/> that exists between <paramref name="fromRot"/>
-    /// and <paramref name="toRot"/>.<br/>
+    /// and <paramref name="toRot"/>.
+    /// </summary>
     public static Quaternion CalculateRelativeTwist(
         Quaternion fromRot,
         Quaternion toRot,

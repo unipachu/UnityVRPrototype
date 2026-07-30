@@ -81,13 +81,6 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
     
     public float GetRotHand0Wt() => 1 - LowestHandIndex();
 
-    // We want the grab to always align with the axe handle.
-    // TODO: actually we want the grab point align with the handle and then use grab point
-    // TODO C: to calculate everything. I made a mistake by using just the physicsHand position
-    // TODO C: for grab calculations. Also grab point and grab overlapsphere pos should be separate.
-    // TODO C: Except... different grabbables might want to attach to different points of the hand.
-    // TODO C: Hmm... Maybe grabbables should just have some sort of hard coded offset for the
-    // TODO C: grabbable-specific grab point.
     public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
         Vector3 initPhysHandPosInGrblSpc = MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position);
         // We clamp init phys hand pos so that it aligns with the handle.
