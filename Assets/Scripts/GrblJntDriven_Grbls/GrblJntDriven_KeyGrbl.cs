@@ -3,14 +3,16 @@ using UnityEngine;
 public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyholeSnpl {
     [Header("Refs")]
     [SerializeField] GrblJntDriven_GrblCore grblCore;
-    [Tooltip("Hand visual used to represent grabbing left hand. \n" +
+    [Tooltip("Hand visual used to represent grabbing left hand.\n" +
     "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject lHandVisProxy;
-    [Tooltip("Hand visual used to represent grabbing right hand. \n" +
+    [Tooltip("Hand visual used to represent grabbing right hand.\n" +
         "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject rHandVisProxy;
-    [Tooltip("Transform used to orient key when snapped to keyhole.")]
-    [SerializeField] Transform snpTrf;
+    [Tooltip("Position used to orient key when snapped to keyhole.\n" +
+        "NOTE: We use Vector3 instead of a Transform reference since Transform positions cannot be safely " +
+        "used with Rigidbodies because they can get out of sync.")]
+    [SerializeField] Vector3 keyTipLclPos;
 
     // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
@@ -25,8 +27,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
     float snpCooldown = 0;
 
     public GrblJntDriven_GrblCore GrblCore => grblCore;
-
-    public Transform KeyTipTrf => snpTrf;
+    public Vector3 KeyTipLclPos => keyTipLclPos;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -94,14 +95,14 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
         GrblUtils.LRGrab_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         var newGrb = new Grb(
             physHand,
-            MathUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position),
-            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation),
+            MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
+            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
             Vector3.zero
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
         GameObject proxy = physHand.side == Side.Left ? lHandVisProxy : rHandVisProxy;
-        GrblUtils.EnableObjNSetPose(proxy, physHand.transform.position, physHand.transform.rotation);
+        ObjUtils.ActivateNSetPose(proxy, physHand.transform.position, physHand.transform.rotation);
         SwitchJntStBasedOnGrbCount();
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 enum KeyholeState {
@@ -43,50 +44,39 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     private void FixedUpdate() {
         switch (st) {
             case KeyholeState.LookForSnpls:
-                LookForKeyholeSnpls();
                 break;
             case KeyholeState.InterpSnplToSnpTgt:
-                MathUtils.InterpToAlignChildWithTgt(
+                interpTimer += Time.fixedDeltaTime;
+                MathUtils.InterpRbSoChildAlignsWithTgtPose(
                     snpl.GrblCore.rb,
-                    snpl.KeyTipTrf,
+                    snpl.KeyTipLclPos,
+                    // NOTE: We use Quaternion.identity here since we expect rb forward to be
+                    // NOTE C: the keyhole insertion direction.
+                    Quaternion.identity, 
                     transform.position,
                     transform.rotation,
                     interpTimer / interpDur
                 );
-                interpTimer += Time.fixedDeltaTime;
-                if(interpTimer > interpDur) {
-                    MathUtils.InterpToAlignChildWithTgt(
-                        snpl.GrblCore.rb,
-                        snpl.KeyTipTrf,
-                        transform.position,
-                        transform.rotation,
-                        1
-                    );
+                if(interpTimer > interpDur)
                     st = KeyholeState.SnplInSnpTgt;
-                }
                 break;
             case KeyholeState.SnplInSnpTgt:
                 SnplPhysicsTick();
                 break;
             case KeyholeState.InterpSnplFromSnpTgt:
-                MathUtils.InterpToAlignChildWithTgt(
+                interpTimer += Time.fixedDeltaTime;
+                MathUtils.InterpRbSoChildAlignsWithTgtPose(
                     snpl.GrblCore.rb,
-                    snpl.KeyTipTrf,
+                    snpl.KeyTipLclPos,
+                    // NOTE: We use Quaternion.identity here since we expect rb forward to be
+                    // NOTE C: the keyhole insertion direction.
+                    Quaternion.identity,
                     transform.position,
                     transform.rotation,
                     interpTimer / interpDur
                 );
-                interpTimer += Time.fixedDeltaTime;
-                if (interpTimer > interpDur) {
-                    MathUtils.InterpToAlignChildWithTgt(
-                        snpl.GrblCore.rb,
-                        snpl.KeyTipTrf,
-                        transform.position,
-                        transform.rotation,
-                        1
-                    );
+                if (interpTimer > interpDur)
                     EndSnp();
-                }
                 break;
             default:
                 Debug.LogError("Switch defaulted", this);
@@ -94,9 +84,26 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
         }
     }
 
+    private void Update() {
+        switch (st) {
+            case KeyholeState.LookForSnpls:
+                // We look for snappables in Update to ensure that rigidbodies and transforms are synced.
+                LookForKeyholeSnpls();
+                break;
+            case KeyholeState.InterpSnplToSnpTgt:
+                break;
+            case KeyholeState.SnplInSnpTgt:
+                break;
+            case KeyholeState.InterpSnplFromSnpTgt:
+                break;
+            default:
+                break;
+        }
+    }
+
     void OnDrawGizmos() {
         Gizmos.color = Color.greenYellow;
-        Gizmos.DrawWireSphere(MathUtils.UnscaledTrfPt(transform, overlapSphereUnscaledLclPos), overlapSphereR);
+        Gizmos.DrawWireSphere(MathUtils.TrfPtUnscaled(transform, overlapSphereUnscaledLclPos), overlapSphereR);
     }
 
     // -----------------------------------------
@@ -110,7 +117,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     }
 
     void LookForKeyholeSnpls() {
-        Vector3 worldPos = MathUtils.UnscaledTrfPt(transform, overlapSphereUnscaledLclPos);
+        Vector3 worldPos = MathUtils.TrfPtUnscaled(transform, overlapSphereUnscaledLclPos);
         int hitCount = Physics.OverlapSphereNonAlloc(
             worldPos,
             overlapSphereR,
@@ -126,7 +133,12 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 continue;
             if (!foundSnpl.CanSnp())
                 continue;
-            if (Vector3.Angle(transform.forward, foundSnpl.KeyTipTrf.forward) > requiredMaxAngForSnapping)
+            // NOTE: We can use rb.transform.forward here because this method is called
+            // NOT C: in Update and therefore rigibody and its transform are in sync.
+            if (Vector3.Angle(
+                transform.forward,
+                foundSnpl.GrblCore.rb.transform.forward) > requiredMaxAngForSnapping
+            )
                 continue;
             foundSnpl.InitSnp(this);
             snpl = foundSnpl;
@@ -139,10 +151,12 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     }
 
     void SnplPhysicsTick() {
-        snpl.GrblCore.rb.Move(transform.position, transform.rotation);
+        Rigidbody snplRb = snpl.GrblCore.rb;
+        List<Grb> snplGrbs = snpl.GrblCore.grbs;
+        snplRb.Move(transform.position, transform.rotation);
         if(
-            snpl.GrblCore.grbs.Count == 0 ||
-            snpl.GrblCore.DistBetweenRbNPhysHandFollowTgt(0) > snapEndDist
+            snplGrbs.Count == 0 ||
+            GrblUtils.DistBetweenGrblRbPosNTheoreticalFollowTgtGrblPos(snplRb, snplGrbs[0]) > snapEndDist
         ) {
             interpTimer = 0;
             st = KeyholeState.InterpSnplFromSnpTgt;

@@ -42,7 +42,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
 
     void UpdateJnt(Grb grb, ConfigurableJoint grbJnt) {
         // Current hand follow targets.
-        Vector3 followTgtGrabPtWorld = MathUtils.UnscaledTrfPt(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
+        Vector3 followTgtGrabPtWorld = MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
         Transform physHandFollowTgt = grb.physHand.followTgtTrf;
         Quaternion tgtWorldRot =
             physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);

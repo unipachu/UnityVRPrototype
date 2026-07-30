@@ -4,12 +4,14 @@ using UnityEngine;
 /// An object that can snap to keyholes, i.e. a key.
 /// </summary>
 public interface IKeyholeSnpl {
+    /// <summary>
+    /// NOTE: Rb's forward should be the keyhole insertion direction.
+    /// </summary>
     GrblJntDriven_GrblCore GrblCore { get; }
     /// <summary>
-    /// Transform representing the center of the tip of the key.
-    /// Forward should be the keyhole insertion direction.
+    /// Position representing the center of the tip of the key in grbl rb space.
     /// </summary>
-    Transform KeyTipTrf { get; }
+    Vector3 KeyTipLclPos { get; }
     bool CanSnp();
     /// <summary>
     /// After the snappable has been initialized for snap, it should have a kinematic rigidbody.

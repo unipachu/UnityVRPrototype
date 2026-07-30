@@ -89,7 +89,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
     // TODO C: Hmm... Maybe grabbables should just have some sort of hard coded offset for the
     // TODO C: grabbable-specific grab point.
     public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
-        Vector3 initPhysHandPosInGrblSpc = MathUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position);
+        Vector3 initPhysHandPosInGrblSpc = MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position);
         // We clamp init phys hand pos so that it aligns with the handle.
         initPhysHandPosInGrblSpc.x = 0;
         initPhysHandPosInGrblSpc.y = Mathf.Clamp(initPhysHandPosInGrblSpc.y, minGrbPtLclY, maxGrbPtHandLclY);
@@ -97,7 +97,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         var newGrb = new Grb(
             physHand,
             initPhysHandPosInGrblSpc,
-            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation),
+            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
             followTgtInitGrabPtInFollowTgtSpc
         );
         grblCore.grbs.Add(newGrb);
@@ -108,9 +108,9 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         float initTwistDeg = MathUtils.ExtractSignedTwistAng(twistResidual, transform.up) * Mathf.Rad2Deg;
         // Create rotation around the handle.
         proxyRot = Quaternion.AngleAxis(initTwistDeg, transform.up) * transform.rotation;
-        GrblUtils.EnableObjNSetPose(
+        ObjUtils.ActivateNSetPose(
             proxyHolder,
-            MathUtils.UnscaledTrfPt(transform, initPhysHandPosInGrblSpc),
+            MathUtils.TrfPtUnscaled(transform, initPhysHandPosInGrblSpc),
             proxyRot
         );
         // TODO: Ugh, here I'm enabling the holder while on release I disable the child visual object.
@@ -185,7 +185,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
 
     void ReinitializeGrabFromCurrentProxyPose(GameObject proxy) {
         Vector3 proxyLocalPos =
-            MathUtils.UnscaledInvrsTrfPt(
+            MathUtils.InvrsTrfPtUnscaled(
                 transform,
                 proxy.transform.position
             );
@@ -196,7 +196,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         proxyLocalPos.z = 0;
         grb.initPhysHandPosInGrblSpc = proxyLocalPos;
         grb.initRotFromGrblToPhysHand =
-            MathUtils.RotFromWorldToTrfSpace(
+            MathUtils.InvrsTrfRot(
                 transform,
                 grb.physHand.followTgtTrf.rotation
             );
@@ -226,7 +226,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         Vector3 followGrabLocal = GrblUtils.FollowTgtInitGrbPtInGrblSpc(grb, transform);
         // Visually slide along the handle.
         proxyLocalPos.y = Mathf.Min(followGrabLocal.y, maxGrbPtHandLclY);
-        Vector3 proxyWorldPos = MathUtils.UnscaledTrfPt(transform, proxyLocalPos);
+        Vector3 proxyWorldPos = MathUtils.TrfPtUnscaled(transform, proxyLocalPos);
         // Twist around handle.
         Quaternion proxyRot = transform.rotation;
         Quaternion twistResidual = grb.physHand.followTgtTrf.rotation * Quaternion.Inverse(proxyRot);
@@ -252,15 +252,15 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
             // Only the upper hand is allowed to slide.
             if (i != lowerHandIndex) {
                 // Controller grip point expressed in axe local space.
-                Vector3 followTgtInitGrabPtWorld = MathUtils.UnscaledTrfPt(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
-                Vector3 followGrabLocal = MathUtils.UnscaledInvrsTrfPt(
+                Vector3 followTgtInitGrabPtWorld = MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
+                Vector3 followGrabLocal = MathUtils.InvrsTrfPtUnscaled(
                     transform,
                     followTgtInitGrabPtWorld
                 );
                 // Visually slide along the handle.
                 proxyLocalPos.y = Mathf.Min(followGrabLocal.y, maxGrbPtHandLclY);
             }
-            Vector3 proxyWorldPos = MathUtils.UnscaledTrfPt(transform, proxyLocalPos);
+            Vector3 proxyWorldPos = MathUtils.TrfPtUnscaled(transform, proxyLocalPos);
             Quaternion proxyRot = transform.rotation;
             // Only the upper hand twists.
             if (i != lowerHandIndex) {

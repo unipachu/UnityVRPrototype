@@ -61,8 +61,4 @@ public class GrblJntDriven_GrblCore : MonoBehaviour
         }
         return false;
     }
-
-    public float DistBetweenRbNPhysHandFollowTgt(int grbI) {
-        return Vector3.Distance(rb.position, grbs[grbI].physHand.followTgtTrf.position);
-    }
 }

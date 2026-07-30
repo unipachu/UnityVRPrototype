@@ -62,8 +62,8 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         Transform followTgt0 = grb0.physHand.followTgtTrf;
         Transform followTgt1 = grb1.physHand.followTgtTrf;
         // Follow targets (hand controllers') grab point.
-        Vector3 followTgtGrabPtWorld0 = MathUtils.UnscaledTrfPt(followTgt0, grb0.followTgtInitGrabPtInFollowTgtSpc);
-        Vector3 followTgtGrabPtWorld1 = MathUtils.UnscaledTrfPt(followTgt1, grb1.followTgtInitGrabPtInFollowTgtSpc);
+        Vector3 followTgtGrabPtWorld0 = MathUtils.TrfPtUnscaled(followTgt0, grb0.followTgtInitGrabPtInFollowTgtSpc);
+        Vector3 followTgtGrabPtWorld1 = MathUtils.TrfPtUnscaled(followTgt1, grb1.followTgtInitGrabPtInFollowTgtSpc);
         // Current line between hands.
         Vector3 tgtWorldLine = followTgtGrabPtWorld1 - followTgtGrabPtWorld0;
         // This is a faster and more rounding safe way to check if vector magnitude is 0.

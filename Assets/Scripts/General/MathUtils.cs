@@ -5,21 +5,70 @@ using UnityEngine;
 /// </summary>
 public static class MathUtils {
     /// <summary>
-    /// Calculates the parent pose that aligns the child with the target world pose.
+    /// Calculates the parent world pose that aligns the child with the target world pose.
     /// </summary>
-    public static (Vector3, Quaternion) AlignChildWithTgtPose(
+    public static (Vector3, Quaternion) AlignChildToTgtPose(
         Transform parentTrf,
         Transform childTrf,
-        Vector3 tgtWorldPos,
-        Quaternion tgtWorldRot
+        Vector3 tgtWldPos,
+        Quaternion tgtWldRot
     ) {
-        // Compute the child's current local offset (position + rotation) relative to the parent
-        Vector3 childParentSpcPos = UnscaledInvrsTrfPt(parentTrf, childTrf.position);
-        Quaternion childParentSpcRot = RotFromWorldToTrfSpace(parentTrf, childTrf.rotation);
-        // Compute the desired rigidbody transform that would make the child match the target
-        Vector3 desiredRbPos = tgtWorldPos - (tgtWorldRot * (Quaternion.Inverse(childParentSpcRot) * childParentSpcPos));
-        Quaternion desiredRbRot = tgtWorldRot * Quaternion.Inverse(childParentSpcRot);
-        return (desiredRbPos, desiredRbRot);
+        return AlignChildToTgtPose(
+            parentTrf.position,
+            parentTrf.rotation,
+            childTrf.position,
+            childTrf.rotation,
+            tgtWldPos,
+            tgtWldRot
+        );
+    }
+
+    /// <summary>
+    /// Calculates the parent world pose that aligns the child with the target world pose.
+    /// NOTE: Parameters use child WORLD position and rotation!
+    /// </summary>
+    public static (Vector3, Quaternion) AlignChildToTgtPose(
+        Vector3 parentPos,
+        Quaternion parentRot,
+        Vector3 childWldPos,
+        Quaternion childWldRot,
+        Vector3 tgtWldPos,
+        Quaternion tgtWldRot
+    ) {
+        // Compute the child's current local pose relative to the parent
+        Vector3 childParentSpcPos = InvrsTrfPtUnscaled(parentPos, parentRot, childWldPos);
+        Quaternion childParentSpcRot = InvrsTrfRot(parentRot, childWldRot);
+        return AlignLclPoseToTgtPose(childParentSpcPos, childParentSpcRot, tgtWldPos, tgtWldRot);
+    }
+
+    /// <summary>
+    /// Returns the transform origin whose local space point is at the given world space position.
+    /// Basically, this finds a position for parent where its child (localPoint) is aligned with the worldPoint. 
+    /// </summary>
+    public static Vector3 AlignLclPtToWldPt(Vector3 wldPt, Quaternion trfRot, Vector3 lclPt) {
+        return wldPt - trfRot * lclPt;
+    }
+
+    /// <summary>
+    /// Returns the transform rotation whose local-space rotation matches the given world-space rotation.
+    /// Basically, this finds a rotation for the parent where its child (localRot) is aligned with the worldRot.
+    /// </summary>
+    public static Quaternion AlignLclRotToWldRot(Quaternion worldRot, Quaternion localRot) {
+        return worldRot * Quaternion.Inverse(localRot);
+    }
+
+    /// <summary>
+    /// Calculates the world pose that aligns a local pose with the target world pose.
+    /// </summary>
+    public static (Vector3, Quaternion) AlignLclPoseToTgtPose(
+        Vector3 lclPos,
+        Quaternion lclRot,
+        Vector3 tgtWldPos,
+        Quaternion tgtWldRot
+    ) {
+        Quaternion desiredRot = AlignLclRotToWldRot(tgtWldRot, lclRot);
+        Vector3 desiredPos = AlignLclPtToWldPt(tgtWldPos, desiredRot, lclPos);
+        return (desiredPos, desiredRot);
     }
 
     // TODO: Perhaps expand this so that parameter takes in the axis and pivot pos and rot instead of
@@ -37,15 +86,11 @@ public static class MathUtils {
         float dXAng = rotAroundAxis * rotMult;
         //Debug.Log("delta x angle: " + deltaXAngle);
         Quaternion dRotAroundPivRight = Quaternion.AngleAxis(dXAng, pivTrf.right);
-        Vector3 movedTrfPosInPivSpace = UnscaledInvrsTrfPt(pivTrf, movedTrf.position);
-        //Vector3 movedTrfPosInPivSpace =
-        //  Quaternion.Inverse(pivTrf.rotation) * (movedTrf.position - pivTrf.position);
-        Quaternion movedTrfRotInPivSpace = RotFromWorldToTrfSpace(pivTrf, movedTrf.rotation);
-        //Quaternion movedTrfRotInPivSpace = Quaternion.Inverse(pivTrf.rotation) * movedTrf.rotation;
+        Vector3 movedTrfPosInPivSpace = InvrsTrfPtUnscaled(pivTrf, movedTrf.position);
+        Quaternion movedTrfRotInPivSpace = InvrsTrfRot(pivTrf, movedTrf.rotation);
         Quaternion pivFutureRot = dRotAroundPivRight * pivTrf.rotation;
         Vector3 movedTrfNextWorldPos = TrfPt(pivTrf.position, pivFutureRot, movedTrfPosInPivSpace);
-        //Vector3 movedTrfNextPos = pivTrf.position + pivFutureRot * movedTrfPosInPivSpace;
-        Quaternion movedTrfNextRot = pivFutureRot * movedTrfRotInPivSpace;
+        Quaternion movedTrfNextRot = TrfRot(pivFutureRot, movedTrfRotInPivSpace);
         return (movedTrfNextWorldPos, movedTrfNextRot);
     }
 
@@ -83,20 +128,76 @@ public static class MathUtils {
 
     /// <summary>
     /// Interpolates rb's pose with rb.Move to align the specified child transform with a target pose.<br/>
-    /// NOTE: Call this in FixedUpdate().
+    /// NOTE: Call this in FixedUpdate()!<br/>
+    /// NOTE #2: Since rigidbodies and transforms can get out of sync, the child pose should be
+    /// cached instead of just using a child Transform reference.
     /// </summary>
-    /// <returns>Returns wether the interpolation is finished.</returns>
-    public static void InterpToAlignChildWithTgt(Rigidbody rb, Transform child, Vector3 tgtPos, Quaternion tgtRot, float t) {
-        var targetPose = AlignChildWithTgtPose(rb.transform, child, tgtPos, tgtRot);
+    /// <param name="rb">Rigidbody to be moved.</param>
+    /// <param name="child">Child of the rigidbody we want to align with the target.</param>
+    /// <param name="t">Lerp parameter (0-1).</param>
+    public static void InterpRbSoChildAlignsWithTgtPose(
+        Rigidbody rb,
+        Vector3 childLclPos,
+        Quaternion childLclRot,
+        Vector3 tgtWldPos,
+        Quaternion tgtWldRot,
+        float t
+    ) {
+        var targetPose = AlignLclPoseToTgtPose(childLclPos, childLclRot, tgtWldPos, tgtWldRot);
         t = Mathf.Clamp01(t);
         Vector3 newPos = Vector3.Lerp(rb.position, targetPose.Item1, t);
         Quaternion newRot = Quaternion.Slerp(rb.rotation, targetPose.Item2, t);
         rb.Move(newPos, newRot);
     }
 
+    /// <summary>
+    /// Transforms a point from world space to unscaled local space,
+    /// ignoring the transform's scale (unlike Transform.InverseTransformPoint).
+    /// </summary>
+    public static Vector3 InvrsTrfPtUnscaled(Transform trf, Vector3 ptInWldSpc) {
+        return InvrsTrfPtUnscaled(trf.position, trf.rotation, ptInWldSpc);
+    }
+
+    /// <summary>
+    /// Transforms a point from world space to unscaled Rigidbody local space,
+    /// using the Rigidbody's position and rotation.
+    /// </summary>
+    public static Vector3 InvrsTrfPtUnscaled(Rigidbody rb, Vector3 ptInWldSpc) {
+        return InvrsTrfPtUnscaled(rb.position, rb.rotation, ptInWldSpc);
+    }
+
+    /// <summary>
+    /// Transforms a point from world space to frame pose's local space,
+    /// using the Rigidbody's position and rotation.
+    /// </summary>
+    public static Vector3 InvrsTrfPtUnscaled(Vector3 framePos, Quaternion frameRot, Vector3 ptInWldSpc) {
+        return Quaternion.Inverse(frameRot) * (ptInWldSpc - framePos);
+    }
+
+    /// <summary>
+    /// Converts a world space rotation into the frame rotations's local space rotation.
+    /// </summary>
+    public static Quaternion InvrsTrfRot(Quaternion frameRot, Quaternion worldRot) {
+        return Quaternion.Inverse(frameRot) * worldRot;
+    }
+
+    /// <summary>
+    /// Converts a world space rotation into the rigidbody's local space rotation.
+    /// </summary>
+    public static Quaternion InvrsTrfRot(Rigidbody rb, Quaternion rotInWorldSpace) {
+        return InvrsTrfRot(rb.rotation, rotInWorldSpace);
+    }
+
+    /// <summary>
+    /// Converts a world space rotation into the transform's local space rotation.
+    /// </summary>
+    public static Quaternion InvrsTrfRot(Transform trf, Quaternion rotInWorldSpace) {
+        return InvrsTrfRot(trf.rotation, rotInWorldSpace);
+    }
+
     public static bool IsInRange(float x, float greaterThanOrEqualTo, float lessThanOrEqualTo) {
         Debug.Assert(
-            greaterThanOrEqualTo < lessThanOrEqualTo,
+            greaterThanOrEqualTo <= lessThanOrEqualTo,
             $"Invalid range: lower bound ({greaterThanOrEqualTo}) must be less than or equal to " +
             $"upper bound ({lessThanOrEqualTo})."
         );
@@ -113,70 +214,47 @@ public static class MathUtils {
     }
 
     /// <summary>
-    /// Transforms a point from world space to unscaled Rigidbody local space,
-    /// using the Rigidbody's position and rotation.
-    /// </summary>
-    public static Vector3 RbUnscaledInvrsTrfPt(Rigidbody rb, Vector3 ptInWorldSpace) {
-        return Quaternion.Inverse(rb.rotation) * (ptInWorldSpace - rb.position);
-    }
-
-    /// <summary>
-    /// Transforms a point from unscaled Rigidbody local space to world space,
-    /// using the Rigidbody's position and rotation.
-    /// </summary>
-    public static Vector3 RbUnscaledTrfPt(Rigidbody rb, Vector3 ptInRbSpace) {
-        return rb.rotation * ptInRbSpace + rb.position;
-    }
-
-    /// <summary>
-    /// Converts a rigidbody's local space rotation into world space rotation.
-    /// </summary>
-    public static Quaternion RotFromRbSpaceToWorld(Rigidbody rb, Quaternion rotInRbSpace) {
-        return rb.rotation * rotInRbSpace;
-    }
-
-    /// <summary>
-    /// <summary>
-    /// Converts a transforms's local space rotation into world space rotation.
-    /// </summary>
-    public static Quaternion RotFromTrfSpaceToWorld(Transform trf, Quaternion rotInTrfSpace) {
-        return trf.rotation * rotInTrfSpace;
-    }
-
-    /// Converts a world space rotation into the rigidbody's local space rotation.
-    /// </summary>
-    public static Quaternion RotFromWorldToRbSpace(Rigidbody rb, Quaternion rotInWorldSpace) {
-        return Quaternion.Inverse(rb.rotation) * rotInWorldSpace;
-    }
-
-    /// <summary>
-    /// Converts a world space rotation into the transform's local space rotation.
-    /// </summary>
-    public static Quaternion RotFromWorldToTrfSpace(Transform trf, Quaternion rotInWorldSpace) {
-        return Quaternion.Inverse(trf.rotation) * rotInWorldSpace;
-    }
-
-    /// <summary>
-    /// Transforms a point from local space to world space using the specified
+    /// Returns a transformed point from local space to world space using the specified
     /// origin and rotation.
     /// </summary>
-    public static Vector3 TrfPt(Vector3 origin, Quaternion rotation, Vector3 localPt) {
-        return rotation * localPt + origin;
-    }
-
-    /// <summary>
-    /// Transforms a point from world space to unscaled local space,
-    /// ignoring the transform's scale (unlike Transform.InverseTransformPoint).
-    /// </summary>
-    public static Vector3 UnscaledInvrsTrfPt(Transform trf, Vector3 pttInWorldSpace) {
-        return Quaternion.Inverse(trf.rotation) * (pttInWorldSpace - trf.position);
+    public static Vector3 TrfPt(Vector3 framePos, Quaternion frameRot, Vector3 lclPt) {
+        return frameRot * lclPt + framePos;
     }
 
     /// <summary>
     /// Transforms a point from unscaled local space to world space,
     /// ignoring the transform's scale (unlike Transform.TransformPoint).
     /// </summary>
-    public static Vector3 UnscaledTrfPt(Transform trf, Vector3 ptInTrfSpace) {
-        return trf.rotation * ptInTrfSpace + trf.position;
+    public static Vector3 TrfPtUnscaled(Transform trf, Vector3 ptInTrfSpace) {
+        return TrfPt(trf.position, trf.rotation, ptInTrfSpace);
+    }
+
+    /// <summary>
+    /// Transforms a point from unscaled Rigidbody local space to world space,
+    /// using the Rigidbody's position and rotation.
+    /// </summary>
+    public static Vector3 TrfPtUnscaled(Rigidbody rb, Vector3 ptInRbSpace) {
+        return TrfPt(rb.position, rb.rotation, ptInRbSpace);
+    }
+
+    /// <summary>
+    /// Converts a transforms's local space rotation into world space rotation.
+    /// </summary>
+    public static Quaternion TrfRot(Transform trf, Quaternion rotInTrfSpace) {
+        return TrfRot(trf.rotation, rotInTrfSpace);
+    }
+
+    /// <summary>
+    /// Transforms a local-space rotation into world space using the given frame rotation.
+    /// </summary>
+    public static Quaternion TrfRot(Quaternion frameWldRot, Quaternion lclRot) {
+        return frameWldRot * lclRot;
+    }
+
+    /// <summary>
+    /// Converts a rigidbody's local space rotation into world space rotation.
+    /// </summary>
+    public static Quaternion TrfRot(Rigidbody rb, Quaternion rotInRbSpace) {
+        return TrfRot(rb.rotation, rotInRbSpace);
     }
 }

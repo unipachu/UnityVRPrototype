@@ -50,28 +50,30 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
         Quaternion refRot = Quaternion.identity;
         bool first = true;
         foreach (Grb grb in grbs) {
-            Transform physHandFollowTgt = grb.physHand.followTgtTrf;
-            Quaternion tgtWorldRot =
-                physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
-            Vector3 targetWorldPos =
-                physHandFollowTgt.position - tgtWorldRot * grb.initPhysHandPosInGrblSpc;
-            avgTgtWorldPos += targetWorldPos;
+            //Transform physHandFollowTgt = grb.physHand.followTgtTrf;
+            //Quaternion tgtWldRot =
+            //    physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
+            //Vector3 tgtWldPos =
+            //    physHandFollowTgt.position - tgtWldRot * grb.initPhysHandPosInGrblSpc;
+            Quaternion tgtWldRot = GrblUtils.TheoreticalFollowTgtGrblRot(grb);
+            Vector3 tgtWldPos = GrblUtils.TheoreticalFollowTgtGrblPos(grb, tgtWldRot);
+            avgTgtWorldPos += tgtWldPos;
             if (first) {
-                refRot = tgtWorldRot;
+                refRot = tgtWldRot;
                 first = false;
             }
-            if (Quaternion.Dot(tgtWorldRot, refRot) < 0f) {
-                tgtWorldRot = new Quaternion(
-                    -tgtWorldRot.x,
-                    -tgtWorldRot.y,
-                    -tgtWorldRot.z,
-                    -tgtWorldRot.w
+            if (Quaternion.Dot(tgtWldRot, refRot) < 0f) {
+                tgtWldRot = new Quaternion(
+                    -tgtWldRot.x,
+                    -tgtWldRot.y,
+                    -tgtWldRot.z,
+                    -tgtWldRot.w
                 );
             }
-            cumulative.x += tgtWorldRot.x;
-            cumulative.y += tgtWorldRot.y;
-            cumulative.z += tgtWorldRot.z;
-            cumulative.w += tgtWorldRot.w;
+            cumulative.x += tgtWldRot.x;
+            cumulative.y += tgtWldRot.y;
+            cumulative.z += tgtWldRot.z;
+            cumulative.w += tgtWldRot.w;
         }
         avgTgtWorldPos /= grbs.Count;
         Quaternion avgTgtWorldRot = new Quaternion(

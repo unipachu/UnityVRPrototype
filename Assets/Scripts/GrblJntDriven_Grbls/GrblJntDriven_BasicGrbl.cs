@@ -89,20 +89,20 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
         // NOTE C: affect the grabbale pose.
         var newGrb = new Grb(
             physHand, 
-            MathUtils.UnscaledInvrsTrfPt(transform, physHand.transform.position),
-            MathUtils.RotFromWorldToTrfSpace(transform, physHand.transform.rotation),
+            MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
+            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
             Vector3.zero
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
         if (physHand.side == Side.Left)
-            GrblUtils.EnableObjNSetPose(
+            ObjUtils.ActivateNSetPose(
                 lHandVisProxy,
                 physHand.transform.position,
                 physHand.transform.rotation
             );
         else
-            GrblUtils.EnableObjNSetPose(
+            ObjUtils.ActivateNSetPose(
                 rHandVisProxy,
                 physHand.transform.position,
                 physHand.transform.rotation
