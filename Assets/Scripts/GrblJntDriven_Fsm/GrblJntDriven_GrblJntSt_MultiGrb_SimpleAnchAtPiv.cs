@@ -24,7 +24,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
         // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
             grbl.GrbJnt,
-            grbl.GrblCore.grbs
+            grbl.Grbs
         );
     }
 
@@ -32,7 +32,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.GrblCore.grbs, grbl.GrbJnt);
+        UpdateJnt(grbl.Grbs, grbl.GrbJnt);
     }
 
     public void Tick() {
@@ -55,7 +55,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
             //    physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
             //Vector3 tgtWldPos =
             //    physHandFollowTgt.position - tgtWldRot * grb.initPhysHandPosInGrblSpc;
-            Quaternion tgtWldRot = GrblUtils.TheoFolTgtGrblRot<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(grb);
+            Quaternion tgtWldRot = GrblUtils.TheoFolTgtGrblRot(grb);
             Vector3 tgtWldPos = GrblUtils.TheoFolTgtGrblPos(grb, tgtWldRot);
             avgTgtWorldPos += tgtWldPos;
             if (first) {

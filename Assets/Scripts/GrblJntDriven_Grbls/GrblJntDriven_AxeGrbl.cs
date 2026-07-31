@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     [SerializeField] float maxGrbPtHandLclY = -0.03f;
 
     [Header("Refs")]
-    [SerializeField] GrblJntDriven_GrblCore grblCore;
+    //[SerializeField] GrblJntDriven_GrblCore grblCore;
     [Tooltip("Hand visual used to represent grabbing left hand.\n" +
     "Set the hand visual inactive in editor!")]
     // TODO: You could probably do without the proxy holders...
@@ -22,18 +23,20 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     [SerializeField] ConfigurableJoint grbJnt;
     [SerializeField] Rigidbody rb;
 
-    // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
     [HideInInspector] public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned jntSt_DblGrb_GrbLineAligned;
     [HideInInspector] public GrblJntDriven_GrblJntSt_NoGrb jntSt_NoGrb;
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
+    readonly List<GrblJntDriven_Grb> grbs = new(2);
+    IGrblJntDriven_Grbs gnrGrbs;
     readonly Vector3 followTgtInitGrabPtInFollowTgtSpc = new Vector3(0, -0.025f, 0);
 
-    public GrblJntDriven_GrblCore GrblCore => grblCore;
+    public IGnrGrbs GnrGrbs => gnrGrbs;
+    public List<GrblJntDriven_Grb> Grbs => grbs;
     public ConfigurableJoint GrbJnt => grbJnt;
-
     public Rigidbody Rb => rb;
+    public Transform Trf => transform;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -44,6 +47,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
         jntSt_DblGrb_GrbLineAligned = new(this, this);
         jntSt_NoGrb = new(this);
         jntSt_SglGrb_SimpleAnchAtPiv = new(this);
+        gnrGrbs = new(grbs);
     }
 
     void Start() {
@@ -55,7 +59,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     void Update() {
-        if (grblCore.grbs.Count == 2)
+        if (grbs.Count == 2)
             UpdateUpperProxyHand();
     }
 
@@ -76,16 +80,13 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     /// </summary>
     public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand)
         => GrblUtils.SidedGrbCount<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(
-            grblCore.grbs,
+            grbs,
             physHand.handSide) == 0;
 
-    public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
-        return true;
-    }
+    public bool CanBeReleased(GrblJntDriven_PhysHand physHand) => true;
 
-    public float GetDistToGrbPt(Vector3 physHandWorldGrbPt) {
-        return Vector3.Distance(transform.position, physHandWorldGrbPt);
-    }
+    public float GetDistToGrbPt(Vector3 physHandWorldGrbPt)
+        => Vector3.Distance(transform.position, physHandWorldGrbPt);
 
     public float GetPosHand0Wt() => 1 - LowestHandIndex();
     
@@ -106,7 +107,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
                 followTgtInitGrabPtInFollowTgtSpc
             )
         );
-        grblCore.grbs.Add(newGrb);
+        grbs.Add(newGrb);
         // Setup hand proxy visual.
         GameObject proxyHolder = physHand.handSide == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
         // NOTE: Currently proxy holder is already aligned with the handle (transform.up) so this works.
@@ -131,15 +132,15 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrab_ReleaseAllGrbs(this, lHandVisProxyHolder, rHandVisProxyHolder);
+        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxyHolder, rHandVisProxyHolder);
         SwitchJntStBasedOnGrbCount();
     }
 
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {
         // If lower hand is about to be released.
         if (
-            GrblCore.grbs.Count == 2 &&
-            GrblUtils.FindGrbIndex(GrblCore.grbs, physHand, GrblCore) == LowestHandIndex()
+            grbs.Count == 2 &&
+            GrblUtils.FindGrbI(grbs, physHand, this) == LowestHandIndex()
         ) {
             // Choose the opposite side proxy from the hand being released.
             GameObject proxy = physHand.handSide == Side.Right ? lHandVisProxyHolder : rHandVisProxyHolder;
@@ -159,15 +160,15 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     /// <returns></returns>
     int HighestHandIndex() {
         Debug.Assert(
-            GrblCore.grbs.Count != 0,
+            grbs.Count != 0,
             "Tried to find local lowest hand on handle but there was 0 grabs!",
             this
         );
-        if (GrblCore.grbs.Count == 1)
+        if (grbs.Count == 1)
             return 0;
         // Check which initial is higher on local Y axis.
-        float grb0LocalHght = grblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
-        float grb1LocalHght = grblCore.grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb0LocalHght = grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb1LocalHght = grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
         if (grb0LocalHght > grb1LocalHght)
             return 0;
         return 1;
@@ -179,15 +180,15 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     /// <returns></returns>
     int LowestHandIndex() {
         Debug.Assert(
-            GrblCore.grbs.Count != 0,
+            grbs.Count != 0,
             "Tried to find local lowest hand on handle but there was 0 grabs!",
             this
         );
-        if(GrblCore.grbs.Count == 1)
+        if(grbs.Count == 1)
             return 0;
         // Check which initial is higher on local Y axis.
-        float grb0LocalHght = grblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
-        float grb1LocalHght = grblCore.grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb0LocalHght = grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb1LocalHght = grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
         if (grb0LocalHght < grb1LocalHght)
             return 0;
         return 1;
@@ -199,7 +200,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
                 transform,
                 proxy.transform.position
             );
-        GrblJntDriven_Grb grb = GrblCore.grbs[HighestHandIndex()];
+        GrblJntDriven_Grb grb = grbs[HighestHandIndex()];
         // Jic we clamp init phys hand pos so that it aligns with the handle.
         proxyLocalPos.x = 0;
         proxyLocalPos.y = Mathf.Clamp(proxyLocalPos.y, minGrbPtLclY, maxGrbPtHandLclY);
@@ -213,21 +214,21 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     void SwitchJntStBasedOnGrbCount() {
-        IFsmSt nextState = grblCore.grbs.Count switch {
+        IFsmSt nextState = grbs.Count switch {
             0 => jntSt_NoGrb,
             1 => jntSt_SglGrb_SimpleAnchAtPiv,
             2 => jntSt_DblGrb_GrbLineAligned,
-            _ => throw new System.ArgumentOutOfRangeException(nameof(grblCore.grbs.Count))
+            _ => throw new System.ArgumentOutOfRangeException(nameof(grbs.Count))
         };
         if (nextState != grbJntFsm.CurSt)
             grbJntFsm.SwitchState(nextState, this);
     }
 
     void UpdateUpperProxyHand() {
-        Debug.Assert(GrblCore.grbs.Count == 2, $"Grabs count was not 2! It was: {GrblCore.grbs.Count}", this);
+        Debug.Assert(grbs.Count == 2, $"Grabs count was not 2! It was: {grbs.Count}", this);
         // Handle axis in world space (+Y of the axe).
         Vector3 handleAxis = transform.up;
-        GrblJntDriven_Grb grb = grblCore.grbs[HighestHandIndex()];
+        GrblJntDriven_Grb grb = grbs[HighestHandIndex()];
         GameObject proxy = grb.physHand.handSide == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
         // Visual grab position in the axe's local space.
         // TODO: proxy hand should be placed so that it is offset by the grab point. Maybe.

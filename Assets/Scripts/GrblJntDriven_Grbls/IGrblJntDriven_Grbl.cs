@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Represents grabbable than can be grabbed by a physics hand.
 /// </summary>
 public interface IGrblJntDriven_Grbl {
-    GrblJntDriven_GrblCore GrblCore { get; }
-    ConfigurableJoint GrbJnt { get;  }
+    Transform Trf { get; }
+    ConfigurableJoint GrbJnt { get; }
+    List<GrblJntDriven_Grb> Grbs { get; }
 
+    // TODO: These can maybe be part of the generic IGnrGrbl interface.
     bool CanBeGrabbed(GrblJntDriven_PhysHand physHand);
     
     bool CanBeReleased(GrblJntDriven_PhysHand physHand);

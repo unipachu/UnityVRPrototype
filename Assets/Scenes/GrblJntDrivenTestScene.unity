@@ -1211,6 +1211,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6246790631621771708}
     - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
+      propertyPath: ctrlHapticImpPlr
+      value: 
+      objectReference: {fileID: 1525248857}
+    - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: handGhostShaderCtrl
       value: 
       objectReference: {fileID: 6246790631621771715}
@@ -2720,7 +2724,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfe06e1990cfe943a09619dc704e758, type: 3}
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1001 &1955284301
@@ -3275,6 +3279,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1766387574}
     - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
+      propertyPath: ctrlHapticImpPlr
+      value: 
+      objectReference: {fileID: 2034991329}
+    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: handGhostShaderCtrl
       value: 
       objectReference: {fileID: 1943804978}
@@ -3430,7 +3438,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfe06e1990cfe943a09619dc704e758, type: 3}
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1001 &7557269413697739295

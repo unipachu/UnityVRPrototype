@@ -24,7 +24,7 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
             grbl.GrbJnt,
-            grbl.GrblCore.grbs
+            grbl.Grbs
         );
     }
 
@@ -33,8 +33,8 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
 
     public void PhysicsTick() {
         UpdateJnt(
-            grbl.GrblCore.grbs[0],
-            grbl.GrblCore.grbs[1],
+            grbl.Grbs[0],
+            grbl.Grbs[1],
             grbl.GrbJnt,
             dblGrb_GrbLineAligned.GetPosHand0Wt(),
             dblGrb_GrbLineAligned.GetRotHand0Wt()

@@ -1,0 +1,25 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+// TODO: Remove I from name.
+public class IGrblJntDriven_Grbs : IGnrGrbs {
+    readonly List<GrblJntDriven_Grb> grbs;
+
+    public int GrbCount => grbs.Count;
+
+    public IGrblJntDriven_Grbs(List<GrblJntDriven_Grb> grbs) {
+        this.grbs = grbs;
+    }
+
+    public void ClearGrbsList() {
+        grbs.Clear();
+    }
+
+    public IGrb GetGrb(int i) => grbs[i];
+
+    public void RemoveGrabFromList(IGrb grb) {
+        if (!grbs.Remove((GrblJntDriven_Grb)grb)) {
+            Debug.LogError($"Could not find grab to remove from {nameof(IGrblJntDriven_Grbs)}!");
+        }
+    }
+}

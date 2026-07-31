@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum GrblJntDriven_BasicGrblSglGrbJntT {
@@ -16,7 +17,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     [SerializeField] GrblJntDriven_BasicGrblDblGrbJntT dblGrbJntT = GrblJntDriven_BasicGrblDblGrbJntT.GrbLineAligned;
 
     [Header("Refs")]
-    [SerializeField] GrblJntDriven_GrblCore grblCore;
+    //[SerializeField] GrblJntDriven_GrblCore grblCore;
     [Tooltip("Hand visual used to represent grabbing left hand. \n" +
         "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject lHandVisProxy;
@@ -26,7 +27,6 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     [SerializeField] ConfigurableJoint grbJnt;
     [SerializeField] Rigidbody rb;
 
-    // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
     [HideInInspector] public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned jntSt_DblGrb_GrbLineAligned;
     [HideInInspector] public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv jntSt_MultiGrb_SimpleAnchAtPiv;
@@ -34,11 +34,14 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos jntSt_SglGrb_SimpleAnchAtPhysHandPos;
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
-    public GrblJntDriven_GrblCore GrblCore => grblCore;
+    readonly List<GrblJntDriven_Grb> grbs = new(2);
+    IGrblJntDriven_Grbs gnrGrbs;
 
+    public IGnrGrbs GnrGrbs => gnrGrbs;
     public ConfigurableJoint GrbJnt => grbJnt;
-
+    public List<GrblJntDriven_Grb> Grbs => grbs;
     public Rigidbody Rb => rb;
+    public Transform Trf => transform;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -51,6 +54,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
         jntSt_NoGrb = new(this);
         jntSt_SglGrb_SimpleAnchAtPhysHandPos = new(this);
         jntSt_SglGrb_SimpleAnchAtPiv = new(this);
+        gnrGrbs = new(grbs);
     }
 
     void Start() {
@@ -78,11 +82,13 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     /// </summary>
     public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand)
         => GrblUtils.SidedGrbCount<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(
-            grblCore.grbs,
+            grbs,
             physHand.handSide) == 0;
 
-    public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
-        return true;
+    public bool CanBeReleased(GrblJntDriven_PhysHand physHand) => true;
+
+    public void ClearGrbsList() {
+        grbs.Clear();
     }
 
     public float GetDistToGrbPt(Vector3 physHandWldGrbPt) {
@@ -105,7 +111,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
                 Vector3.zero
             )
         );
-        grblCore.grbs.Add(newGrb);
+        grbs.Add(newGrb);
         // Setup hand proxy visual.
         if (physHand.handSide == Side.Left)
             ObjUtils.ActivateNSetPose(
@@ -132,12 +138,12 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     // -----------------------------------------
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrab_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
+        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         SwitchJntStBasedOnGrbCount();
     }
     
     void SwitchJntStBasedOnGrbCount() {
-        IFsmSt nextState = grblCore.grbs.Count switch {
+        IFsmSt nextState = grbs.Count switch {
             0 => jntSt_NoGrb,
             1 => sglGrbJntT switch {
                 GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv =>
@@ -153,7 +159,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
                     jntSt_MultiGrb_SimpleAnchAtPiv,
                 _ => throw new System.ArgumentOutOfRangeException(nameof(dblGrbJntT))
             },
-            _ => throw new System.ArgumentOutOfRangeException(nameof(grblCore.grbs.Count))
+            _ => throw new System.ArgumentOutOfRangeException(nameof(grbs.Count))
         };
         if (nextState != grbJntFsm.CurSt)
             grbJntFsm.SwitchState(nextState, this);

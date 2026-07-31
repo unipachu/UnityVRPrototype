@@ -22,7 +22,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
         grbl.GrbJnt.anchor = Vector3.zero;
         PhysUtils.SetJntDrivesToDflt(
             grbl.GrbJnt, 
-            grbl.GrblCore.grbs[0].physHand.jntData
+            grbl.Grbs[0].physHand.jntData
         );
     }
 
@@ -30,7 +30,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrbJnt);
+        UpdateJnt(grbl.Grbs[0], grbl.GrbJnt);
     }
 
     public void Tick() {

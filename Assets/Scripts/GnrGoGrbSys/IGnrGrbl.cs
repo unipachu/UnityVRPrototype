@@ -5,4 +5,5 @@ using UnityEngine;
 /// </summary>
 public interface IGnrGrbl {
     Rigidbody Rb { get; }
+    IGnrGrbs GnrGrbs { get; }
 }

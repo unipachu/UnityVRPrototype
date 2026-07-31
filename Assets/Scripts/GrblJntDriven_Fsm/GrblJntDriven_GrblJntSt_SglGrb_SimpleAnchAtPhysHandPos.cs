@@ -17,13 +17,13 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
 
     public void Enter(IFsmSt previousState) {
         grbl.GrbJnt.anchor = new Vector3(
-            grbl.GrblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.x / grbl.GrblCore.transform.lossyScale.x,
-            grbl.GrblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y / grbl.GrblCore.transform.lossyScale.y,
-            grbl.GrblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.z / grbl.GrblCore.transform.lossyScale.z
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.x / grbl.Trf.lossyScale.x,
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y / grbl.Trf.transform.lossyScale.y,
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.z / grbl.Trf.transform.lossyScale.z
         );
         PhysUtils.SetJntDrivesToDflt(
             grbl.GrbJnt,
-            grbl.GrblCore.grbs[0].physHand.jntData
+            grbl.Grbs[0].physHand.jntData
         );
     }
 
@@ -31,7 +31,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrbJnt);
+        UpdateJnt(grbl.Grbs[0], grbl.GrbJnt);
     }
 
     public void Tick() {

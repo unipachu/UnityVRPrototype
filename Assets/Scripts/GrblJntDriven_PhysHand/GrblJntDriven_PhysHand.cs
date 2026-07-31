@@ -23,7 +23,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
     public Transform followTgtTrf;
     public GhostShdrCtlr handGhostShaderCtrl;
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
-    public HapticImpulsePlayer controllerHapticImpulsePlayer;
+    public HapticImpulsePlayer ctrlHapticImpPlr;
 
     [Header("Player Input Refs")]
     public PlrCtrl plrCtrl;
@@ -42,9 +42,11 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
     PhysHandState physHandSt = PhysHandState.NotGrabbing;
     IGrblJntDriven_Grbl grabbedGrbl = null;
 
+    public HapticImpulsePlayer CtrlHapticImpPlr => ctrlHapticImpPlr;
     public Transform FollowTgtTrf => followTgtTrf;
-
     public Side HandSide => handSide;
+    public Transform Trf => transform;
+
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -239,7 +241,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
         // Found closest grabbable that can be grabbed!
         closestGrabbable.InitiateGrb(this);
         grabbedGrbl = closestGrabbable;
-        controllerHapticImpulsePlayer.SendHapticImpulse(0.5f, 0.1f);
+        ctrlHapticImpPlr.SendHapticImpulse(0.5f, 0.1f);
         return true;
     }
 }
