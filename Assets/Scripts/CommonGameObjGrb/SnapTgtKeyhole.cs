@@ -242,11 +242,14 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
         bool linearMovAllowed =
             absSnplRollInKeyholeSpcDeg < lowerAbsRollInsertionThreshold ||
             absSnplRollInKeyholeSpcDeg > upperAbsRollInsertionThreshold;
-        Debug.Log("snplSt: " + snplSt.ToString());
+        //Debug.Log("snplSt: " + snplSt.ToString());
         switch (snplSt) {
             case SnappedSnplSt.Outside:
                 tipLclTgtDepth = Mathf.Max(tipLclTgtDepth, snplTipMinLclDepth);
                 if (
+                    // TODO: Using tip tgt depth is unstable because we interpolate to it and so
+                    // TODO C: it can be quite far from actualy tip. But using actual tip depth does not
+                    // TODO C: work either (try it if you don't believe me).
                     tipLclTgtDepth > snplTipMinRotDisabledLclDepth &&
                     linearMovAllowed
                 )
@@ -313,7 +316,8 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             st = KeyholeSt.InterpSnplFromSnpTgt;
             return;
         }
-        MoveSnappedSnpl();
+        if(snplGrbs.Count != 0)
+            MoveSnappedSnpl();
     }
 
     // TODO: You should probably just cache tip theoretical world pos and keyhole space pos every update
