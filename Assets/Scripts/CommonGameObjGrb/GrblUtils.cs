@@ -72,7 +72,7 @@ public static class GrblUtils {
     /// of the grabbable.
     /// /// </summary>
     public static float DistBetweenGrblRbPosNTheoFolTgtGrblPos(Rigidbody rb, Grb grb) {
-        return Vector3.Distance(rb.position, TheoFolTgtGrblPos(grb, TheoFolTgtGrblRot(grb)));
+        return Vector3.Distance(rb.position, TheoFolTgtGrblPos(grb));
     }
 
     /// <summary>

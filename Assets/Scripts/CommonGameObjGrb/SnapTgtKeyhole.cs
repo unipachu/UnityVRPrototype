@@ -30,10 +30,12 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [Tooltip("Max angle required for a snappable to snap to this snap target, in degrees.")]
     [SerializeField] float requiredMaxAngForSnapping = 10;
 
-    [Header("Interpolation Settings")]
+    [Header("Snap-In and Snap-Out Interpolation Settings")]
     [Tooltip("Duration for snappable interpolating into and away from snap during " +
         "snap initialization and end.")]
-    [SerializeField] float interpDur = 0.1f;
+    [SerializeField] float snapInInterpDur = 0.1f;
+    // TODO: Do we even need snap out interpolation?
+    [SerializeField] float snapOutInterpDur = 0.05f;
 
     [Header("Rumble Settings")]
     [SerializeField] float snapStartRumbleAmp = 0.1f;
@@ -47,12 +49,13 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [SerializeField] float padlockUnlockedRumbleFreq = 0.05f;
 
 
-    [Header("Snap End Settings")]
+    [Header("Snap Out Settings")]
     [Tooltip("Distance from grabbable to theoretical follow target grabbable position required for " +
-        "the snapped grabbable to exit the snap.")]
-    // TODO: Snapping out could be easier when the key is pulled away from the hole (in lcl -Z direction)
-    // TODO C: direction, and also easier when the key itself is fully out of the hole.
-    [SerializeField] float snapOutDist = 0.2f;
+        "the snapped grabbable to exit the snap. See code for detailed 'snap out' requirements.")]
+    [SerializeField] float snapOutDist = 0.15f;
+    [Tooltip("Tip is required to fall below this threshold for the snapped grabbable to exit the snap. " +
+        "See code for detailed 'snap out' requirements.")]
+    [SerializeField] float snapOutDep = -0.1f;
 
     [Header("Snappable Movement In Keyhole Settings")]
     [SerializeField] float snplTipMinLclDepth = -0.01f;
@@ -62,8 +65,6 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [SerializeField] float snplTipMaxLclDepth = 0.1f;
     [SerializeField] float lowerAbsRollInsertionThreshold = 2;
     [SerializeField] float upperAbsRollInsertionThreshold = 178;
-    // TODO: Do you want to lerp or not? With lerping you never reach the target.
-    // TODO C: e.g.: Vector3 snplNewPos = Vector3.Lerp(snplRb.position, snplWldTgtPos, snplLerpSpd * Time.fixedDeltaTime);
     [SerializeField] float snplLerpLinSpd = 0.4f;
     [SerializeField] float snplLerpAngSpd = 720;
 
@@ -106,9 +107,9 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     Quaternion.identity, 
                     transform.position + (transform.forward * snplTipMinLclDepth),
                     snplWldTgtRot,
-                    interpTimer / interpDur
+                    interpTimer / snapInInterpDur
                 );
-                if(interpTimer > interpDur)
+                if(interpTimer > snapInInterpDur)
                     st = KeyholeSt.SnplInSnpTgt;
                     snplSt = SnappedSnplSt.Outside;
                 break;
@@ -128,9 +129,9 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     transform.position + new Vector3(0, 0, snplTipMinLclDepth),
                     // TODO: If the keyhole is moving, you need to use the keyhole rotation for all except twist.
                     snpl.GrblCore.rb.rotation,
-                    interpTimer / interpDur
+                    interpTimer / snapOutInterpDur
                 );
-                if (interpTimer > interpDur)
+                if (interpTimer > snapOutInterpDur)
                     // TODO: You should give the snpl rb a vel that matches the previous snpl lerp vel.
                     EndSnp();
                 break;
@@ -356,10 +357,20 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
 
     void SnplPhysicsTick() {
         List<Grb> snplGrbs = snpl.GrblCore.grbs;
+
+        //if (snplGrbs.Count != 0) {
+        //    Debug.Log("depth:" + MathUtils.InvrsTrfPtUnscaled(transform, TheoFolTgtTipWldPos(snplGrbs[0])).z);
+        //    Debug.Log("dist bet:" + GrblUtils.DistBetweenGrblRbPosNTheoFolTgtGrblPos(snpl.GrblCore.rb, snplGrbs[0]));
+
+        //}
+
         if (
-            (snplGrbs.Count == 0 ||
-            GrblUtils.DistBetweenGrblRbPosNTheoFolTgtGrblPos(snpl.GrblCore.rb, snplGrbs[0]) > snapOutDist) &&
-            snplSt == SnappedSnplSt.Outside
+            snplSt == SnappedSnplSt.Outside &&
+            (snplGrbs.Count == 0 || (
+                GrblUtils.DistBetweenGrblRbPosNTheoFolTgtGrblPos(snpl.GrblCore.rb, snplGrbs[0]) > snapOutDist ||
+                // Key should be more easily pulled away from snap if pulled away from key insertion direction.
+                MathUtils.InvrsTrfPtUnscaled(transform, TheoFolTgtTipWldPos(snplGrbs[0])).z < snapOutDep)
+            )
         ) {
             interpTimer = 0;
             st = KeyholeSt.InterpSnplFromSnpTgt;
