@@ -202,7 +202,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             foundSnpl.InitSnp(this);
             snpl = foundSnpl;
             for (int j = 0; j < snpl.Grbl.GnrGrbs.GrbCount; j++)
-                snpl.Grbl.GnrGrbs.GetGrb(j).PhysHand.CtrlHapticImpPlr.SendHapticImpulse(
+                snpl.Grbl.GnrGrbs.GetGrb(j).GnrGrbData.gnrPhysHand.CtrlHapticImpPlr.SendHapticImpulse(
                     snapStartRumbleAmp,
                     snapStartRumbleDur,
                     snapStartRumbleFreq
@@ -297,7 +297,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     snplSt = SnappedSnplSt.Outside;
                 else if (tipLclTgtDepth > snplTipMaxRotDisabledLclDepth) {
                     snplSt = SnappedSnplSt.InsideEnd;
-                    grb.PhysHand.CtrlHapticImpPlr.SendHapticImpulse(
+                    grb.GnrGrbData.gnrPhysHand.CtrlHapticImpPlr.SendHapticImpulse(
                         keyholeEndReachedRumbleAmp,
                         keyholeEndReachedRumbleDur,
                         keyholeEndReachedRumbleFreq
@@ -317,7 +317,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 if (absSnplRollInKeyholeSpcDeg > 85 && absSnplRollInKeyholeSpcDeg < 95 && !padlockUnlocked) {
                     padlockUnlocked = true;
                     StartCoroutine(UnlockShackleAnim());
-                    grb.PhysHand.CtrlHapticImpPlr.SendHapticImpulse(
+                    grb.GnrGrbData.gnrPhysHand.CtrlHapticImpPlr.SendHapticImpulse(
                         padlockUnlockedRumbleAmp,
                         padlockUnlockedRumbleDur,
                         padlockUnlockedRumbleFreq

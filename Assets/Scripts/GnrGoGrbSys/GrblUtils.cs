@@ -20,7 +20,7 @@ public static class GrblUtils {
     public static IGnrGrbData FindGrb(IGnrGrbl grbl, IGnrPhysHand physHand, Object grblCtx)
     {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
-            if (grbl.GnrGrbs.GetGrb(i).PhysHand == physHand)
+            if (grbl.GnrGrbs.GetGrb(i).GnrGrbData.gnrPhysHand == physHand)
                 return grbl.GnrGrbs.GetGrb(i);
         }
         Debug.LogError($"{physHand.Trf.name} was not grabbing {grblCtx.name}!", grblCtx);
@@ -36,7 +36,7 @@ public static class GrblUtils {
         where TPhysHand : MonoBehaviour, IGnrPhysHand 
     {
         for (int i = 0; i < grbs.Count; i++) {
-            if (grbs[i].PhysHand == physHand)
+            if (grbs[i].GnrGrbData.gnrPhysHand == physHand)
                 return i;
         }
         Debug.LogError($"{physHand.name} was not grabbing {grblCtx.name}!", grblCtx);
@@ -73,7 +73,7 @@ public static class GrblUtils {
         where TPhysHand : MonoBehaviour, IGnrPhysHand
     {
         for (int i = 0; i < grbs.Count; i++) {
-            if (grbs[i].PhysHand == physHand)
+            if (grbs[i].GnrGrbData.gnrPhysHand == physHand)
                 return true;
         }
         return false;
@@ -82,7 +82,7 @@ public static class GrblUtils {
     public static void LRGrb_ReleaseAllGrbs(IGnrGrbl grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
-            grb.PhysHand.OnGrabReleased(
+            grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
                 MathUtils.TrfPtUnscaled(grbl.Rb.transform, grb.GnrGrbData.initPhysHandPosInGrblSpc),
                 MathUtils.TrfRot(grbl.Rb.transform, grb.GnrGrbData.initRotFromGrblToPhysHand)
             );
@@ -108,7 +108,7 @@ public static class GrblUtils {
                 ? lHandVisProxy
                 : rHandVisProxy;
 
-        grb.PhysHand.OnGrabReleased(
+        grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
             correspondingProxyHand.transform.position,
             correspondingProxyHand.transform.rotation
         );
@@ -128,7 +128,7 @@ public static class GrblUtils {
     {
         int counter = 0;
         foreach (TGrb grb in grbs) {
-            if (grb.PhysHand.HandSide == handSide)
+            if (grb.GnrGrbData.gnrPhysHand.HandSide == handSide)
                 counter++;
         }
         return counter;
@@ -142,7 +142,7 @@ public static class GrblUtils {
     /// <param name="theoGrblRot">NOTE: You can use <see cref="TheoFolTgtGrblRot"/> to get the rot.</param>
     public static Vector3 TheoFolTgtGrblPos(IGnrGrbData grb, Quaternion theoGrblRot) {
         return MathUtils.AlignLclPtToWldPt(
-            grb.PhysHand.FollowTgtTrf.position,
+            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.position,
             theoGrblRot,
             grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
@@ -157,7 +157,7 @@ public static class GrblUtils {
         where TGrb : IGnrGrbData
     { 
         return MathUtils.AlignLclPtToWldPt(
-            grb.PhysHand.FollowTgtTrf.position,
+            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.position,
             TheoFolTgtGrblRot<TGrb>(grb),
             grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
@@ -187,7 +187,7 @@ public static class GrblUtils {
         where TGrb : IGnrGrbData
     {
         return MathUtils.AlignLclRotToWldRot(
-            grb.PhysHand.FollowTgtTrf.rotation,
+            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.rotation,
             grb.GnrGrbData.initRotFromGrblToPhysHand
         );
     }

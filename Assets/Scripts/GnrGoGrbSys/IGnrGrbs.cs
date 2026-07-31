@@ -1,7 +1,6 @@
 /// <summary>
 /// Grabs grabbing a grabbable.
 /// </summary>
-// TODO: Rename to IGnrGrbs
 public interface IGnrGrbs {
     int GrbCount { get; }
 
