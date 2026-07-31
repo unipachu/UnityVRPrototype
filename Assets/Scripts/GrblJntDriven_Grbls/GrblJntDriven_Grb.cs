@@ -13,6 +13,8 @@ public sealed class GrblJntDriven_Grb : IGrb<GrblJntDriven_PhysHand> {
     
     public GrblJntDriven_PhysHand PhysHand => physHand;
 
+    public GnrGrb GnrGrb => gnrGrb;
+
     public GrblJntDriven_Grb(GrblJntDriven_PhysHand physHand, GnrGrb gnrGrb) {
         this.physHand = physHand;
         this.gnrGrb = gnrGrb;

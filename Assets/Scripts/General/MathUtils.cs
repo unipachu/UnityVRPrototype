@@ -7,10 +7,10 @@ public static class MathUtils {
     /// <summary>
     /// Applies a rotation offset to a base rotation.
     /// </summary>
-    public static Quaternion AddRotOffset(
+    public static Quaternion AddRotOfs(
         Quaternion baseRot,
-        Quaternion offsetRot) {
-        return offsetRot * baseRot;
+        Quaternion ofsRot) {
+        return ofsRot * baseRot;
     }
 
     /// <summary>

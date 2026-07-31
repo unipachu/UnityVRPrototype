@@ -383,13 +383,13 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     // TODO: You should probably just cache tip theoretical world pos and keyhole space pos every update
     // TODO C: when a snappable is snapped to the keyhole.
     Vector3 TheoFolTgtTipWldPos(GrblJntDriven_Grb grb) {
-        var theoPose = GrblUtils.TheoFolTgtGrblPose(grb);
+        var theoPose = GrblUtils.TheoFolTgtGrblPose<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(grb);
         return MathUtils.TrfPt(theoPose.Item1, theoPose.Item2, snpl.KeyTipLclPos);
     }
 
     Quaternion TheoFolTgtTipWldRot(GrblJntDriven_Grb grb) {
         // Theoretical tip world rotation is same as the grabbable theoretical world rotation...
-        return GrblUtils.TheoFolTgtGrblRot(grb);
+        return GrblUtils.TheoFolTgtGrblRot<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(grb);
     }
 
     Vector3 TipPosInKeyholeSpc() {

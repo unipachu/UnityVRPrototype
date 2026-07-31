@@ -3,7 +3,10 @@
 /// </summary>
 public interface IFsmSt {
     void Enter(IFsmSt prevSt);
+
     void Exit();
+
     void PhysicsTick();
+
     void Tick();
 }

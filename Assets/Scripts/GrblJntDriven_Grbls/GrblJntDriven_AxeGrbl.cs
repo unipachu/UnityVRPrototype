@@ -51,7 +51,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     void FixedUpdate() {
-        grbJntFsm.CurrentState.PhysicsTick();
+        grbJntFsm.CurSt.PhysicsTick();
     }
 
     void Update() {
@@ -219,7 +219,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
             2 => jntSt_DblGrb_GrbLineAligned,
             _ => throw new System.ArgumentOutOfRangeException(nameof(grblCore.grbs.Count))
         };
-        if (nextState != grbJntFsm.CurrentState)
+        if (nextState != grbJntFsm.CurSt)
             grbJntFsm.SwitchState(nextState, this);
     }
 

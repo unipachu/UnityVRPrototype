@@ -35,6 +35,7 @@ To distinguish between similar systems, names for the system features became qui
 |`jnt`|joint|
 |`lcl`|local|
 |`n`|and|
+|`ofs`|offset|
 |`phys`|physics|
 |`piv`|pivot|
 |`plr`|player|

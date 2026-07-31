@@ -86,7 +86,7 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         // Twist on the unit circle.
         float avgTwistRad = MathUtils.AvgAngRad(twistAngle1, rotHand0Wt, twistAngle2, rotHand1Wt);
         Quaternion avgTwist = Quaternion.AngleAxis(avgTwistRad * Mathf.Rad2Deg, tgtWldLine);
-        Quaternion newTgtWorldRot = MathUtils.AddRotOffset(lineAlignRot, avgTwist);        
+        Quaternion newTgtWorldRot = MathUtils.AddRotOfs(lineAlignRot, avgTwist);        
         // Compute the world position implied by each grab point.
         Vector3 posFromGrab0 =
             MathUtils.AlignLclPtToWldPt(followTgtGrabPtWorld0, newTgtWorldRot, initLocalPos0);

@@ -21,7 +21,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
     [Header("XROrigin Refs")]
     [Tooltip("Transform of the follow target of the corresponding VR controller.")]
     public Transform followTgtTrf;
-    public GhostShaderCtlr handGhostShaderCtrl;
+    public GhostShdrCtlr handGhostShaderCtrl;
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
     public HapticImpulsePlayer controllerHapticImpulsePlayer;
 

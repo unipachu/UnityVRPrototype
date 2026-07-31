@@ -55,7 +55,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
             //    physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
             //Vector3 tgtWldPos =
             //    physHandFollowTgt.position - tgtWldRot * grb.initPhysHandPosInGrblSpc;
-            Quaternion tgtWldRot = GrblUtils.TheoFolTgtGrblRot(grb);
+            Quaternion tgtWldRot = GrblUtils.TheoFolTgtGrblRot<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(grb);
             Vector3 tgtWldPos = GrblUtils.TheoFolTgtGrblPos(grb, tgtWldRot);
             avgTgtWorldPos += tgtWldPos;
             if (first) {

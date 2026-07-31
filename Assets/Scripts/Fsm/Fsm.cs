@@ -4,8 +4,11 @@ using UnityEngine;
 /// Reuseable FSM.
 /// </summary>
 public class Fsm {
-    public bool IsSwitchingState { get; private set; }
-    public IFsmSt CurrentState { get; private set; }
+    public bool IsSwitchingSt { get; private set; }
+    /// <summary>
+    /// Current state.
+    /// </summary>
+    public IFsmSt CurSt { get; private set; }
 
     /// <summary>
     /// Switches to a new <see cref="IFsmSt"/> by calling <see cref="IFsmSt.Exit"/> on the
@@ -16,22 +19,22 @@ public class Fsm {
     public void SwitchState(IFsmSt newSt, Object ctx = null) {
 #if UNITY_EDITOR
         if(ctx != null) {
-            Debug.Assert(!IsSwitchingState, "Already switching state!", ctx);
-            Debug.Assert(CurrentState != newSt, "Tried to change to same state we are already in. " +
+            Debug.Assert(!IsSwitchingSt, "Already switching state!", ctx);
+            Debug.Assert(CurSt != newSt, "Tried to change to same state we are already in. " +
                 "This can cause errors related to animation events overlapping during animation transition.", ctx);
         }
         else {
-            Debug.Assert(!IsSwitchingState, "Already switching state!");
-            Debug.Assert(CurrentState != newSt, "Tried to change to same state we are already in. " +
+            Debug.Assert(!IsSwitchingSt, "Already switching state!");
+            Debug.Assert(CurSt != newSt, "Tried to change to same state we are already in. " +
                 "This can cause errors related to animation events overlapping during animation transition.");
         }
 #endif
-        IsSwitchingState = true;
-        if (CurrentState != null)
-            CurrentState.Exit();
-        newSt.Enter(CurrentState);
-        CurrentState = newSt;
+        IsSwitchingSt = true;
+        if (CurSt != null)
+            CurSt.Exit();
+        newSt.Enter(CurSt);
+        CurSt = newSt;
         //Debug.Log("Switched to state: " + newSt.GetType().Name);
-        IsSwitchingState = false;
+        IsSwitchingSt = false;
     }
 }

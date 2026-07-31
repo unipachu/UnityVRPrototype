@@ -139,7 +139,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1628792346546962642}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfe06e1990cfe943a09619dc704e758, type: 3}
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!23 &9750763983532978
@@ -1228,7 +1228,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7872261532758236763}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cfe06e1990cfe943a09619dc704e758, type: 3}
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!33 &4960776923963975568

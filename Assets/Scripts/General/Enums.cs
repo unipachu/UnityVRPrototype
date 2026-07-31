@@ -1,3 +1,6 @@
+/// <summary>
+/// Represents direction on a vertical plane.
+/// </summary>
 public enum Dir2D {
     Left,
     Right,

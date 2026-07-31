@@ -5,11 +5,11 @@ using UnityEngine;
 /// NOTE: The scale of this object during Awake is the scale the object is displayed at min distance from player.
 /// The scale gets larger the further the object moves from player gaze.
 /// </summary>
-public class FwdDirFollower : MonoBehaviour {
-    enum FollowSmoothingMode {
-        SmoothMvmt,
-        SmoothDist,
-        NoSmoothing
+public class FwdDirFol : MonoBehaviour {
+    enum FolSmoothingMode {
+        SmoothMov,
+        OnlySmoothDist,
+        NoMovSmoothing
     }
 
     [Header("Box Check Settings")]
@@ -38,10 +38,10 @@ public class FwdDirFollower : MonoBehaviour {
 
     [Header("Smoothing")]
     [Tooltip("Should this object smoothly follow the target pos/rot with linear interpolation (instead of snapping to target pos/rot)?")]
-    [SerializeField] FollowSmoothingMode smoothingMode = FollowSmoothingMode.SmoothDist;
-    [SerializeField] float posInterpFollowSpd = 12f;
-    [SerializeField] float rotInterpFollowSpd = 10f;
-    [SerializeField] float sclInterpFollowSpd = 12f;
+    [SerializeField] FolSmoothingMode smoothingMode = FolSmoothingMode.OnlySmoothDist;
+    [SerializeField] float posInterpFolSpd = 12f;
+    [SerializeField] float rotInterpFolSpd = 10f;
+    [SerializeField] float sclInterpFolSpd = 12f;
 
     [Header("Physics")]
     [Tooltip("Min distance between CheckBox query steps.")]
@@ -61,10 +61,10 @@ public class FwdDirFollower : MonoBehaviour {
     [Tooltip("Transform of the target object whose forward direction we want to follow, e.g. camera transform.")]
     [SerializeField] Transform tgtObjTrf;
 
-    Vector3 initialScale;
+    Vector3 initScl;
 
     void Awake() {
-        initialScale = transform.localScale;
+        initScl = transform.localScale;
     }
 
     void OnValidate() {
@@ -83,37 +83,35 @@ public class FwdDirFollower : MonoBehaviour {
         Quaternion offsetRot = Quaternion.Euler(tgtDirOffsetEuler);
         Vector3 tgtDir = (tgtObjTrf.rotation * offsetRot) * Vector3.forward;
         float tgtDist;
-        if (lockDist) {
+        if (lockDist)
             tgtDist = lockedDist;
-        }
-        else {
+        else
             tgtDist = FindTgtDist(origin, tgtDir);
-        }
         Vector3 objTgtPos = origin + tgtDir * tgtDist;
         // Target rotation for this game object.
-        Quaternion targetRotation = Quaternion.LookRotation(objTgtPos - origin, Vector3.up);
-        float targetScaleFactor = Mathf.Max(0.01f, tgtDist / minDistFromTgtObj);
-        Vector3 targetScale = initialScale * targetScaleFactor;
-        float posLerp = 1f - Mathf.Exp(-posInterpFollowSpd * Time.deltaTime);
-        float rotLerp = 1f - Mathf.Exp(-rotInterpFollowSpd * Time.deltaTime);
-        float scaleLerp = 1f - Mathf.Exp(-sclInterpFollowSpd * Time.deltaTime);
+        Quaternion tgtRot = Quaternion.LookRotation(objTgtPos - origin, Vector3.up);
+        float tgtSclFactor = Mathf.Max(0.01f, tgtDist / minDistFromTgtObj);
+        Vector3 tgtScl = initScl * tgtSclFactor;
+        float posLerp = 1f - Mathf.Exp(-posInterpFolSpd * Time.deltaTime);
+        float rotLerp = 1f - Mathf.Exp(-rotInterpFolSpd * Time.deltaTime);
+        float scaleLerp = 1f - Mathf.Exp(-sclInterpFolSpd * Time.deltaTime);
         switch (smoothingMode) {
-            case FollowSmoothingMode.SmoothMvmt:
+            case FolSmoothingMode.SmoothMov:
                 transform.position = Vector3.Lerp(transform.position, objTgtPos, posLerp);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotLerp);
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
+                transform.rotation = Quaternion.Slerp(transform.rotation, tgtRot, rotLerp);
+                transform.localScale = Vector3.Lerp(transform.localScale, tgtScl, scaleLerp);
                 break;
-            case FollowSmoothingMode.SmoothDist:
+            case FolSmoothingMode.OnlySmoothDist:
                 // Snap rotation immediately.
-                transform.rotation = targetRotation;
+                transform.rotation = tgtRot;
                 float currentDist = Vector3.Distance(origin, transform.position);
                 float smoothedDist = Mathf.Lerp(currentDist, tgtDist, posLerp);
                 transform.position = origin + tgtDir * smoothedDist;
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleLerp);
+                transform.localScale = Vector3.Lerp(transform.localScale, tgtScl, scaleLerp);
                 break;
-            case FollowSmoothingMode.NoSmoothing:
-                transform.SetPositionAndRotation(objTgtPos, targetRotation);
-                transform.localScale = targetScale;
+            case FolSmoothingMode.NoMovSmoothing:
+                transform.SetPositionAndRotation(objTgtPos, tgtRot);
+                transform.localScale = tgtScl;
                 break;
         }
     }
@@ -155,12 +153,12 @@ public class FwdDirFollower : MonoBehaviour {
         // We iteratively make CheckBox queries to find target position (and scale) for this object.
         while (testDist >= minDistFromTgtObj) {
             chks++;
-            Vector3 testPosition = origin + tgtDir * testDist;
-            float scaleFactor = testDist / minDistFromTgtObj;
-            Vector3 halfExtents = GetHalfExtents(scaleFactor);
+            Vector3 testPos = origin + tgtDir * testDist;
+            float sclFactor = testDist / minDistFromTgtObj;
+            Vector3 halfExtents = GetHalfExtents(sclFactor);
             bool blocked =
                 Physics.CheckBox(
-                    testPosition,
+                    testPos,
                     halfExtents,
                     chkBoxRot,
                     colMask,
@@ -184,11 +182,11 @@ public class FwdDirFollower : MonoBehaviour {
         return tgtDist;
     }
 
-    Vector3 GetHalfExtents(float scaleFactor) {
+    Vector3 GetHalfExtents(float sclFactor) {
         return new Vector3(
-            ChkBoxSz.x * initialScale.x * scaleFactor * 0.5f,
-            ChkBoxSz.y * initialScale.y * scaleFactor * 0.5f,
-            ChkBoxSz.z * initialScale.z * scaleFactor * 0.5f
+            ChkBoxSz.x * initScl.x * sclFactor * 0.5f,
+            ChkBoxSz.y * initScl.y * sclFactor * 0.5f,
+            ChkBoxSz.z * initScl.z * sclFactor * 0.5f
         );
     }
 }

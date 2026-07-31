@@ -50,7 +50,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
 
     void FixedUpdate() {
         if (snapped == null)
-            grbJntFsm.CurrentState.PhysicsTick();
+            grbJntFsm.CurSt.PhysicsTick();
     }
 
     void Update() {
@@ -139,7 +139,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
             1 => jntSt_SglGrb_SimpleAnchAtPiv,
             _ => throw new System.ArgumentOutOfRangeException(nameof(grblCore.grbs.Count))
         };
-        if (nextState != grbJntFsm.CurrentState)
+        if (nextState != grbJntFsm.CurSt)
             grbJntFsm.SwitchState(nextState, this);
     }
 }

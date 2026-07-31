@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class GhostShaderCtlr : MonoBehaviour {
+/// <summary>
+/// Controls ghost shader's dithering amount.
+/// </summary>
+public class GhostShdrCtlr : MonoBehaviour {
     private Renderer tgtRenderer;
     //private MaterialPropertyBlock propertyBlock;
 
