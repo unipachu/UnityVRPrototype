@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,10 @@ enum SnappedSnplSt {
     InsideEnd,
 }
 
+/// <summary>
+/// Keyhole snappable target for <see cref="IKeyholeSnpl"/> game objects.
+/// </summary>
+// TODO: Currently 
 public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [Header("Snappable Search Settings")]
     [SerializeField] Vector3 overlapSphereUnscaledLclPos;
@@ -33,6 +38,14 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [Header("Rumble Settings")]
     [SerializeField] float snapStartRumbleAmp = 0.1f;
     [SerializeField] float snapStartRumbleDur = 0.1f;
+    [SerializeField] float snapStartRumbleFreq = 0.05f;
+    [SerializeField] float keyholeEndReachedRumbleAmp = 0.5f;
+    [SerializeField] float keyholeEndReachedRumbleDur = 0.05f;
+    [SerializeField] float keyholeEndReachedRumbleFreq = 0.05f;
+    [SerializeField] float padlockUnlockedRumbleAmp = 0.5f;
+    [SerializeField] float padlockUnlockedRumbleDur = 0.05f;
+    [SerializeField] float padlockUnlockedRumbleFreq = 0.05f;
+
 
     [Header("Snap End Settings")]
     [Tooltip("Distance from grabbable to theoretical follow target grabbable position required for " +
@@ -54,12 +67,16 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     [SerializeField] float snplLerpLinSpd = 0.4f;
     [SerializeField] float snplLerpAngSpd = 720;
 
+    [Header("Refs")]
+    [SerializeField] GameObject shackle;
+
     IKeyholeSnpl snpl = null;
     // No need to allocate this every physics tick...
     readonly Collider[] overlapResults = new Collider[8];
     KeyholeSt st = KeyholeSt.LookForSnpls;
     SnappedSnplSt snplSt = SnappedSnplSt.Outside;
     float interpTimer = 0;
+    bool padlockUnlocked = false;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -71,15 +88,24 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 break;
             case KeyholeSt.InterpSnplToSnpTgt:
                 interpTimer += Time.fixedDeltaTime;
-                // TODO: Allow roll input to target rot.
+                // Allow roll input to target rot.
+                Quaternion snplWldTgtRot = transform.rotation;
+                if (snpl.GrblCore.grbs.Count != 0) {
+                    Quaternion theoTipWldRot = TheoFolTgtTipWldRot(snpl.GrblCore.grbs[0]);
+                    snplWldTgtRot = MathUtils.CalculateRelativeTwist(
+                        transform.rotation,
+                        theoTipWldRot,
+                        transform.forward
+                    );
+                }
                 MathUtils.InterpRbSoChildAlignsWithTgtPose(
                     snpl.GrblCore.rb,
                     snpl.KeyTipLclPos,
                     // NOTE: We use Quaternion.identity here since we expect rb forward to be
                     // NOTE C: the keyhole insertion direction.
                     Quaternion.identity, 
-                    transform.position + new Vector3(0, 0, snplTipMinLclDepth),
-                    transform.rotation,
+                    transform.position + (transform.forward * snplTipMinLclDepth),
+                    snplWldTgtRot,
                     interpTimer / interpDur
                 );
                 if(interpTimer > interpDur)
@@ -90,6 +116,8 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 SnplPhysicsTick();
                 break;
             case KeyholeSt.InterpSnplFromSnpTgt:
+                // TODO: You should probably have a separate interpolate for when the key is grabbed,
+                // TODO : _so that it interpolates to the theoretical grabbable pos.
                 interpTimer += Time.fixedDeltaTime;
                 MathUtils.InterpRbSoChildAlignsWithTgtPose(
                     snpl.GrblCore.rb,
@@ -98,7 +126,8 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     // NOTE C: the keyhole insertion direction.
                     Quaternion.identity,
                     transform.position + new Vector3(0, 0, snplTipMinLclDepth),
-                    transform.rotation,
+                    // TODO: If the keyhole is moving, you need to use the keyhole rotation for all except twist.
+                    snpl.GrblCore.rb.rotation,
                     interpTimer / interpDur
                 );
                 if (interpTimer > interpDur)
@@ -172,7 +201,11 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             foundSnpl.InitSnp(this);
             snpl = foundSnpl;
             foreach(Grb grb in snpl.GrblCore.grbs)
-                grb.physHand.controllerHapticImpulsePlayer.SendHapticImpulse(snapStartRumbleAmp, snapStartRumbleDur);
+                grb.physHand.controllerHapticImpulsePlayer.SendHapticImpulse(
+                    snapStartRumbleAmp,
+                    snapStartRumbleDur,
+                    snapStartRumbleFreq
+                );
             interpTimer = 0;
             st = KeyholeSt.InterpSnplToSnpTgt;
             return;
@@ -261,8 +294,14 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 snplWldTgtRot = snplRb.rotation;
                 if (tipLclTgtDepth < snplTipMinRotDisabledLclDepth)
                     snplSt = SnappedSnplSt.Outside;
-                else if (tipLclTgtDepth > snplTipMaxRotDisabledLclDepth)
+                else if (tipLclTgtDepth > snplTipMaxRotDisabledLclDepth) {
                     snplSt = SnappedSnplSt.InsideEnd;
+                    grb.physHand.controllerHapticImpulsePlayer.SendHapticImpulse(
+                        keyholeEndReachedRumbleAmp,
+                        keyholeEndReachedRumbleDur,
+                        keyholeEndReachedRumbleFreq
+                    );
+                }
                 break;
             case SnappedSnplSt.InsideEnd:
                 tipLclTgtDepth = Mathf.Min(tipLclTgtDepth, snplTipMaxLclDepth);
@@ -273,6 +312,16 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     snplSt = SnappedSnplSt.InsideMiddle;
                 else
                     tipLclTgtDepth = Mathf.Max(tipLclTgtDepth, snplTipMaxRotDisabledLclDepth);
+                // If rotated key at keyhole end, unlock padlock.
+                if (absSnplRollInKeyholeSpcDeg > 85 && absSnplRollInKeyholeSpcDeg < 95 && !padlockUnlocked) {
+                    padlockUnlocked = true;
+                    StartCoroutine(UnlockShackleAnim());
+                    grb.physHand.controllerHapticImpulsePlayer.SendHapticImpulse(
+                        padlockUnlockedRumbleAmp,
+                        padlockUnlockedRumbleDur,
+                        padlockUnlockedRumbleFreq
+                    );
+                }
                 break;
             default:
                 Debug.LogError("Switch defaulted", this);
@@ -335,5 +384,19 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     Vector3 TipPosInKeyholeSpc() {
         Vector3 tipWldPos = MathUtils.TrfPtUnscaled(snpl.GrblCore.rb, snpl.KeyTipLclPos);
         return MathUtils.InvrsTrfPtUnscaled(transform, tipWldPos);
+    }
+
+    IEnumerator UnlockShackleAnim() {
+        Vector3 startPos = shackle.transform.localPosition;
+        Vector3 endPos = startPos + Vector3.up * 0.04f;
+        float duration = 0.1f;
+        float timer = 0f;
+        while (timer < duration) {
+            timer += Time.deltaTime;
+            float t = Mathf.Clamp01(timer / duration);
+            shackle.transform.localPosition = Vector3.Lerp(startPos, endPos, t);
+            yield return null;
+        }
+        shackle.transform.localPosition = endPos;
     }
 }
