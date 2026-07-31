@@ -10,9 +10,9 @@ enum PhysHandState {
 /// <summary>
 /// Controller for one physics hand. 
 /// </summary>
-public class GrblJntDriven_PhysHand : MonoBehaviour {
+public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
     [Header("Settings")]
-    public Side side;
+    public Side handSide;
 
     [Header("Read Only Data")]
     public PhysHandConfigurableJntData jntData;
@@ -41,6 +41,10 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
 
     PhysHandState physHandSt = PhysHandState.NotGrabbing;
     IGrblJntDriven_Grbl grabbedGrbl = null;
+
+    public Transform FollowTgtTrf => followTgtTrf;
+
+    public Side HandSide => handSide;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -80,8 +84,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
         switch (physHandSt) {
             case PhysHandState.NotGrabbing:
                 if (
-                    side == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
-                    side == Side.Right && plrCtrl.TryConsumeRGrabPressed()
+                    handSide == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
+                    handSide == Side.Right && plrCtrl.TryConsumeRGrabPressed()
                 ) {
                     if (TryGrabbing()) {
                         EnterGrabState();
@@ -92,8 +96,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour {
                 break;
             case PhysHandState.Grabbing:
                 if (
-                    side == Side.Left && !plrCtrl.LGrabButtonHeld ||
-                    side == Side.Right && !plrCtrl.RGrabButtonHeld
+                    handSide == Side.Left && !plrCtrl.LGrabButtonHeld ||
+                    handSide == Side.Right && !plrCtrl.RGrabButtonHeld
                 ) {
                     if(grabbedGrbl.CanBeReleased(this)) {
                         grabbedGrbl.ReleaseGrb(this);

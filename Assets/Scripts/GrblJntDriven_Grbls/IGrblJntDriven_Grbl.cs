@@ -5,6 +5,7 @@ using UnityEngine;
 /// </summary>
 public interface IGrblJntDriven_Grbl {
     GrblJntDriven_GrblCore GrblCore { get; }
+    ConfigurableJoint GrbJnt { get;  }
 
     bool CanBeGrabbed(GrblJntDriven_PhysHand physHand);
     

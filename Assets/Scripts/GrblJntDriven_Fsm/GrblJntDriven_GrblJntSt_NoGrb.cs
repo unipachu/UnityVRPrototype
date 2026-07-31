@@ -12,8 +12,8 @@ public class GrblJntDriven_GrblJntSt_NoGrb : IFsmSt {
     // -----------------------------------------
 
     public void Enter(IFsmSt prevSt) {
-        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
-        PhysUtils.SetJntDrivesToZero(grbl.GrblCore.grbJnt);
+        grbl.GrbJnt.anchor = Vector3.zero;
+        PhysUtils.SetJntDrivesToZero(grbl.GrbJnt);
     }
 
     public void Exit() {

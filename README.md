@@ -24,15 +24,20 @@ To distinguish between similar systems, names for the system features became qui
 |Abbreviation|Meaning|
 |-|-|
 |`dbl`|double|
+|`dep`|depth|
 |`fol`|follow|
+|`gnr`|generic/general|
+|`go`|game object|
 |`grb` / `grbs`|grab / grabs|
 |`grbl` / `grbls`|grabbable / grabbables|
 |`grbr`|grabber|
 |`invrs`|inverse|
 |`jnt`|joint|
 |`lcl`|local|
+|`n`|and|
 |`phys`|physics|
 |`piv`|pivot|
+|`plr`|player|
 |`pt`|point|
 |`sgl`|single|
 |`snp`|snap|

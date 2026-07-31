@@ -9,6 +9,7 @@ public interface IKeyholeSnpl {
     /// (rb forward towards the keyhole insertion direction).
     /// </summary>
     GrblJntDriven_GrblCore GrblCore { get; }
+    Rigidbody Rb { get; }
     /// <summary>
     /// Position representing the center of the tip of the key in grbl rb space.
     /// </summary>

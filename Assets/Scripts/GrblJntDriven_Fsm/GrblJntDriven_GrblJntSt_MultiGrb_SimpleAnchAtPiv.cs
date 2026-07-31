@@ -18,12 +18,12 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     // -----------------------------------------
 
     public void Enter(IFsmSt prevSt) {
-        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
+        grbl.GrbJnt.anchor = Vector3.zero;
         // NOTE: A better system would be to use different hand drives to every frame calculate
         // NOTE C: weights for how much each hand affects the grab joint target pose, but this
         // NOTE C: is just a "simple" multi grab system.
         PhysUtils.SetJntDrivesToAvgPhysHandsDflt(
-            grbl.GrblCore.grbJnt,
+            grbl.GrbJnt,
             grbl.GrblCore.grbs
         );
     }
@@ -32,7 +32,7 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.GrblCore.grbs, grbl.GrblCore.grbJnt);
+        UpdateJnt(grbl.GrblCore.grbs, grbl.GrbJnt);
     }
 
     public void Tick() {
@@ -42,14 +42,14 @@ public class GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv : IFsmSt{
     // Private Methods
     // -----------------------------------------
 
-    public void UpdateJnt(List<Grb> grbs, ConfigurableJoint grbJnt) {
+    public void UpdateJnt(List<GrblJntDriven_Grb> grbs, ConfigurableJoint grbJnt) {
         Vector3 avgTgtWorldPos = Vector3.zero;
         Vector4 cumulative = Vector4.zero;
         // Use the first target rotation as the hemisphere reference.
         // TODO: How does this work? Is there a better way to get the hemisphere reference?
         Quaternion refRot = Quaternion.identity;
         bool first = true;
-        foreach (Grb grb in grbs) {
+        foreach (GrblJntDriven_Grb grb in grbs) {
             //Transform physHandFollowTgt = grb.physHand.followTgtTrf;
             //Quaternion tgtWldRot =
             //    physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);

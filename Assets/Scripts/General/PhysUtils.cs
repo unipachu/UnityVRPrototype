@@ -21,7 +21,7 @@ public static class PhysUtils {
         jnt.slerpDrive = jntDrive;
     }
 
-    public static void SetJntDrivesToAvgPhysHandsDflt(ConfigurableJoint jnt, List<Grb> grabs) {
+    public static void SetJntDrivesToAvgPhysHandsDflt(ConfigurableJoint jnt, List<GrblJntDriven_Grb> grabs) {
         // Calculate avg drives.
         float avgDfltLinDrivePosSpring = 0;
         float avgDfltLinDrivePosDamper = 0;
@@ -29,7 +29,7 @@ public static class PhysUtils {
         float avgDfltSlerpDrivePosSpring = 0;
         float avgDfltSlerpDriveDamper = 0;
         float avgDefaultSlerpDriveMaxForce = 0;
-        foreach (Grb grab in grabs) {
+        foreach (GrblJntDriven_Grb grab in grabs) {
             PhysHandConfigurableJntData data = grab.physHand.jntData;
 
             avgDfltLinDrivePosSpring += data.dfltLinDrivePosSpring;

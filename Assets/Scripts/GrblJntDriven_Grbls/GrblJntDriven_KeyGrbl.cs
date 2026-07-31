@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyholeSnpl {
+public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IKeyholeSnpl {
     [Header("Refs")]
     [SerializeField] GrblJntDriven_GrblCore grblCore;
     [Tooltip("Hand visual used to represent grabbing left hand.\n" +
@@ -13,6 +13,8 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
         "NOTE: We use Vector3 instead of a Transform reference since Transform positions cannot be safely " +
         "used with Rigidbodies because they can get out of sync.")]
     [SerializeField] Vector3 keyTipLclPos;
+    [SerializeField] ConfigurableJoint grbJnt;
+    [SerializeField] Rigidbody rb;
 
     // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
@@ -28,6 +30,9 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
 
     public GrblJntDriven_GrblCore GrblCore => grblCore;
     public Vector3 KeyTipLclPos => keyTipLclPos;
+    public ConfigurableJoint GrbJnt => grbJnt;
+
+    public Rigidbody Rb => rb;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -82,7 +87,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
 
     public void OnEndSnp() {
         snapped = null;
-        GrblCore.rb.isKinematic = false;
+        rb.isKinematic = false;
         snpCooldown = 0.3f;
     }
 
@@ -93,22 +98,25 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IKeyhol
     public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
         // Only one grabber can grab this at a time. Thus release any previous grab.
         GrblUtils.LRGrab_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
-        var newGrb = new Grb(
+        var newGrb = new GrblJntDriven_Grb(
             physHand,
-            MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
-            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
-            Vector3.zero
+            new GnrGrb(
+                physHand,
+                MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
+                MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
+                Vector3.zero
+            )
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
-        GameObject proxy = physHand.side == Side.Left ? lHandVisProxy : rHandVisProxy;
+        GameObject proxy = physHand.handSide == Side.Left ? lHandVisProxy : rHandVisProxy;
         ObjUtils.ActivateNSetPose(proxy, physHand.transform.position, physHand.transform.rotation);
         SwitchJntStBasedOnGrbCount();
     }
 
     public void InitSnp(ISnapTgt snpTgt) {
         snapped = snpTgt;
-        GrblCore.rb.isKinematic = true;
+        rb.isKinematic = true;
     }
 
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {

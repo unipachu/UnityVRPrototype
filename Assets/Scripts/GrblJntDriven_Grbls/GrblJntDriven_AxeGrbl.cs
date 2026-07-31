@@ -3,7 +3,11 @@ using UnityEngine;
 /// <summary>
 /// Axe grabbable.
 /// </summary>
-public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
+public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
+    [Header("Settings")]
+    [SerializeField] float minGrbPtLclY = -0.49f;
+    [SerializeField] float maxGrbPtHandLclY = -0.03f;
+
     [Header("Refs")]
     [SerializeField] GrblJntDriven_GrblCore grblCore;
     [Tooltip("Hand visual used to represent grabbing left hand.\n" +
@@ -15,8 +19,8 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject rHandVisProxyHolder;
     [SerializeField] GameObject rHandVisProxyVis;
-    [SerializeField] float minGrbPtLclY = -0.49f;
-    [SerializeField] float maxGrbPtHandLclY = -0.03f;
+    [SerializeField] ConfigurableJoint grbJnt;
+    [SerializeField] Rigidbody rb;
 
     // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
@@ -27,6 +31,9 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
     readonly Vector3 followTgtInitGrabPtInFollowTgtSpc = new Vector3(0, -0.025f, 0);
 
     public GrblJntDriven_GrblCore GrblCore => grblCore;
+    public ConfigurableJoint GrbJnt => grbJnt;
+
+    public Rigidbody Rb => rb;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -64,10 +71,13 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
     // PUBLIC METHODS
     // -----------------------------------------
 
-    public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand) {
-        // Can be grabbed by up to one left hand and one right hand simultaneously.
-        return grblCore.GrbCount(physHand.side) == 0;
-    }
+    /// <summary>
+    /// NOTE: This grbl can be grabbed by up to one left hand and one right hand simultaneously.
+    /// </summary>
+    public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand)
+        => GrblUtils.SidedGrbCount<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(
+            grblCore.grbs,
+            physHand.handSide) == 0;
 
     public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
         return true;
@@ -87,15 +97,18 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         initPhysHandPosInGrblSpc.x = 0;
         initPhysHandPosInGrblSpc.y = Mathf.Clamp(initPhysHandPosInGrblSpc.y, minGrbPtLclY, maxGrbPtHandLclY);
         initPhysHandPosInGrblSpc.z = 0;
-        var newGrb = new Grb(
+        var newGrb = new GrblJntDriven_Grb(
             physHand,
-            initPhysHandPosInGrblSpc,
-            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
-            followTgtInitGrabPtInFollowTgtSpc
+            new GnrGrb(
+                physHand,
+                initPhysHandPosInGrblSpc,
+                MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
+                followTgtInitGrabPtInFollowTgtSpc
+            )
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
-        GameObject proxyHolder = physHand.side == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
+        GameObject proxyHolder = physHand.handSide == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
         // NOTE: Currently proxy holder is already aligned with the handle (transform.up) so this works.
         Quaternion axeRotWithTwistAroundHandle = MathUtils.CalculateRelativeTwist(
             transform.rotation,
@@ -110,7 +123,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         // TODO: Ugh, here I'm enabling the holder while on release I disable the child visual object.
         // TODO C: This is an easy fix, but is very ugly. Maybe remove the holders entirely and hard code
         // TODO C: the proxy hand pos and rot constraints.
-        if (physHand.side == Side.Left)
+        if (physHand.handSide == Side.Left)
             lHandVisProxyVis.SetActive(true);
         else
             rHandVisProxyVis.SetActive(true);
@@ -124,9 +137,12 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
 
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {
         // If lower hand is about to be released.
-        if (GrblCore.grbs.Count == 2 && GrblCore.FindGrbIndex(physHand) == LowestHandIndex()) {
+        if (
+            GrblCore.grbs.Count == 2 &&
+            GrblUtils.FindGrbIndex(GrblCore.grbs, physHand, GrblCore) == LowestHandIndex()
+        ) {
             // Choose the opposite side proxy from the hand being released.
-            GameObject proxy = physHand.side == Side.Right ? lHandVisProxyHolder : rHandVisProxyHolder;
+            GameObject proxy = physHand.handSide == Side.Right ? lHandVisProxyHolder : rHandVisProxyHolder;
             ReinitializeGrabFromCurrentProxyPose(proxy);
         }
         GrblUtils.LRGrb_ReleaseGrb(this, physHand, lHandVisProxyVis, rHandVisProxyVis);
@@ -150,8 +166,8 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         if (GrblCore.grbs.Count == 1)
             return 0;
         // Check which initial is higher on local Y axis.
-        float grb0LocalHght = grblCore.grbs[0].initPhysHandPosInGrblSpc.y;
-        float grb1LocalHght = grblCore.grbs[1].initPhysHandPosInGrblSpc.y;
+        float grb0LocalHght = grblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb1LocalHght = grblCore.grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
         if (grb0LocalHght > grb1LocalHght)
             return 0;
         return 1;
@@ -170,8 +186,8 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         if(GrblCore.grbs.Count == 1)
             return 0;
         // Check which initial is higher on local Y axis.
-        float grb0LocalHght = grblCore.grbs[0].initPhysHandPosInGrblSpc.y;
-        float grb1LocalHght = grblCore.grbs[1].initPhysHandPosInGrblSpc.y;
+        float grb0LocalHght = grblCore.grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y;
+        float grb1LocalHght = grblCore.grbs[1].gnrGrb.initPhysHandPosInGrblSpc.y;
         if (grb0LocalHght < grb1LocalHght)
             return 0;
         return 1;
@@ -183,13 +199,13 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
                 transform,
                 proxy.transform.position
             );
-        Grb grb = GrblCore.grbs[HighestHandIndex()];
+        GrblJntDriven_Grb grb = GrblCore.grbs[HighestHandIndex()];
         // Jic we clamp init phys hand pos so that it aligns with the handle.
         proxyLocalPos.x = 0;
         proxyLocalPos.y = Mathf.Clamp(proxyLocalPos.y, minGrbPtLclY, maxGrbPtHandLclY);
         proxyLocalPos.z = 0;
-        grb.initPhysHandPosInGrblSpc = proxyLocalPos;
-        grb.initRotFromGrblToPhysHand =
+        grb.gnrGrb.initPhysHandPosInGrblSpc = proxyLocalPos;
+        grb.gnrGrb.initRotFromGrblToPhysHand =
             MathUtils.InvrsTrfRot(
                 transform,
                 grb.physHand.followTgtTrf.rotation
@@ -211,13 +227,13 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         Debug.Assert(GrblCore.grbs.Count == 2, $"Grabs count was not 2! It was: {GrblCore.grbs.Count}", this);
         // Handle axis in world space (+Y of the axe).
         Vector3 handleAxis = transform.up;
-        Grb grb = grblCore.grbs[HighestHandIndex()];
-        GameObject proxy = grb.physHand.side == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
+        GrblJntDriven_Grb grb = grblCore.grbs[HighestHandIndex()];
+        GameObject proxy = grb.physHand.handSide == Side.Left ? lHandVisProxyHolder : rHandVisProxyHolder;
         // Visual grab position in the axe's local space.
         // TODO: proxy hand should be placed so that it is offset by the grab point. Maybe.
         // TODO C: Think about this when you are less tired.
-        Vector3 proxyLocalPos = grb.initPhysHandPosInGrblSpc;
-        Vector3 followGrabLocal = GrblUtils.FollowTgtInitGrbPtInGrblSpc(grb, transform);
+        Vector3 proxyLocalPos = grb.gnrGrb.initPhysHandPosInGrblSpc;
+        Vector3 followGrabLocal = GrblUtils.FolTgtInitGrbPtInGrblSpc(grb.gnrGrb, transform);
         // Visually slide along the handle.
         proxyLocalPos.y = Mathf.Min(followGrabLocal.y, maxGrbPtHandLclY);
         Vector3 proxyWorldPos = MathUtils.TrfPtUnscaled(transform, proxyLocalPos);

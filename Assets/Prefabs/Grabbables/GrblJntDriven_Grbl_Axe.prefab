@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 6705095560291864265}
   - component: {fileID: 5976568405749683233}
   m_Layer: 7
-  m_Name: GrabbableAxe
+  m_Name: GrblJntDriven_Grbl_Axe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -530,13 +530,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d63085c9db75c15459655247bb12b869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_AxeGrbl
+  minGrbPtLclY: -0.49
+  maxGrbPtHandLclY: -0.03
   grblCore: {fileID: 1894635328074925199}
   lHandVisProxyHolder: {fileID: 599777965074079079}
   lHandVisProxyVis: {fileID: 8267977506743683433}
   rHandVisProxyHolder: {fileID: 8538109434488674957}
   rHandVisProxyVis: {fileID: 912851848367600961}
-  minGrbPtLclY: -0.49
-  maxGrbPtHandLclY: -0.03
+  grbJnt: {fileID: 5976568405749683233}
+  rb: {fileID: 6705095560291864265}
 --- !u!114 &1894635328074925199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,8 +551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e514c2e073fb50a449adb226da33783f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_GrblCore
-  rb: {fileID: 6705095560291864265}
-  grbJnt: {fileID: 5976568405749683233}
 --- !u!54 &6705095560291864265
 Rigidbody:
   m_ObjectHideFlags: 0

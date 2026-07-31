@@ -100,7 +100,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                     );
                 }
                 MathUtils.InterpRbSoChildAlignsWithTgtPose(
-                    snpl.GrblCore.rb,
+                    snpl.Rb,
                     snpl.KeyTipLclPos,
                     // NOTE: We use Quaternion.identity here since we expect rb forward to be
                     // NOTE C: the keyhole insertion direction.
@@ -121,14 +121,14 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
                 // TODO : _so that it interpolates to the theoretical grabbable pos.
                 interpTimer += Time.fixedDeltaTime;
                 MathUtils.InterpRbSoChildAlignsWithTgtPose(
-                    snpl.GrblCore.rb,
+                    snpl.Rb,
                     snpl.KeyTipLclPos,
                     // NOTE: We use Quaternion.identity here since we expect rb forward to be
                     // NOTE C: the keyhole insertion direction.
                     Quaternion.identity,
                     transform.position + new Vector3(0, 0, snplTipMinLclDepth),
                     // TODO: If the keyhole is moving, you need to use the keyhole rotation for all except twist.
-                    snpl.GrblCore.rb.rotation,
+                    snpl.Rb.rotation,
                     interpTimer / snapOutInterpDur
                 );
                 if (interpTimer > snapOutInterpDur)
@@ -196,12 +196,12 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
             // NOT C: in Update and therefore rigibody and its transform are in sync.
             if (Vector3.Angle(
                 transform.forward,
-                foundSnpl.GrblCore.rb.transform.forward) > requiredMaxAngForSnapping
+                foundSnpl.Rb.transform.forward) > requiredMaxAngForSnapping
             )
                 continue;
             foundSnpl.InitSnp(this);
             snpl = foundSnpl;
-            foreach(Grb grb in snpl.GrblCore.grbs)
+            foreach(GrblJntDriven_Grb grb in snpl.GrblCore.grbs)
                 grb.physHand.controllerHapticImpulsePlayer.SendHapticImpulse(
                     snapStartRumbleAmp,
                     snapStartRumbleDur,
@@ -214,8 +214,8 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     }
 
     private void MoveSnappedSnpl() {
-        Rigidbody snplRb = snpl.GrblCore.rb;
-        Grb grb = snpl.GrblCore.grbs[0];
+        Rigidbody snplRb = snpl.Rb;
+        GrblJntDriven_Grb grb = snpl.GrblCore.grbs[0];
         float tipDepthInKeyholeSpc = TipPosInKeyholeSpc().z;
         // Find theoretical snappable depth and interpolate towards that.
         Vector3 theoTipWldPos = TheoFolTgtTipWldPos(grb);
@@ -356,7 +356,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
     }
 
     void SnplPhysicsTick() {
-        List<Grb> snplGrbs = snpl.GrblCore.grbs;
+        List<GrblJntDriven_Grb> snplGrbs = snpl.GrblCore.grbs;
 
         //if (snplGrbs.Count != 0) {
         //    Debug.Log("depth:" + MathUtils.InvrsTrfPtUnscaled(transform, TheoFolTgtTipWldPos(snplGrbs[0])).z);
@@ -367,7 +367,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
         if (
             snplSt == SnappedSnplSt.Outside &&
             (snplGrbs.Count == 0 || (
-                GrblUtils.DistBetweenGrblRbPosNTheoFolTgtGrblPos(snpl.GrblCore.rb, snplGrbs[0]) > snapOutDist ||
+                GrblUtils.DistBetweenGrblRbPosNTheoFolTgtGrblPos(snpl.Rb, snplGrbs[0]) > snapOutDist ||
                 // Key should be more easily pulled away from snap if pulled away from key insertion direction.
                 MathUtils.InvrsTrfPtUnscaled(transform, TheoFolTgtTipWldPos(snplGrbs[0])).z < snapOutDep)
             )
@@ -382,24 +382,24 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
 
     // TODO: You should probably just cache tip theoretical world pos and keyhole space pos every update
     // TODO C: when a snappable is snapped to the keyhole.
-    Vector3 TheoFolTgtTipWldPos(Grb grb) {
+    Vector3 TheoFolTgtTipWldPos(GrblJntDriven_Grb grb) {
         var theoPose = GrblUtils.TheoFolTgtGrblPose(grb);
         return MathUtils.TrfPt(theoPose.Item1, theoPose.Item2, snpl.KeyTipLclPos);
     }
 
-    Quaternion TheoFolTgtTipWldRot(Grb grb) {
+    Quaternion TheoFolTgtTipWldRot(GrblJntDriven_Grb grb) {
         // Theoretical tip world rotation is same as the grabbable theoretical world rotation...
         return GrblUtils.TheoFolTgtGrblRot(grb);
     }
 
     Vector3 TipPosInKeyholeSpc() {
-        Vector3 tipWldPos = MathUtils.TrfPtUnscaled(snpl.GrblCore.rb, snpl.KeyTipLclPos);
+        Vector3 tipWldPos = MathUtils.TrfPtUnscaled(snpl.Rb, snpl.KeyTipLclPos);
         return MathUtils.InvrsTrfPtUnscaled(transform, tipWldPos);
     }
 
     IEnumerator UnlockShackleAnim() {
         Vector3 startPos = shackle.transform.localPosition;
-        Vector3 endPos = startPos + Vector3.up * 0.04f;
+        Vector3 endPos = startPos + Vector3.up * 0.05f;
         float duration = 0.1f;
         float timer = 0f;
         while (timer < duration) {

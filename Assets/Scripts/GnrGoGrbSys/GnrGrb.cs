@@ -1,13 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Represent a grab - one physics hand grabbing a grabbable.
+/// Generic grab data shared by all different game object grab systems.
 /// </summary>
-public sealed class Grb {
+public sealed class GnrGrb
+{
     /// <summary>
-    /// Grabbing hand.
+    /// Physics hand grabbing the grabbable.
     /// </summary>
-    public GrblJntDriven_PhysHand physHand;
+    public IGnrPhysHand gnrPhysHand;
     /// <summary>
     /// Unscaled position of the hand in grabbable's local space when the grab was initialized.
     /// </summary>
@@ -17,21 +18,20 @@ public sealed class Grb {
     /// </summary>
     public Quaternion initRotFromGrblToPhysHand = Quaternion.identity;
     /// <summary>
-    /// Initial point in phys hand's follow target space that corresponds to the
-    /// grip point used for this grab.
+    /// Theoretical grab point in the physics hand's follow target space, as if the
+    /// follow target had grabbed the grabbable the same way as the physics hand.
     /// </summary>
-    public Vector3 followTgtInitGrabPtInFollowTgtSpc = Vector3.zero;
+    public Vector3 theoInitGrbPtInFolTgtSpc = Vector3.zero;
 
-    public Grb(
-        GrblJntDriven_PhysHand physHand,
+    public GnrGrb(
+        IGnrPhysHand gnrPhysHand,
         Vector3 initPhysHandPosInGrblSpc,
         Quaternion initRotFromGrblToPhysHand,
-        Vector3 followTgtInitGrabPtInFollowTgtSpc
-
+        Vector3 theoInitGrbPtInFolTgtSpc
     ) {
-        this.physHand = physHand;
+        this.gnrPhysHand = gnrPhysHand;
         this.initPhysHandPosInGrblSpc = initPhysHandPosInGrblSpc;
         this.initRotFromGrblToPhysHand = initRotFromGrblToPhysHand;
-        this.followTgtInitGrabPtInFollowTgtSpc = followTgtInitGrabPtInFollowTgtSpc;
+        this.theoInitGrbPtInFolTgtSpc = theoInitGrbPtInFolTgtSpc;
     }
 }

@@ -10,7 +10,7 @@ public enum GrblJntDriven_BasicGrblDblGrbJntT {
     SimpleAnchAtPiv,
 }
 
-public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
+public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
     [Header("Settings")]
     [SerializeField] GrblJntDriven_BasicGrblSglGrbJntT sglGrbJntT = GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv;
     [SerializeField] GrblJntDriven_BasicGrblDblGrbJntT dblGrbJntT = GrblJntDriven_BasicGrblDblGrbJntT.GrbLineAligned;
@@ -23,6 +23,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     [Tooltip("Hand visual used to represent grabbing right hand. \n" +
         "Set the hand visual inactive in editor!")]
     [SerializeField] GameObject rHandVisProxy;
+    [SerializeField] ConfigurableJoint grbJnt;
+    [SerializeField] Rigidbody rb;
 
     // Finite state machine
     [HideInInspector] public Fsm grbJntFsm = new();
@@ -33,6 +35,10 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
     public GrblJntDriven_GrblCore GrblCore => grblCore;
+
+    public ConfigurableJoint GrbJnt => grbJnt;
+
+    public Rigidbody Rb => rb;
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -67,10 +73,13 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     // PUBLIC METHODS
     // -----------------------------------------
 
-    public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand) {
-        // Can be grabbed by up to one left hand and one right hand simultaneously.
-        return grblCore.GrbCount(physHand.side) == 0;
-    }
+    /// <summary>
+    /// NOTE: This grbl can be grabbed by up to one left hand and one right hand simultaneously.
+    /// </summary>
+    public bool CanBeGrabbed(GrblJntDriven_PhysHand physHand)
+        => GrblUtils.SidedGrbCount<GrblJntDriven_Grb, GrblJntDriven_PhysHand>(
+            grblCore.grbs,
+            physHand.handSide) == 0;
 
     public bool CanBeReleased(GrblJntDriven_PhysHand physHand) {
         return true;
@@ -87,15 +96,18 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
         // NOTE: Grab point is set to Vector3, because the grab point offset doesn't meaningfully
         // NOTE C: affect the grabbale pose.
-        var newGrb = new Grb(
-            physHand, 
-            MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
-            MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
-            Vector3.zero
+        var newGrb = new GrblJntDriven_Grb(
+            physHand,
+            new GnrGrb(
+                physHand,
+                MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
+                MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
+                Vector3.zero
+            )
         );
         grblCore.grbs.Add(newGrb);
         // Setup hand proxy visual.
-        if (physHand.side == Side.Left)
+        if (physHand.handSide == Side.Left)
             ObjUtils.ActivateNSetPose(
                 lHandVisProxy,
                 physHand.transform.position,

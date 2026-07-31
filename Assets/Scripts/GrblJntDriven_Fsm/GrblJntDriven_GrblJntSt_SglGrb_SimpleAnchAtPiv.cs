@@ -19,9 +19,9 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     public void Enter(IFsmSt prevSt) {
         // TODO: You could set the anchor to the grabbable COM but then for joint drive calculations
         // TODO C: you need to offset targets based on that.
-        grbl.GrblCore.grbJnt.anchor = Vector3.zero;
+        grbl.GrbJnt.anchor = Vector3.zero;
         PhysUtils.SetJntDrivesToDflt(
-            grbl.GrblCore.grbJnt, 
+            grbl.GrbJnt, 
             grbl.GrblCore.grbs[0].physHand.jntData
         );
     }
@@ -30,7 +30,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     }
 
     public void PhysicsTick() {
-        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrblCore.grbJnt);
+        UpdateJnt(grbl.GrblCore.grbs[0], grbl.GrbJnt);
     }
 
     public void Tick() {
@@ -40,13 +40,13 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
     // Private Methods
     // -----------------------------------------
 
-    void UpdateJnt(Grb grb, ConfigurableJoint grbJnt) {
+    void UpdateJnt(GrblJntDriven_Grb grb, ConfigurableJoint grbJnt) {
         // Current hand follow targets.
-        Vector3 followTgtGrabPtWorld = MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, grb.followTgtInitGrabPtInFollowTgtSpc);
+        Vector3 followTgtGrabPtWorld = MathUtils.TrfPtUnscaled(grb.physHand.followTgtTrf, grb.gnrGrb.theoInitGrbPtInFolTgtSpc);
         Transform physHandFollowTgt = grb.physHand.followTgtTrf;
         Quaternion tgtWorldRot =
-            physHandFollowTgt.rotation * Quaternion.Inverse(grb.initRotFromGrblToPhysHand);
-        Vector3 targetWorldPos = followTgtGrabPtWorld - tgtWorldRot * grb.initPhysHandPosInGrblSpc;
+            physHandFollowTgt.rotation * Quaternion.Inverse(grb.gnrGrb.initRotFromGrblToPhysHand);
+        Vector3 targetWorldPos = followTgtGrabPtWorld - tgtWorldRot * grb.gnrGrb.initPhysHandPosInGrblSpc;
         grbJnt.targetPosition = targetWorldPos;
         grbJnt.targetRotation = tgtWorldRot;
     }

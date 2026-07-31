@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(
     fileName = "NewPhysHandData",
     menuName = "VrPhysics/PhysHandData")]
+// TODO: Rename to: GnrPhysHandData
 public class PhysHandConfigurableJntData : ScriptableObject {
     [Header("Hand Pose Reset Settings")]
     [Tooltip("Reset hand pose if it gets too far from the controller.")]
