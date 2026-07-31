@@ -66,7 +66,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     }
 
     void OnDrawGizmos() {
-        GrblUtils.OnDrawGizmos_DrawGrbJntAnchor(this);
+        ObjUtils.OnDrawGizmos_DrawJntAnch(GrbJnt);
     }
 
     void OnDisable() {
@@ -104,7 +104,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
         // NOTE C: affect the grabbale pose.
         var newGrb = new GrblJntDriven_Grb(
             physHand,
-            new GnrGrb(
+            new GnrGrbData(
                 physHand,
                 MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
                 MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),

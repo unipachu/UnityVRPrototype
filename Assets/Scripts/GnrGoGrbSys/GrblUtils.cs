@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -11,14 +10,14 @@ public static class GrblUtils {
     /// if the follow target (i.e. hand controller) would be grabbing it like the phys hand's initial grab
     /// of the grabbable.
     /// /// </summary>
-    public static float DistBetweenGrblRbPosNTheoFolTgtGrblPos(Rigidbody rb, IGrb grb) {
+    public static float DistBetweenGrblRbPosNTheoFolTgtGrblPos(Rigidbody rb, IGnrGrbData grb) {
         return Vector3.Distance(rb.position, TheoFolTgtGrblPos(grb));
     }
 
     /// <summary>
     /// Finds the grab for the specified physics hand.
     /// </summary>
-    public static IGrb FindGrb(IGnrGrbl grbl, IGnrPhysHand physHand, Object grblCtx)
+    public static IGnrGrbData FindGrb(IGnrGrbl grbl, IGnrPhysHand physHand, Object grblCtx)
     {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             if (grbl.GnrGrbs.GetGrb(i).PhysHand == physHand)
@@ -33,7 +32,7 @@ public static class GrblUtils {
     /// </summary>
     /// <param name="grblCtx">For debug message context.</param>
     public static int FindGrbI<TGrb, TPhysHand>(List<TGrb> grbs, TPhysHand physHand, MonoBehaviour grblCtx)
-        where TGrb : IGrb
+        where TGrb : IGnrGrbData
         where TPhysHand : MonoBehaviour, IGnrPhysHand 
     {
         for (int i = 0; i < grbs.Count; i++) {
@@ -47,7 +46,7 @@ public static class GrblUtils {
     /// <summary>
     /// Finds follow target grap point expressed in grabbable space.
     /// </summary>
-    public static Vector3 FolTgtInitGrbPtInGrblSpc(GnrGrb gnrGrb, Transform grblTrf) {
+    public static Vector3 FolTgtInitGrbPtInGrblSpc(GnrGrbData gnrGrb, Transform grblTrf) {
         Vector3 followTgtInitGrabPtWorld = MathUtils.TrfPtUnscaled(
             gnrGrb.gnrPhysHand.FollowTgtTrf,
             gnrGrb.theoInitGrbPtInFolTgtSpc
@@ -62,7 +61,7 @@ public static class GrblUtils {
     /// <summary>
     /// Get the grab point of the phys hand target in world space.
     /// </summary>
-    public static Vector3 GetTgtGrbPtWld(GnrGrb gnrGrb, Vector3 lclGrbPt) {
+    public static Vector3 GetTgtGrbPtWld(GnrGrbData gnrGrb, Vector3 lclGrbPt) {
         return MathUtils.TrfPtUnscaled(gnrGrb.gnrPhysHand.FollowTgtTrf, lclGrbPt);
     }
 
@@ -70,7 +69,7 @@ public static class GrblUtils {
     /// Is the specified phys hand grabbing?
     /// </summary>
     public static bool IsGrabbing<TGrb, TPhysHand>(List<TGrb> grbs,TPhysHand physHand)
-        where TGrb : IGrb
+        where TGrb : IGnrGrbData
         where TPhysHand : MonoBehaviour, IGnrPhysHand
     {
         for (int i = 0; i < grbs.Count; i++) {
@@ -82,10 +81,10 @@ public static class GrblUtils {
 
     public static void LRGrb_ReleaseAllGrbs(IGnrGrbl grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
-            IGrb grb = grbl.GnrGrbs.GetGrb(i);
+            IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
             grb.PhysHand.OnGrabReleased(
-                MathUtils.TrfPtUnscaled(grbl.Rb.transform, grb.GnrGrb.initPhysHandPosInGrblSpc),
-                MathUtils.TrfRot(grbl.Rb.transform, grb.GnrGrb.initRotFromGrblToPhysHand)
+                MathUtils.TrfPtUnscaled(grbl.Rb.transform, grb.GnrGrbData.initPhysHandPosInGrblSpc),
+                MathUtils.TrfRot(grbl.Rb.transform, grb.GnrGrbData.initRotFromGrblToPhysHand)
             );
         }
         grbl.GnrGrbs.ClearGrbsList();
@@ -93,33 +92,13 @@ public static class GrblUtils {
         rHandVisProxy.SetActive(false);
     }
 
-    //// TODO: Make generic.
-    //public static void LRGrb_ReleaseGrb(
-    //    IGrblJntDriven_Grbl grbl,
-    //    GrblJntDriven_PhysHand physHandToRelease,
-    //    GameObject lHandVisProxy,
-    //    GameObject rHandVisProxy
-    //) {
-    //    GrblJntDriven_Grb grb = FindGrb(
-    //        grbl.GrblCore.grbs,
-    //        physHandToRelease,
-    //        grbl.GrblCore);
-    //    GameObject correspondingProxyHand = physHandToRelease.handSide == Side.Left ? lHandVisProxy : rHandVisProxy;
-    //    grb.physHand.OnGrabReleased(
-    //        correspondingProxyHand.transform.position,
-    //        correspondingProxyHand.transform.rotation
-    //    );
-    //    grbl.GrblCore.grbs.Remove(grb);
-    //    correspondingProxyHand.SetActive(false);
-    //}
-
     public static void LRGrb_ReleaseGrb(
         IGnrGrbl grbl,
         IGnrPhysHand physHandToRelease,
         GameObject lHandVisProxy,
         GameObject rHandVisProxy
     ) {
-        IGrb grb = FindGrb(
+        IGnrGrbData grb = FindGrb(
             grbl,
             physHandToRelease,
             grbl.Rb);
@@ -138,19 +117,6 @@ public static class GrblUtils {
         correspondingProxyHand.SetActive(false);
     }
 
-    public static void OnDrawGizmos_DrawGrbJntAnchor(IGrblJntDriven_Grbl grbl) {
-        if (grbl == null || grbl.GrbJnt == null) {
-            Debug.Log("Something was null in the grbl");
-            return;
-        }
-        Gizmos.color = Color.yellow;
-        Vector3 worldAnchorPos = MathUtils.TrfPtUnscaled(
-            grbl.GrbJnt.transform,
-            grbl.GrbJnt.anchor
-        );
-        Gizmos.DrawWireSphere(worldAnchorPos, 0.01f);
-    }
-
     /// <summary>
     /// Counts how many phys hands of the specified side are grabbing.
     /// </summary>
@@ -158,7 +124,7 @@ public static class GrblUtils {
         List<TGrb> grbs,
         Side handSide
     )
-    where TGrb : IGrb
+    where TGrb : IGnrGrbData
     {
         int counter = 0;
         foreach (TGrb grb in grbs) {
@@ -174,11 +140,11 @@ public static class GrblUtils {
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
     /// <param name="theoGrblRot">NOTE: You can use <see cref="TheoFolTgtGrblRot"/> to get the rot.</param>
-    public static Vector3 TheoFolTgtGrblPos(GrblJntDriven_Grb grb, Quaternion theoGrblRot) {
+    public static Vector3 TheoFolTgtGrblPos(IGnrGrbData grb, Quaternion theoGrblRot) {
         return MathUtils.AlignLclPtToWldPt(
-            grb.physHand.followTgtTrf.position,
+            grb.PhysHand.FollowTgtTrf.position,
             theoGrblRot,
-            grb.gnrGrb.initPhysHandPosInGrblSpc
+            grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
     }
 
@@ -188,12 +154,12 @@ public static class GrblUtils {
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
     public static Vector3 TheoFolTgtGrblPos<TGrb>(TGrb grb)
-        where TGrb : IGrb
+        where TGrb : IGnrGrbData
     { 
         return MathUtils.AlignLclPtToWldPt(
             grb.PhysHand.FollowTgtTrf.position,
             TheoFolTgtGrblRot<TGrb>(grb),
-            grb.GnrGrb.initPhysHandPosInGrblSpc
+            grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
     }
 
@@ -205,7 +171,7 @@ public static class GrblUtils {
     /// Grab with the corresponding phys hand's follow target holding the theoretical grabbable.
     /// </param>
     public static (Vector3, Quaternion) TheoFolTgtGrblPose<TGrb>(TGrb grb)
-        where TGrb : IGrb
+        where TGrb : IGnrGrbData
     {
         Quaternion theoRot = TheoFolTgtGrblRot<TGrb>(grb);
         Vector3 theoPos = TheoFolTgtGrblPos<TGrb>(grb);
@@ -218,11 +184,11 @@ public static class GrblUtils {
     /// </summary>
     /// <param name="grb">Grab with the corresponding phys hand's follow target holding the theoretical grabbable.</param>
     public static Quaternion TheoFolTgtGrblRot<TGrb>(TGrb grb)
-        where TGrb : IGrb
+        where TGrb : IGnrGrbData
     {
         return MathUtils.AlignLclRotToWldRot(
             grb.PhysHand.FollowTgtTrf.rotation,
-            grb.GnrGrb.initRotFromGrblToPhysHand
+            grb.GnrGrbData.initRotFromGrblToPhysHand
         );
     }
 }

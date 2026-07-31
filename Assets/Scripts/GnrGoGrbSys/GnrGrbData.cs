@@ -3,8 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Generic grab data shared by all different game object grab systems.
 /// </summary>
-public sealed class GnrGrb
-{
+public sealed class GnrGrbData {
     /// <summary>
     /// Physics hand grabbing the grabbable.
     /// </summary>
@@ -23,7 +22,7 @@ public sealed class GnrGrb
     /// </summary>
     public Vector3 theoInitGrbPtInFolTgtSpc = Vector3.zero;
 
-    public GnrGrb(
+    public GnrGrbData(
         IGnrPhysHand gnrPhysHand,
         Vector3 initPhysHandPosInGrblSpc,
         Quaternion initRotFromGrblToPhysHand,

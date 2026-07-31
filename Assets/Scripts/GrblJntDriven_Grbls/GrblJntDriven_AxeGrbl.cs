@@ -64,7 +64,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     void OnDrawGizmos() {
-        GrblUtils.OnDrawGizmos_DrawGrbJntAnchor(this);
+        ObjUtils.OnDrawGizmos_DrawJntAnch(grbJnt);
     }
 
     void OnDisable() {
@@ -100,7 +100,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
         initPhysHandPosInGrblSpc.z = 0;
         var newGrb = new GrblJntDriven_Grb(
             physHand,
-            new GnrGrb(
+            new GnrGrbData(
                 physHand,
                 initPhysHandPosInGrblSpc,
                 MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),

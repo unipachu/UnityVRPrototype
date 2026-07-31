@@ -10,9 +10,9 @@ public interface IGnrGrbs {
     /// NOTE: This is a helper method for complete grab release methods!
     /// </summary>
     void ClearGrbsList();
-    IGrb GetGrb(int i);
+    IGnrGrbData GetGrb(int i);
     /// <summary>
     /// NOTE: This is a helper method for complete grab release methods!
     /// </summary>
-    void RemoveGrabFromList(IGrb grb);
+    void RemoveGrabFromList(IGnrGrbData grb);
 }

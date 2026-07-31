@@ -513,7 +513,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8889991721735292168}
   - component: {fileID: 4781879426537273523}
-  - component: {fileID: 5087472966836814379}
   - component: {fileID: 6304413422746122727}
   - component: {fileID: 531268420415036490}
   m_Layer: 7
@@ -555,24 +554,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538768a755042bd46b812c00a29df3ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_KeyGrbl
-  grblCore: {fileID: 5087472966836814379}
   lHandVisProxy: {fileID: 4419481046953422344}
   rHandVisProxy: {fileID: 1007363112328765987}
   keyTipLclPos: {x: 0, y: 0, z: 0.1056}
   grbJnt: {fileID: 531268420415036490}
   rb: {fileID: 6304413422746122727}
---- !u!114 &5087472966836814379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5306830199379378609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e514c2e073fb50a449adb226da33783f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_GrblCore
 --- !u!54 &6304413422746122727
 Rigidbody:
   m_ObjectHideFlags: 0

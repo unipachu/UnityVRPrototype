@@ -15,9 +15,9 @@ public class IGrblJntDriven_Grbs : IGnrGrbs {
         grbs.Clear();
     }
 
-    public IGrb GetGrb(int i) => grbs[i];
+    public IGnrGrbData GetGrb(int i) => grbs[i];
 
-    public void RemoveGrabFromList(IGrb grb) {
+    public void RemoveGrabFromList(IGnrGrbData grb) {
         if (!grbs.Remove((GrblJntDriven_Grb)grb)) {
             Debug.LogError($"Could not find grab to remove from {nameof(IGrblJntDriven_Grbs)}!");
         }

@@ -1,7 +1,7 @@
 /// <summary>
 /// Represent a grabbable joint driven grab - one physics hand grabbing a grabbable.
 /// </summary>
-public sealed class GrblJntDriven_Grb : IGrb {
+public sealed class GrblJntDriven_Grb : IGnrGrbData {
     /// <summary>
     /// Grabbing hand.
     /// </summary>
@@ -9,13 +9,13 @@ public sealed class GrblJntDriven_Grb : IGrb {
     /// <summary>
     /// Common grab data.
     /// </summary>
-    public GnrGrb gnrGrb;
+    public GnrGrbData gnrGrb;
     
-    public GnrGrb GnrGrb => gnrGrb;
+    public GnrGrbData GnrGrbData => gnrGrb;
 
-    IGnrPhysHand IGrb.PhysHand => physHand;
+    public IGnrPhysHand PhysHand => physHand;
 
-    public GrblJntDriven_Grb(GrblJntDriven_PhysHand physHand, GnrGrb gnrGrb) {
+    public GrblJntDriven_Grb(GrblJntDriven_PhysHand physHand, GnrGrbData gnrGrb) {
         this.physHand = physHand;
         this.gnrGrb = gnrGrb;
     }

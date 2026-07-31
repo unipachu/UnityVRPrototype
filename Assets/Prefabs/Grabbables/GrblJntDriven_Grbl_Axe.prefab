@@ -487,8 +487,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 471505671769007521}
-  - component: {fileID: 1092081780038640616}
-  - component: {fileID: 1894635328074925199}
+  - component: {fileID: 5139198365368982681}
   - component: {fileID: 6705095560291864265}
   - component: {fileID: 5976568405749683233}
   m_Layer: 7
@@ -518,7 +517,7 @@ Transform:
   - {fileID: 7966818170744992161}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1092081780038640616
+--- !u!114 &5139198365368982681
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -532,25 +531,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_AxeGrbl
   minGrbPtLclY: -0.49
   maxGrbPtHandLclY: -0.03
-  grblCore: {fileID: 1894635328074925199}
   lHandVisProxyHolder: {fileID: 599777965074079079}
   lHandVisProxyVis: {fileID: 8267977506743683433}
   rHandVisProxyHolder: {fileID: 8538109434488674957}
   rHandVisProxyVis: {fileID: 912851848367600961}
   grbJnt: {fileID: 5976568405749683233}
   rb: {fileID: 6705095560291864265}
---- !u!114 &1894635328074925199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8335875250518918510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e514c2e073fb50a449adb226da33783f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GrblJntDriven_GrblCore
 --- !u!54 &6705095560291864265
 Rigidbody:
   m_ObjectHideFlags: 0

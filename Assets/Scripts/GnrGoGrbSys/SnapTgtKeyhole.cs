@@ -215,7 +215,7 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
 
     private void MoveSnappedSnpl() {
         Rigidbody snplRb = snpl.Rb;
-        IGrb grb = snpl.Grbl.GnrGrbs.GetGrb(0);
+        IGnrGrbData grb = snpl.Grbl.GnrGrbs.GetGrb(0);
         float tipDepthInKeyholeSpc = TipPosInKeyholeSpc().z;
         // Find theoretical snappable depth and interpolate towards that.
         Vector3 theoTipWldPos = TheoFolTgtTipWldPos(grb);
@@ -382,12 +382,12 @@ public class SnapTgtKeyhole : MonoBehaviour, ISnapTgt {
 
     // TODO: You should probably just cache tip theoretical world pos and keyhole space pos every update
     // TODO C: when a snappable is snapped to the keyhole.
-    Vector3 TheoFolTgtTipWldPos(IGrb grb) {
+    Vector3 TheoFolTgtTipWldPos(IGnrGrbData grb) {
         var theoPose = GrblUtils.TheoFolTgtGrblPose(grb);
         return MathUtils.TrfPt(theoPose.Item1, theoPose.Item2, snpl.KeyTipLclPos);
     }
 
-    Quaternion TheoFolTgtTipWldRot(IGrb grb) {
+    Quaternion TheoFolTgtTipWldRot(IGnrGrbData grb) {
         // Theoretical tip world rotation is same as the grabbable theoretical world rotation...
         return GrblUtils.TheoFolTgtGrblRot(grb);
     }
