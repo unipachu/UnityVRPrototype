@@ -21,7 +21,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
     readonly List<GrblJntDriven_Grb> grbs = new(2);
-    IGrblJntDriven_Grbs gnrGrbs;
+    GrblJntDriven_Grbs gnrGrbs;
     ISnapTgt snapped = null;
     /// <summary>
     /// We use snap cooldown since when we turn rigidbody from kinematic to dynamic,

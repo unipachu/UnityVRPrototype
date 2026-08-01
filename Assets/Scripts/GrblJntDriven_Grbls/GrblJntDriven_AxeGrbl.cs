@@ -29,7 +29,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
     readonly List<GrblJntDriven_Grb> grbs = new(2);
-    IGrblJntDriven_Grbs gnrGrbs;
+    GrblJntDriven_Grbs gnrGrbs;
     readonly Vector3 followTgtInitGrabPtInFollowTgtSpc = new Vector3(0, -0.025f, 0);
 
     public IGnrGrbsCtrl GnrGrbs => gnrGrbs;

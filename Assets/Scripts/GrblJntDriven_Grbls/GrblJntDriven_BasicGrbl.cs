@@ -35,7 +35,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriv
     [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
     readonly List<GrblJntDriven_Grb> grbs = new(2);
-    IGrblJntDriven_Grbs gnrGrbs;
+    GrblJntDriven_Grbs gnrGrbs;
 
     public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public ConfigurableJoint GrbJnt => grbJnt;

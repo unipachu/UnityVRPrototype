@@ -12,7 +12,6 @@ public sealed class GrblJntDriven_Grb : IGnrGrbData {
     public GnrGrbData gnrGrb;
     
     public GnrGrbData GnrGrbData => gnrGrb;
-
     public IGnrPhysHand PhysHand => physHand;
 
     public GrblJntDriven_Grb(GrblJntDriven_PhysHand physHand, GnrGrbData gnrGrb) {

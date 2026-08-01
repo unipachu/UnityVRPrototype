@@ -48,10 +48,11 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
     // Private Methods
     // -----------------------------------------
 
-    // TODO: What does AngleAxis do with 180 angles?
     /// <summary>
     /// NOTE: hand1Wt should be 0-1. It decides how hands' rotation affects grabbable twist around the axis between the hands.
     /// </summary>
+    // TODO: What does AngleAxis do with 180 angles?
+    // TODO: You could collapse some of the calculations to a static function to allow usage with other grab types!
     public void UpdateJnt(GrblJntDriven_Grb grb0, GrblJntDriven_Grb grb1, ConfigurableJoint grbJnt, float posHand0Wt = 0.5f, float rotHand0Wt = 0.5f) {
         float posHand1Wt = 1f - posHand0Wt;
         float rotHand1Wt = 1f - rotHand0Wt;
@@ -67,12 +68,12 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         // Current line between hands.
         Vector3 tgtWldLine = followTgtGrabPtWorld1 - followTgtGrabPtWorld0;
         // This is a faster and more rounding safe way to check if vector magnitude is 0.
-        if (tgtWldLine.sqrMagnitude < 1e-8f)
+        if(MathUtils.IsNearlyZero(tgtWldLine))
             return;
         tgtWldLine.Normalize();
         // Initial line between grab points.
         Vector3 initLine = initLocalPos1 - initLocalPos0;
-        if (initLine.sqrMagnitude < 1e-8f)
+        if(MathUtils.IsNearlyZero(initLine))
             return;
         initLine.Normalize();
         // Align the initial grab line with the current grab line.

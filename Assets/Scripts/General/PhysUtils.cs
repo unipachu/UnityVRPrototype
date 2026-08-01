@@ -31,19 +31,21 @@ public static class PhysUtils {
         float avgDefaultSlerpDriveMaxForce = 0;
         foreach (GrblJntDriven_Grb grab in grabs) {
             PhysHandConfigurableJntData data = grab.physHand.jntData;
-
+            // Linear drive
             avgDfltLinDrivePosSpring += data.dfltLinDrivePosSpring;
             avgDfltLinDrivePosDamper += data.dfltLinDrivePosDamper;
             avgDfltLinDriveMaxForce += data.dfltLinDriveMaxForce;
-
+            // Slerp drive
             avgDfltSlerpDrivePosSpring += data.dfltSlerpDrivePosSpring;
             avgDfltSlerpDriveDamper += data.dfltSlerpDriveDamper;
             avgDefaultSlerpDriveMaxForce += data.defaultSlerpDriveMaxForce;
         }
         float invGrabCount = 1f / grabs.Count;
+        // Linear drive
         avgDfltLinDrivePosSpring *= invGrabCount;
         avgDfltLinDrivePosDamper *= invGrabCount;
         avgDfltLinDriveMaxForce *= invGrabCount;
+        // Slerp drive
         avgDfltSlerpDrivePosSpring *= invGrabCount;
         avgDfltSlerpDriveDamper *= invGrabCount;
         avgDefaultSlerpDriveMaxForce *= invGrabCount;

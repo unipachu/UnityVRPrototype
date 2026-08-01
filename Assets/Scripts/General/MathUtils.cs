@@ -263,13 +263,32 @@ public static class MathUtils {
         return InvrsTrfRot(trf.rotation, rotInWorldSpace);
     }
 
-    public static bool IsInRange(float x, float greaterThanOrEqualTo, float lessThanOrEqualTo) {
+    /// <summary>
+    /// Returns whether <paramref name="x"/> is within the specified inclusive range.
+    /// </summary>
+    /// <param name="x">The value to test.</param>
+    /// <param name="gte">The inclusive lower bound of the range.</param>
+    /// <param name="lte">The inclusive upper bound of the range.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="x"/> is greater than or equal to
+    /// <paramref name="gte"/> and less than or equal to <paramref name="lte"/>; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
+    public static bool IsInRange(float x, float gte, float lte) {
         Debug.Assert(
-            greaterThanOrEqualTo <= lessThanOrEqualTo,
-            $"Invalid range: lower bound ({greaterThanOrEqualTo}) must be less than or equal to " +
-            $"upper bound ({lessThanOrEqualTo})."
+            gte <= lte,
+            $"Invalid range: lower bound ({gte}) must be less than or equal to " +
+            $"upper bound ({lte})."
         );
-        return x >= greaterThanOrEqualTo && x <= lessThanOrEqualTo;
+        return x >= gte && x <= lte;
+    }
+
+    /// <summary>
+    /// Checks whether a vector is approximately zero using its squared
+    /// magnitude, avoiding the less performant <see cref="Vector3.magnitude"/>.
+    /// </summary>
+    public static bool IsNearlyZero(Vector3 vec, float magThld = 1e-8f) {
+        return vec.sqrMagnitude < magThld;
     }
 
     /// <summary>
