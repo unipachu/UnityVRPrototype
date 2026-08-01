@@ -17,7 +17,7 @@ public static class GrblUtils {
     /// <summary>
     /// Finds the grab for the specified physics hand.
     /// </summary>
-    public static IGnrGrbData FindGrb(IGnrGrbl grbl, IGnrPhysHand physHand, Object grblCtx)
+    public static IGnrGrbData FindGrb(IGnrGrblData grbl, IGnrPhysHand physHand, Object grblCtx)
     {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             if (grbl.GnrGrbs.GetGrb(i).GnrGrbData.gnrPhysHand == physHand)
@@ -79,7 +79,7 @@ public static class GrblUtils {
         return false;
     }
 
-    public static void LRGrb_ReleaseAllGrbs(IGnrGrbl grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
+    public static void LRGrb_ReleaseAllGrbs(IGnrGrblData grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
             grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
@@ -93,7 +93,7 @@ public static class GrblUtils {
     }
 
     public static void LRGrb_ReleaseGrb(
-        IGnrGrbl grbl,
+        IGnrGrblData grbl,
         IGnrPhysHand physHandToRelease,
         GameObject lHandVisProxy,
         GameObject rHandVisProxy
@@ -102,17 +102,14 @@ public static class GrblUtils {
             grbl,
             physHandToRelease,
             grbl.Rb);
-
         GameObject correspondingProxyHand =
             physHandToRelease.HandSide == Side.Left
                 ? lHandVisProxy
                 : rHandVisProxy;
-
         grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
             correspondingProxyHand.transform.position,
             correspondingProxyHand.transform.rotation
         );
-
         grbl.GnrGrbs.RemoveGrabFromList(grb);
         correspondingProxyHand.SetActive(false);
     }

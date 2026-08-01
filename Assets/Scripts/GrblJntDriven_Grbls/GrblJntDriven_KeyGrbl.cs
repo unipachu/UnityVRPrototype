@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IKeyholeSnpl {
+public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IKeyholeSnpl {
     [Header("Refs")]
     [Tooltip("Hand visual used to represent grabbing left hand.\n" +
     "Set the hand visual inactive in editor!")]
@@ -29,9 +29,9 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     /// </summary>
     float snpCooldown = 0;
 
-    public IGnrGrbs GnrGrbs => gnrGrbs;
+    public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public ConfigurableJoint GrbJnt => grbJnt;
-    public IGnrGrbl Grbl => this;
+    public IGnrGrblData GnrGrblData => this;
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public Vector3 KeyTipLclPos => keyTipLclPos;
     public Rigidbody Rb => rb;

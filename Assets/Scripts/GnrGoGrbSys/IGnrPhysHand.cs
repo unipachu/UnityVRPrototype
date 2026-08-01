@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 
 /// <summary>
-/// Represents a generic physics hand.
+/// Represents a generic physics hand, i.e. any game object-based physics hand.
 /// </summary>
 public interface IGnrPhysHand{
     public HapticImpulsePlayer CtrlHapticImpPlr { get; }

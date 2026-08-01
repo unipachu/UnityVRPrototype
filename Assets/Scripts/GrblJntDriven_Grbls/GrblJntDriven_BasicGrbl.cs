@@ -11,7 +11,7 @@ public enum GrblJntDriven_BasicGrblDblGrbJntT {
     SimpleAnchAtPiv,
 }
 
-public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
+public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
     [Header("Settings")]
     [SerializeField] GrblJntDriven_BasicGrblSglGrbJntT sglGrbJntT = GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv;
     [SerializeField] GrblJntDriven_BasicGrblDblGrbJntT dblGrbJntT = GrblJntDriven_BasicGrblDblGrbJntT.GrbLineAligned;
@@ -37,7 +37,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_G
     readonly List<GrblJntDriven_Grb> grbs = new(2);
     IGrblJntDriven_Grbs gnrGrbs;
 
-    public IGnrGrbs GnrGrbs => gnrGrbs;
+    public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public ConfigurableJoint GrbJnt => grbJnt;
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public Rigidbody Rb => rb;

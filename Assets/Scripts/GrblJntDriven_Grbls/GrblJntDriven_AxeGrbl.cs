@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Axe grabbable.
 /// </summary>
-public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IDblGrb_GrbLineAligned {
+public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
     [Header("Settings")]
     [SerializeField] float minGrbPtLclY = -0.49f;
     [SerializeField] float maxGrbPtHandLclY = -0.03f;
@@ -32,7 +32,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     IGrblJntDriven_Grbs gnrGrbs;
     readonly Vector3 followTgtInitGrabPtInFollowTgtSpc = new Vector3(0, -0.025f, 0);
 
-    public IGnrGrbs GnrGrbs => gnrGrbs;
+    public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public ConfigurableJoint GrbJnt => grbJnt;
     public Rigidbody Rb => rb;

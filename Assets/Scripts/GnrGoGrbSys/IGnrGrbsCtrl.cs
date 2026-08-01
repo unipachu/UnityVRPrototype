@@ -1,7 +1,10 @@
 /// <summary>
-/// Grabs grabbing a grabbable.
+/// Generic controller that can do basic operations on a grabs collection.<br/>
+/// NOTE: This is needed because generic collections in C# are invariant, so
+/// polymorphism cannot be used to treat a List&lt;GrblJntDriven_Grb&gt; as a
+/// List&lt;IGnrGrbData&gt;.
 /// </summary>
-public interface IGnrGrbs {
+public interface IGnrGrbsCtrl {
     int GrbCount { get; }
 
     /// <summary>

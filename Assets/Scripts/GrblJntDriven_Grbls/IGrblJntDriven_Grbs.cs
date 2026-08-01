@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // TODO: Remove I from name.
-public class IGrblJntDriven_Grbs : IGnrGrbs {
+public class IGrblJntDriven_Grbs : IGnrGrbsCtrl {
     readonly List<GrblJntDriven_Grb> grbs;
 
     public int GrbCount => grbs.Count;

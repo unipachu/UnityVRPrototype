@@ -6,9 +6,9 @@ using UnityEngine;
 /// </summary>
 public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
     IGrblJntDriven_Grbl grbl;
-    IDblGrb_GrbLineAligned dblGrb_GrbLineAligned;
+    IDblGrb_GrbLineAlignable dblGrb_GrbLineAligned;
 
-    public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned(IGrblJntDriven_Grbl grbl, IDblGrb_GrbLineAligned dblGrb_GrbLineAligned) {
+    public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned(IGrblJntDriven_Grbl grbl, IDblGrb_GrbLineAlignable dblGrb_GrbLineAligned) {
         this.grbl = grbl;
         this.dblGrb_GrbLineAligned = dblGrb_GrbLineAligned;
     }
