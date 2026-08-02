@@ -1,17 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GrblJntDriven_BasicGrblSglGrbJntT {
-    AnchAtGrblPiv,
-    AnchAtPhysHandPos,
-}
-
-public enum GrblJntDriven_BasicGrblDblGrbJntT {
-    GrbLineAligned,
-    SimpleAnchAtPiv,
-}
-
-public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
+public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
     [Header("Settings")]
     [SerializeField] GrblJntDriven_BasicGrblSglGrbJntT sglGrbJntT = GrblJntDriven_BasicGrblSglGrbJntT.AnchAtGrblPiv;
     [SerializeField] GrblJntDriven_BasicGrblDblGrbJntT dblGrbJntT = GrblJntDriven_BasicGrblDblGrbJntT.GrbLineAligned;
@@ -42,6 +32,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriv
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public Rigidbody Rb => rb;
     public Transform Trf => transform;
+
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -99,7 +90,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriv
 
     public float GetPosHand0Wt() => 0.5f;
 
-    public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
+    public void OnInitGrb(GrblJntDriven_PhysHand physHand) {
         // NOTE: Grab point is set to Vector3, because the grab point offset doesn't meaningfully
         // NOTE C: affect the grabbale pose.
         var newGrb = new GrblJntDriven_Grb(

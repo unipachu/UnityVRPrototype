@@ -50,20 +50,20 @@ MonoBehaviour:
   grbLayers:
     serializedVersion: 2
     m_Bits: 128
-  requiredMaxAngForSnapping: 10
-  snapInInterpDur: 0.1
-  snapOutInterpDur: 0.05
-  snapStartRumbleAmp: 0.1
-  snapStartRumbleDur: 0.1
-  snapStartRumbleFreq: 0.05
+  requiredMaxAngForSnapping: 15
+  snpInInterpDur: 0.1
+  snpOutInterpDur: 0.05
+  snpStartRumbleAmp: 0.1
+  snpStartRumbleDur: 0.1
+  snpStartRumbleFreq: 0.05
   keyholeEndReachedRumbleAmp: 0.5
   keyholeEndReachedRumbleDur: 0.05
   keyholeEndReachedRumbleFreq: 0.05
   padlockUnlockedRumbleAmp: 0.5
   padlockUnlockedRumbleDur: 0.05
   padlockUnlockedRumbleFreq: 0.05
-  snapOutDist: 0.15
-  snapOutDep: -0.1
+  snpOutDist: 0.15
+  snpOutDep: -0.1
   snplTipMinLclDepth: -0.01
   snplTipMinRotDisabledLclDepth: 0.007
   snplTipMaxRotDisabledLclDepth: 0.095

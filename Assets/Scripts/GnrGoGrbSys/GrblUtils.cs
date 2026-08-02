@@ -17,7 +17,12 @@ public static class GrblUtils {
     /// <summary>
     /// Finds the grab for the specified physics hand.
     /// </summary>
-    public static IGnrGrbData FindGrb(IGnrGrblData grbl, IGnrPhysHand physHand, Object grblCtx)
+    public static IGnrGrbData FindGrb<TPhysHand, TGrbl>(
+        IGnrGrbl<TPhysHand, TGrbl> grbl,
+        IGnrPhysHand physHand,
+        Object grblCtx
+    ) where TPhysHand : IGnrPhysHand<TGrbl, TPhysHand>
+        where TGrbl : IGnrGrbl<TPhysHand, TGrbl> 
     {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             if (grbl.GnrGrbs.GetGrb(i).GnrGrbData.gnrPhysHand == physHand)
@@ -79,7 +84,13 @@ public static class GrblUtils {
         return false;
     }
 
-    public static void LRGrb_ReleaseAllGrbs(IGnrGrblData grbl, GameObject lHandVisProxy, GameObject rHandVisProxy) {
+    public static void LRGrb_ReleaseAllGrbs<TPhysHand, TGrbl>(
+        IGnrGrbl<TPhysHand, TGrbl> grbl,
+        GameObject lHandVisProxy,
+        GameObject rHandVisProxy
+    ) where TPhysHand : IGnrPhysHand<TGrbl, TPhysHand>
+        where TGrbl : IGnrGrbl<TPhysHand, TGrbl>
+    {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
             grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
@@ -92,12 +103,14 @@ public static class GrblUtils {
         rHandVisProxy.SetActive(false);
     }
 
-    public static void LRGrb_ReleaseGrb(
-        IGnrGrblData grbl,
+    public static void LRGrb_ReleaseGrb<TPhysHand, TGrbl>(
+        IGnrGrbl<TPhysHand, TGrbl> grbl,
         IGnrPhysHand physHandToRelease,
         GameObject lHandVisProxy,
         GameObject rHandVisProxy
-    ) {
+    ) where TPhysHand : IGnrPhysHand<TGrbl, TPhysHand>
+        where TGrbl : IGnrGrbl<TPhysHand, TGrbl>
+    {
         IGnrGrbData grb = FindGrb(
             grbl,
             physHandToRelease,

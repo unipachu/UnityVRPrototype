@@ -22,7 +22,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv : IFsmSt {
         grbl.GrbJnt.anchor = Vector3.zero;
         PhysUtils.SetJntDrivesToDflt(
             grbl.GrbJnt, 
-            grbl.Grbs[0].physHand.jntData
+            grbl.Grbs[0].physHand.wldJntData
         );
     }
 

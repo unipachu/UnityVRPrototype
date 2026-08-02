@@ -8,7 +8,7 @@ public interface IKeyholeSnpl {
     /// NOTE: Grbl rb's orientation should match with the keyhole
     /// (rb forward towards the keyhole insertion direction).
     /// </summary>
-    IGnrGrblData GnrGrblData { get; }
+    IGnrGrbl GnrGrblData { get; }
     /// <summary>
     /// Position representing the center of the tip of the key in grbl rb space.
     /// </summary>
@@ -20,7 +20,7 @@ public interface IKeyholeSnpl {
     /// <summary>
     /// After the snappable has been initialized for snap, it should have a kinematic rigidbody.
     /// </summary>
-    void InitSnp(ISnapTgt snpTgt);
+    void InitSnp(ISnpTgt snpTgt);
     /// <summary>
     /// Should be called by the keyhole when it decides to end the snap.
     /// </summary>

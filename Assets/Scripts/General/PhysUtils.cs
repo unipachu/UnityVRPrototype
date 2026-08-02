@@ -5,19 +5,19 @@ using UnityEngine;
 /// Utility methods using PhysX's features and the physics grab system.
 /// </summary>
 public static class PhysUtils {
-    public static void SetJntDrivesToDflt(ConfigurableJoint jnt, PhysHandConfigurableJntData data) {
+    public static void SetJntDrivesToDflt(ConfigurableJoint jnt, DfltConfigJntData data) {
         JointDrive jntDrive = new JointDrive();
         // Linear drives:
-        jntDrive.positionSpring = data.dfltLinDrivePosSpring;
-        jntDrive.positionDamper = data.dfltLinDrivePosDamper;
-        jntDrive.maximumForce = data.dfltLinDriveMaxForce;
+        jntDrive.positionSpring = data.dfltLinDrvPosSpring;
+        jntDrive.positionDamper = data.dfltLinDrvPosDamper;
+        jntDrive.maximumForce = data.dfltLinDrvMaxForce;
         jnt.xDrive = jntDrive;
         jnt.yDrive = jntDrive;
         jnt.zDrive = jntDrive;
         // Angular drive:
-        jntDrive.positionSpring = data.dfltSlerpDrivePosSpring;
-        jntDrive.positionDamper = data.dfltSlerpDriveDamper;
-        jntDrive.maximumForce = data.defaultSlerpDriveMaxForce;
+        jntDrive.positionSpring = data.dfltSlerpDrvPosSpring;
+        jntDrive.positionDamper = data.dfltSlerpDrvDamper;
+        jntDrive.maximumForce = data.dfltSlerpDrvMaxForce;
         jnt.slerpDrive = jntDrive;
     }
 
@@ -30,15 +30,15 @@ public static class PhysUtils {
         float avgDfltSlerpDriveDamper = 0;
         float avgDefaultSlerpDriveMaxForce = 0;
         foreach (GrblJntDriven_Grb grab in grabs) {
-            PhysHandConfigurableJntData data = grab.physHand.jntData;
+            DfltConfigJntData data = grab.physHand.wldJntData;
             // Linear drive
-            avgDfltLinDrivePosSpring += data.dfltLinDrivePosSpring;
-            avgDfltLinDrivePosDamper += data.dfltLinDrivePosDamper;
-            avgDfltLinDriveMaxForce += data.dfltLinDriveMaxForce;
+            avgDfltLinDrivePosSpring += data.dfltLinDrvPosSpring;
+            avgDfltLinDrivePosDamper += data.dfltLinDrvPosDamper;
+            avgDfltLinDriveMaxForce += data.dfltLinDrvMaxForce;
             // Slerp drive
-            avgDfltSlerpDrivePosSpring += data.dfltSlerpDrivePosSpring;
-            avgDfltSlerpDriveDamper += data.dfltSlerpDriveDamper;
-            avgDefaultSlerpDriveMaxForce += data.defaultSlerpDriveMaxForce;
+            avgDfltSlerpDrivePosSpring += data.dfltSlerpDrvPosSpring;
+            avgDfltSlerpDriveDamper += data.dfltSlerpDrvDamper;
+            avgDefaultSlerpDriveMaxForce += data.dfltSlerpDrvMaxForce;
         }
         float invGrabCount = 1f / grabs.Count;
         // Linear drive
@@ -79,5 +79,17 @@ public static class PhysUtils {
         jntDrive.positionDamper = 0;
         jntDrive.maximumForce = 0;
         jnt.slerpDrive = jntDrive;
+    }
+
+    public static void TeleportWldJntCtrldRb(Transform trf, Rigidbody rb, Transform tgtTrf, ConfigurableJoint wldJnt, DfltConfigJntData configJntData) {
+        // We move the hand to the pose of the controller.
+        trf.position = tgtTrf.position;
+        trf.rotation = tgtTrf.rotation;
+        rb.position = tgtTrf.position;
+        rb.rotation = tgtTrf.rotation;
+        // Set world joint targets.
+        wldJnt.targetPosition = tgtTrf.position;
+        wldJnt.targetRotation = tgtTrf.rotation;
+        SetJntDrivesToDflt(wldJnt, configJntData);
     }
 }

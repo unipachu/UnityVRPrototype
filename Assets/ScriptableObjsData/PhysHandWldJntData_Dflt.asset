@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b83dee84f87fd48906d7966a086bad, type: 3}
+  m_Name: PhysHandWldJntData_Dflt
+  m_EditorClassIdentifier: Assembly-CSharp::PhysHandWldJntData
+  dfltLinDrvPosSpring: 5000
+  dfltLinDrvPosDamper: 50
+  dfltLinDrvMaxForce: 50
+  dfltSlerpDrvPosSpring: 3000
+  dfltSlerpDrvDamper: 50
+  dfltSlerpDrvMaxForce: 50

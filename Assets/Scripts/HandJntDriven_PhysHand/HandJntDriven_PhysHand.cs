@@ -4,7 +4,9 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 /// <summary>
 /// Controller for one physics hand. 
 /// </summary>
-public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven_Grbl, GrblJntDriven_PhysHand>  {
+public class HandJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand {
+    // TODO: Common phys hand fields could be made into a separate monobehaviour the specialized
+    // TODO C: phys hands would have a reference to.
     [Header("Settings")]
     public Side handSide;
 
@@ -35,7 +37,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     public Collider[] cols;
 
     PhysHandState physHandSt = PhysHandState.NotGrabbing;
-    IGrblJntDriven_Grbl grabbedGrbl = null;
+    IHandJntDriven_Grbl grabbedGrbl = null;
 
     public HapticImpulsePlayer CtrlHapticImpPlr => ctrlHapticImpPlr;
     public Transform FollowTgtTrf => followTgtTrf;
@@ -43,21 +45,12 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     public Transform Trf => transform;
 
 
+
     // -----------------------------------------
     // UNITY CALLBACKS
     // -----------------------------------------
 
     void Start() {
-        // NOTE: These default values should be set from Configurable Joint's inspector and they are here just as an example.
-        // We want the connected anchor to be in the world origin so that the target pose matches world coodrinates.
-        //worldJnt.autoConfigureConnectedAnchor = false;
-        // We want the connected anchor to be in the world origin so that the target pose matches world coodrinates.
-        //worldJnt.connectedAnchor = Vector3.zero;
-        // Quaternion Slerp mode avoids problems with Euler Angles.
-        //worldJnt.rotationDriveMode = RotationDriveMode.Slerp;
-        // When swap bodies is set to true, joint target pose is interpreted relative to the connected body's anchor's space
-        // instead of this rb's anchor's space. In this case it makes the target position equivalent to world space pose.
-        //worldJnt.swapBodies = true;
         PhysUtils.TeleportWldJntCtrldRb(transform, rb, followTgtTrf, worldJnt, wldJntData);
     }
 
@@ -66,15 +59,14 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
         worldJnt.targetPosition = followTgtTrf.position;
         worldJnt.targetRotation = followTgtTrf.rotation;
     }
-
-    private void Update() {
+    void Update() {
         switch (physHandSt) {
             case PhysHandState.NotGrabbing:
                 if (
                     handSide == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
                     handSide == Side.Right && plrCtrl.TryConsumeRGrabPressed()
                 )
-                    if (PhysHandUtils.TryGrabbing<IGrblJntDriven_Grbl, GrblJntDriven_PhysHand>(this, grblSearchPos.position, grbrData)) 
+                    if (TryGrabbing()) 
                         break;
                 PhysHandUtils.UpdateTgtGhostShader(handGhostShaderCtrl, transform.position, followTgtTrf.position, ghostShdrData);
                 break;
@@ -89,8 +81,9 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
                     }
                 }
                 // TODO: Since grabbable now controls the phys hand visual proxy, it should
-                // TODO C: call the UpdateTgtGhostShader with the correct distance (or in other way help update it).
+                // TODO C: call the UpdateTgtGhostShader with the correct distance.
                 // TODO C: Then remove the line below:
+                // TODO C: Or actually
                 PhysHandUtils.UpdateTgtGhostShader(handGhostShaderCtrl, transform.position, new Vector3(99999, 99999, 99999), ghostShdrData);
                 break;
             case PhysHandState.Resetting:
@@ -104,7 +97,6 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
                 break;
         }
     }
-
     void OnDrawGizmos() {
         if (grblSearchPos == null || grbrData == null)
             return;
@@ -113,7 +105,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     }
 
     private void OnDisable() {
-        if(grabbedGrbl != null)
+        if (grabbedGrbl != null)
             // NOTE: We force grab release here without checking if the grab can be released
             // NOTE C: because this hand is about to get disabled/destroyed.
             grabbedGrbl.ReleaseGrb(this);
@@ -123,10 +115,18 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     // PUBLIC METHODS
     // -----------------------------------------
 
+    public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
+        throw new System.NotImplementedException();
+    }
+
+    // -----------------------------------------
+    // PRIVATE METHODS
+    // -----------------------------------------
+
     /// <summary>
     /// NOTE: Hand joint initiates a grab, the grabbable initiates the END of the grab. Just like all my relationships.
     /// </summary>
-    public void InitGrab(IGrblJntDriven_Grbl grbl) {
+    void InitGrab(IHandJntDriven_Grbl grbl) {
         grbl.OnInitGrb(this);
         grabbedGrbl = grbl;
         ctrlHapticImpPlr.SendHapticImpulse(0.5f, 0.1f);
@@ -138,24 +138,58 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     }
 
     /// <summary>
-    /// Called by <see cref="IGrblJntDriven_Grbl"/> when grab by THIS hand is released.
+    /// Tries to find an <see cref="IHandJntDriven_Grbl"/> implemented by a component on the collider's attached Rigidbody.
+    /// Returns <see langword="null"/> if no <see cref="IHandJntDriven_Grbl"/> is found.<br/>
+    /// NOTE: The <see cref="IHandJntDriven_Grbl"/> implementation must be on the same GameObject as the collider's attached Rigidbody.
     /// </summary>
-    public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
-        grabbedGrbl = null;
-        vis.SetActive(true);
-        rb.isKinematic = false;
-        // NOTE: Setting only rb pose (and not transform pose) causes the object to jerk when grab is released 
-        // NOTE C: (likely because rb movement is solved only during physics simulation steps and visuals are
-        // NOTE C: interpolated) and setting only transform pose in some cases seems to teleport the object where 
-        // NOTE C: the grab was first initialized - likely because the rb pose is frozen where the grab started and 
-        // NOTE C: rb pose overrides the transform pose. So you need to set BOTH transform and rb pose.
-        transform.position = grabReleaseWorldPos;
-        transform.rotation = grabReleaseWorldRot;
-        rb.position = grabReleaseWorldPos;
-        rb.rotation = grabReleaseWorldRot;
-        // TODO: Set velocity to VR controller follow target velocity.
-        foreach (Collider col in cols)
-            col.enabled = true;
-        physHandSt = PhysHandState.NotGrabbing;
+    IHandJntDriven_Grbl TryGetPhysicsHandGrabbableObject(Collider otherCollider) {
+        IHandJntDriven_Grbl grabbable = null;
+        Rigidbody otherRb = otherCollider.attachedRigidbody;
+        if (otherRb)
+            grabbable = otherRb.GetComponent<IHandJntDriven_Grbl>();
+        return grabbable;
+    }
+
+    /// <summary>
+    /// Searches for nearby objects with OverlapSphere and checks if any are eligible for grabbing.
+    /// If so, grabs the closest <see cref="IHandJntDriven_Grbl"/> and returns true, otherwise returns false.
+    /// </summary>
+    bool TryGrabbing() {
+        Collider[] nearbyColliders = Physics.OverlapSphere(
+            grblSearchPos.position,
+            grbrData.overlapSphereR,
+            grbrData.grbLayers,
+            QueryTriggerInteraction.Ignore
+        );
+        if (nearbyColliders.Length == 0)
+            return false;
+        //Debug.Log(
+        //    $"Found colliders ({nearbyColliders.Length}): " +
+        //    string.Join(", ", Array.ConvertAll(nearbyColliders, c => c.name))
+        //);
+        IHandJntDriven_Grbl closestGrabbable = null;
+        float distanceToClosestGrabbable = 0;
+        // Find closest grabbable object.
+        foreach (Collider collider in nearbyColliders) {
+            IHandJntDriven_Grbl grabbable = TryGetPhysicsHandGrabbableObject(collider);
+            if (grabbable == null)
+                continue;
+            if (!grabbable.CanBeGrabbed(this))
+                continue;
+            if (closestGrabbable == null) {
+                closestGrabbable = grabbable;
+                continue;
+            }
+            float grabbableDistance = grabbable.GnrGrbl.GetDistToGrbPt(grblSearchPos.position);
+            if (grabbableDistance < distanceToClosestGrabbable) {
+                closestGrabbable = grabbable;
+                distanceToClosestGrabbable = grabbableDistance;
+            }
+        }
+        if (closestGrabbable == null)
+            return false;
+        // Found closest grabbable that can be grabbed!
+        InitGrab(closestGrabbable);
+        return true;
     }
 }

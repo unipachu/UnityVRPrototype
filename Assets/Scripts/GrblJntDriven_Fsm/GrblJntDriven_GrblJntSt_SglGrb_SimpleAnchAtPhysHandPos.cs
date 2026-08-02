@@ -17,13 +17,13 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
 
     public void Enter(IFsmSt previousState) {
         grbl.GrbJnt.anchor = new Vector3(
-            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.x / grbl.Trf.lossyScale.x,
-            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y / grbl.Trf.transform.lossyScale.y,
-            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.z / grbl.Trf.transform.lossyScale.z
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.x / grbl.Rb.transform.lossyScale.x,
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.y / grbl.Rb.transform.transform.lossyScale.y,
+            grbl.Grbs[0].gnrGrb.initPhysHandPosInGrblSpc.z / grbl.Rb.transform.transform.lossyScale.z
         );
         PhysUtils.SetJntDrivesToDflt(
             grbl.GrbJnt,
-            grbl.Grbs[0].physHand.jntData
+            grbl.Grbs[0].physHand.wldJntData
         );
     }
 

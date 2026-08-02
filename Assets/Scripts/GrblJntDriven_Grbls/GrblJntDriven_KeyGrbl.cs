@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IKeyholeSnpl {
+public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grbl, IKeyholeSnpl {
     [Header("Refs")]
     [Tooltip("Hand visual used to represent grabbing left hand.\n" +
     "Set the hand visual inactive in editor!")]
@@ -22,20 +22,22 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
 
     readonly List<GrblJntDriven_Grb> grbs = new(2);
     GrblJntDriven_Grbs gnrGrbs;
-    ISnapTgt snapped = null;
+    ISnpTgt snapped = null;
     /// <summary>
     /// We use snap cooldown since when we turn rigidbody from kinematic to dynamic,
     /// the rigidbody can trigger OnTriggerEntered from triggers it was already overlapping with.
     /// </summary>
     float snpCooldown = 0;
 
+    public IGnrGrbl GnrGrbl => this;
     public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public ConfigurableJoint GrbJnt => grbJnt;
-    public IGnrGrblData GnrGrblData => this;
+    public IGnrGrbl GnrGrblData => this;
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public Vector3 KeyTipLclPos => keyTipLclPos;
     public Rigidbody Rb => rb;
     public Transform Trf => transform;
+
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -89,7 +91,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
         return Vector3.Distance(transform.position, physHandWorldGrbPt);
     }
 
-    public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
+    public void OnInitGrb(GrblJntDriven_PhysHand physHand) {
         // Only one grabber can grab this at a time. Thus release any previous grab.
         GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         var newGrb = new GrblJntDriven_Grb(
@@ -108,7 +110,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
         SwitchJntStBasedOnGrbCount();
     }
 
-    public void InitSnp(ISnapTgt snpTgt) {
+    public void InitSnp(ISnpTgt snpTgt) {
         snapped = snpTgt;
         rb.isKinematic = true;
     }

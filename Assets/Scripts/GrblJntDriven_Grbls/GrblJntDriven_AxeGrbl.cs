@@ -4,7 +4,8 @@ using UnityEngine;
 /// <summary>
 /// Axe grabbable.
 /// </summary>
-public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
+// TODO: Relative velocity based haptic rumble when axe head collides.
+public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb_GrbLineAlignable {
     [Header("Settings")]
     [SerializeField] float minGrbPtLclY = -0.49f;
     [SerializeField] float maxGrbPtHandLclY = -0.03f;
@@ -32,11 +33,13 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
     GrblJntDriven_Grbs gnrGrbs;
     readonly Vector3 followTgtInitGrabPtInFollowTgtSpc = new Vector3(0, -0.025f, 0);
 
+    public IGnrGrbl GnrGrbl => this;
     public IGnrGrbsCtrl GnrGrbs => gnrGrbs;
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public ConfigurableJoint GrbJnt => grbJnt;
     public Rigidbody Rb => rb;
     public Transform Trf => transform;
+
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -92,7 +95,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGnrGrblData, IGrblJntDriven
     
     public float GetRotHand0Wt() => 1 - LowestHandIndex();
 
-    public void InitiateGrb(GrblJntDriven_PhysHand physHand) {
+    public void OnInitGrb(GrblJntDriven_PhysHand physHand) {
         Vector3 initPhysHandPosInGrblSpc = MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position);
         // We clamp init phys hand pos so that it aligns with the handle.
         initPhysHandPosInGrblSpc.x = 0;
