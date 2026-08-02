@@ -15,8 +15,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
 
     [Header("XROrigin Refs")]
     [Tooltip("Transform of the follow target of the corresponding VR controller.")]
-    public Transform followTgtTrf;
-    public GhostShdrCtlr handGhostShaderCtrl;
+    public Transform folTgtTrf;
+    public GhostShdrCtlr handGhostShdrCtrl;
     [Tooltip("HapticImpulsePlayer of the matching controller.")]
     public HapticImpulsePlayer ctrlHapticImpPlr;
 
@@ -38,7 +38,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     IGrblJntDriven_Grbl grabbedGrbl = null;
 
     public HapticImpulsePlayer CtrlHapticImpPlr => ctrlHapticImpPlr;
-    public Transform FollowTgtTrf => followTgtTrf;
+    public Transform FolTgtTrf => folTgtTrf;
     public Side HandSide => handSide;
     public Transform Trf => transform;
 
@@ -60,13 +60,13 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
         // When swap bodies is set to true, joint target pose is interpreted relative to the connected body's anchor's space
         // instead of this rb's anchor's space. In this case it makes the target position equivalent to world space pose.
         //worldJnt.swapBodies = true;
-        PhysUtils.TeleportWldJntCtrldRb(transform, rb, followTgtTrf, wldJnt, wldJntData);
+        PhysUtils.TeleportWldJntCtrldRb(transform, rb, folTgtTrf, wldJnt, wldJntData);
     }
 
     void FixedUpdate() {
         // Set joint target pose to controller pose.
-        wldJnt.targetPosition = followTgtTrf.position;
-        wldJnt.targetRotation = followTgtTrf.rotation;
+        wldJnt.targetPosition = folTgtTrf.position;
+        wldJnt.targetRotation = folTgtTrf.rotation;
     }
 
     void Update() {
@@ -85,9 +85,9 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
                     ) 
                         break;
                 PhysHandUtils.UpdateTgtGhostShader(
-                    handGhostShaderCtrl,
+                    handGhostShdrCtrl,
                     transform.position,
-                    followTgtTrf.position,
+                    folTgtTrf.position,
                     ghostShdrData
                 );
                 break;
@@ -104,13 +104,13 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
                 // TODO: Since grabbable now controls the phys hand visual proxy, it should
                 // TODO C: call the UpdateTgtGhostShader with the correct distance (or in other way help update it).
                 // TODO C: Then remove the line below:
-                PhysHandUtils.UpdateTgtGhostShader(handGhostShaderCtrl, transform.position, new Vector3(99999, 99999, 99999), ghostShdrData);
+                PhysHandUtils.UpdateTgtGhostShader(handGhostShdrCtrl, transform.position, new Vector3(99999, 99999, 99999), ghostShdrData);
                 break;
             case PhysHandState.Resetting:
                 // TODO: If after hand pose reset, or grab release the new pose of the hand would be blocked,
                 // TODO C: enter state where colliders are disabled until they are not overlapping with anything.
                 // TODO C: Use a red, translucent shader to communicate reset state.
-                PhysHandUtils.UpdateTgtGhostShader(handGhostShaderCtrl, transform.position, followTgtTrf.position, ghostShdrData);
+                PhysHandUtils.UpdateTgtGhostShader(handGhostShdrCtrl, transform.position, folTgtTrf.position, ghostShdrData);
                 break;
             default:
                 Debug.LogError("Switch defaulted.", this);

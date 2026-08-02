@@ -42,7 +42,7 @@ public class GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos : IFsmSt {
     // -----------------------------------------
 
     void UpdateJnt(GrblJntDriven_Grb grb, ConfigurableJoint grbJnt) {
-        Transform physHandFollowTgt = grb.physHand.followTgtTrf;
+        Transform physHandFollowTgt = grb.physHand.folTgtTrf;
         Quaternion tgtWorldRot =
             physHandFollowTgt.rotation * Quaternion.Inverse(grb.gnrGrb.initRotFromGrblToPhysHand);
         Vector3 targetWorldPos = physHandFollowTgt.position;

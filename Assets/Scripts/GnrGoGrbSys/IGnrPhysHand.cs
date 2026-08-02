@@ -13,7 +13,7 @@ public interface IGnrPhysHand<TGrbl, TPhysHand> : IGnrPhysHand
 
 public interface IGnrPhysHand{
     public HapticImpulsePlayer CtrlHapticImpPlr { get; }
-    public Transform FollowTgtTrf { get; }
+    public Transform FolTgtTrf { get; }
     public Side HandSide { get; }
     public Transform Trf { get; }
     public ConfigurableJoint WldJnt { get; }

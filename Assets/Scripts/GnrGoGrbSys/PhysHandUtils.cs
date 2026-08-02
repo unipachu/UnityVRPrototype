@@ -7,8 +7,8 @@ public static class PhysHandUtils {
     /// to move the physics hand to the player's actual hand position and rotation.
     /// </summary>
     public static void SetWldJntTgtToFolTgt(IGnrPhysHand physHand){
-        physHand.WldJnt.targetPosition = physHand.FollowTgtTrf.position;
-        physHand.WldJnt.targetRotation = physHand.FollowTgtTrf.rotation;
+        physHand.WldJnt.targetPosition = physHand.FolTgtTrf.position;
+        physHand.WldJnt.targetRotation = physHand.FolTgtTrf.rotation;
     }
 
     public static void SetWldJntTgt(IGnrPhysHand physHand, Vector3 targetPos, Quaternion targetRot) {

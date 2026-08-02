@@ -61,8 +61,8 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         Vector3 initLocalPos0 = grb0.gnrGrb.initPhysHandPosInGrblSpc;
         Vector3 initLocalPos1 = grb1.gnrGrb.initPhysHandPosInGrblSpc;
         // Current hand follow targets.
-        Transform followTgt0 = grb0.physHand.followTgtTrf;
-        Transform followTgt1 = grb1.physHand.followTgtTrf;
+        Transform followTgt0 = grb0.physHand.folTgtTrf;
+        Transform followTgt1 = grb1.physHand.folTgtTrf;
         // Follow targets (hand controllers') grab point.
         Vector3 followTgtGrabPtWorld0 = MathUtils.TrfPtUnscaled(followTgt0, grb0.gnrGrb.theoInitGrbPtInFolTgtSpc);
         Vector3 followTgtGrabPtWorld1 = MathUtils.TrfPtUnscaled(followTgt1, grb1.gnrGrb.theoInitGrbPtInFolTgtSpc);

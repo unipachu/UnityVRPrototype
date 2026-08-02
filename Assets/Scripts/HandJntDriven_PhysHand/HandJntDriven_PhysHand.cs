@@ -53,7 +53,7 @@ public class HandJntDriven_PhysHand :
     IHandJntDriven_Grbl grabbedGrbl = null;
 
     public HapticImpulsePlayer CtrlHapticImpPlr => ctrlHapticImpPlr;
-    public Transform FollowTgtTrf => followTgtTrf;
+    public Transform FolTgtTrf => followTgtTrf;
     public Side HandSide => handSide;
     public Transform Trf => transform;
     public ConfigurableJoint WldJnt => wldJnt;

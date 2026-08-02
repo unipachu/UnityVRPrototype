@@ -53,7 +53,7 @@ public static class GrblUtils {
     /// </summary>
     public static Vector3 FolTgtInitGrbPtInGrblSpc(GnrGrbData gnrGrb, Transform grblTrf) {
         Vector3 followTgtInitGrabPtWorld = MathUtils.TrfPtUnscaled(
-            gnrGrb.gnrPhysHand.FollowTgtTrf,
+            gnrGrb.gnrPhysHand.FolTgtTrf,
             gnrGrb.theoInitGrbPtInFolTgtSpc
         );
         Vector3 followGrabLocal = MathUtils.InvrsTrfPtUnscaled(
@@ -67,7 +67,7 @@ public static class GrblUtils {
     /// Get the grab point of the phys hand target in world space.
     /// </summary>
     public static Vector3 GetTgtGrbPtWld(GnrGrbData gnrGrb, Vector3 lclGrbPt) {
-        return MathUtils.TrfPtUnscaled(gnrGrb.gnrPhysHand.FollowTgtTrf, lclGrbPt);
+        return MathUtils.TrfPtUnscaled(gnrGrb.gnrPhysHand.FolTgtTrf, lclGrbPt);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public static class GrblUtils {
     /// <param name="theoGrblRot">NOTE: You can use <see cref="TheoFolTgtGrblRot"/> to get the rot.</param>
     public static Vector3 TheoFolTgtGrblPos(IGnrGrbData grb, Quaternion theoGrblRot) {
         return MathUtils.AlignLclPtToWldPt(
-            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.position,
+            grb.GnrGrbData.gnrPhysHand.FolTgtTrf.position,
             theoGrblRot,
             grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
@@ -186,7 +186,7 @@ public static class GrblUtils {
         where TGrb : IGnrGrbData
     { 
         return MathUtils.AlignLclPtToWldPt(
-            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.position,
+            grb.GnrGrbData.gnrPhysHand.FolTgtTrf.position,
             TheoFolTgtGrblRot<TGrb>(grb),
             grb.GnrGrbData.initPhysHandPosInGrblSpc
         );
@@ -216,7 +216,7 @@ public static class GrblUtils {
         where TGrb : IGnrGrbData
     {
         return MathUtils.AlignLclRotToWldRot(
-            grb.GnrGrbData.gnrPhysHand.FollowTgtTrf.rotation,
+            grb.GnrGrbData.gnrPhysHand.FolTgtTrf.rotation,
             grb.GnrGrbData.initRotFromGrblToPhysHand
         );
     }

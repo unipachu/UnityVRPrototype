@@ -116,7 +116,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         // NOTE: Currently proxy holder is already aligned with the handle (transform.up) so this works.
         Quaternion axeRotWithTwistAroundHandle = MathUtils.CalculateRelativeTwist(
             transform.rotation,
-            physHand.followTgtTrf.rotation,
+            physHand.folTgtTrf.rotation,
             transform.up
         );
         ObjUtils.ActivateNSetPose(
@@ -212,7 +212,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         grb.gnrGrb.initRotFromGrblToPhysHand =
             MathUtils.InvrsTrfRot(
                 transform,
-                grb.physHand.followTgtTrf.rotation
+                grb.physHand.folTgtTrf.rotation
             );
     }
 
@@ -244,7 +244,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
         // Twist around handle.
         float twistDeg = MathUtils.ExtractSignedTwistAng(
             transform.rotation,
-            grb.physHand.followTgtTrf.rotation,
+            grb.physHand.folTgtTrf.rotation,
             handleAxis
         ) * Mathf.Rad2Deg;
         Quaternion proxyRot = Quaternion.AngleAxis(twistDeg, handleAxis) * transform.rotation;
