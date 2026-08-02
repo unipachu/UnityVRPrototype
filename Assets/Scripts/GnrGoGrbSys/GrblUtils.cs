@@ -71,29 +71,16 @@ public static class GrblUtils {
     }
 
     /// <summary>
-    /// Is the specified phys hand grabbing?
+    /// This is called "LRGrb" since it expects only one left hand and one right hand visual proxy.
     /// </summary>
-    public static bool IsGrabbing<TGrb, TPhysHand>(List<TGrb> grbs,TPhysHand physHand)
-        where TGrb : IGnrGrbData
-        where TPhysHand : MonoBehaviour, IGnrPhysHand
-    {
-        for (int i = 0; i < grbs.Count; i++) {
-            if (grbs[i].GnrGrbData.gnrPhysHand == physHand)
-                return true;
-        }
-        return false;
-    }
-
-    public static void LRGrb_ReleaseAllGrbs<TPhysHand, TGrbl>(
-        IGnrGrbl<TPhysHand, TGrbl> grbl,
+    public static void GrblJntDriven_LRGrb_ReleaseAllGrbs(
+        IGrblJntDriven_Grbl grbl,
         GameObject lHandVisProxy,
         GameObject rHandVisProxy
-    ) where TPhysHand : IGnrPhysHand<TGrbl, TPhysHand>
-        where TGrbl : IGnrGrbl<TPhysHand, TGrbl>
-    {
-        for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
-            IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
-            grb.GnrGrbData.gnrPhysHand.OnReleaseGrb(
+    ) {
+        for (int i = 0; i < grbl.Grbs.Count; i++) {
+            GrblJntDriven_Grb grb = grbl.Grbs[i];
+            grb.physHand.OnReleaseGrb(
                 MathUtils.TrfPtUnscaled(grbl.Rb.transform, grb.GnrGrbData.initPhysHandPosInGrblSpc),
                 MathUtils.TrfRot(grbl.Rb.transform, grb.GnrGrbData.initRotFromGrblToPhysHand)
             );
@@ -103,28 +90,62 @@ public static class GrblUtils {
         rHandVisProxy.SetActive(false);
     }
 
-    public static void LRGrb_ReleaseGrb<TPhysHand, TGrbl>(
-        IGnrGrbl<TPhysHand, TGrbl> grbl,
-        IGnrPhysHand physHandToRelease,
+    public static void GrblJntDriven_LRGrb_ReleaseGrbNHideProxyHand(
+        IGrblJntDriven_Grbl grbl,
+        GrblJntDriven_PhysHand physHandToRelease,
         GameObject lHandVisProxy,
         GameObject rHandVisProxy
-    ) where TPhysHand : IGnrPhysHand<TGrbl, TPhysHand>
-        where TGrbl : IGnrGrbl<TPhysHand, TGrbl>
-    {
+    ) {
         IGnrGrbData grb = FindGrb(
             grbl,
             physHandToRelease,
-            grbl.Rb);
+            grbl.Rb
+        );
         GameObject correspondingProxyHand =
             physHandToRelease.HandSide == Side.Left
                 ? lHandVisProxy
                 : rHandVisProxy;
-        grb.GnrGrbData.gnrPhysHand.OnReleaseGrb(
+        physHandToRelease.OnReleaseGrb(
             correspondingProxyHand.transform.position,
             correspondingProxyHand.transform.rotation
         );
         grbl.GnrGrbs.RemoveGrabFromList(grb);
         correspondingProxyHand.SetActive(false);
+    }
+
+    public static void HandJntDriven_ReleaseAllGrbs(IHandJntDriven_Grbl grbl) {
+        for (int i = 0; i < grbl.Grbs.Count; i++) {
+            HandJntDriven_Grb grb = grbl.Grbs[i];
+            grb.physHand.OnReleaseGrb();
+        }
+        grbl.GnrGrbs.ClearGrbsList();
+    }
+
+    public static void HandJntDriven_LRGrb_ReleaseGrb(
+        IHandJntDriven_Grbl grbl,
+        HandJntDriven_PhysHand physHandToRelease
+    ) {
+        IGnrGrbData grb = FindGrb(
+            grbl,
+            physHandToRelease,
+            grbl.Rb
+        );
+        physHandToRelease.OnReleaseGrb();
+        grbl.GnrGrbs.RemoveGrabFromList(grb);
+    }
+
+    /// <summary>
+    /// Is the specified phys hand grabbing?
+    /// </summary>
+    public static bool IsGrabbing<TGrb, TPhysHand>(List<TGrb> grbs, TPhysHand physHand)
+        where TGrb : IGnrGrbData
+        where TPhysHand : MonoBehaviour, IGnrPhysHand
+    {
+        for (int i = 0; i < grbs.Count; i++) {
+            if (grbs[i].GnrGrbData.gnrPhysHand == physHand)
+                return true;
+        }
+        return false;
     }
 
     /// <summary>

@@ -149,7 +149,6 @@ public class HandJntDriven_PhysHand :
         grabbedGrbl = grbl;
         ctrlHapticImpPlr.SendHapticImpulse(0.5f, 0.1f);
         physHandSt = PhysHandState.Grabbing;
-        vis.SetActive(false);
         foreach (Collider col in cols)
             col.enabled = false;
     }
@@ -158,12 +157,11 @@ public class HandJntDriven_PhysHand :
     /// This should be called by the grabbable when in ends the grab (since grabbables are
     /// responsible for ending the grab).
     /// </summary>
-    public void OnReleaseGrb(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
+    public void OnReleaseGrb() {
         PhysUtils.SetJntMotCstrsToFree(grbJnt);
         PhysUtils.SetJntDrivesToDflt(wldJnt, wldJntData);
         grbJnt.connectedBody = null;
         grabbedGrbl = null;
-        vis.SetActive(true);
         foreach (Collider col in cols)
             col.enabled = true;
         physHandSt = PhysHandState.NotGrabbing;

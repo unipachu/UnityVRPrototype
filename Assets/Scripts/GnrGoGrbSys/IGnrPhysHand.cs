@@ -17,10 +17,4 @@ public interface IGnrPhysHand{
     public Side HandSide { get; }
     public Transform Trf { get; }
     public ConfigurableJoint WldJnt { get; }
-
-    /// <summary>
-    /// Should be called by grabbable when it releases the grab (since grabbables are responsible for grab
-    /// release). Parameters represent the proxy hand world pose at the moment of grab release.
-    /// </summary>
-    void OnReleaseGrb(Vector3 grbReleaseWldPos, Quaternion grbReleaseWldRot);
 }

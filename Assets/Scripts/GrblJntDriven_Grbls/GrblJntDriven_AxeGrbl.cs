@@ -135,7 +135,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
     }
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxyHolder, rHandVisProxyHolder);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseAllGrbs(this, lHandVisProxyHolder, rHandVisProxyHolder);
         SwitchJntStBasedOnGrbCount();
     }
 
@@ -149,7 +149,7 @@ public class GrblJntDriven_AxeGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblGrb
             GameObject proxy = physHand.handSide == Side.Right ? lHandVisProxyHolder : rHandVisProxyHolder;
             ReinitializeGrabFromCurrentProxyPose(proxy);
         }
-        GrblUtils.LRGrb_ReleaseGrb(this, physHand, lHandVisProxyVis, rHandVisProxyVis);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseGrbNHideProxyHand(this, physHand, lHandVisProxyVis, rHandVisProxyVis);
         SwitchJntStBasedOnGrbCount();
     }
 

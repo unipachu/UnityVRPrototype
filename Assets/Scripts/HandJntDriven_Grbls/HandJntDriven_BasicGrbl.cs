@@ -3,17 +3,12 @@ using UnityEngine;
 
 public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblGrb_GrbLineAlignable {
     [Header("Refs")]
-    [Tooltip("Hand visual used to represent grabbing left hand. \n" +
-    "Set the hand visual inactive in editor!")]
-    [SerializeField] GameObject lHandVisProxy;
-    [Tooltip("Hand visual used to represent grabbing right hand. \n" +
-        "Set the hand visual inactive in editor!")]
-    [SerializeField] GameObject rHandVisProxy;
     [SerializeField] Rigidbody rb;
 
-    public Fsm grbJntFsm = new();
-    public St_NoOp jntSt_NoGrb;
-    public HandJntDriven_JntSt_SglGrb jntSt_SglGrb;
+    Fsm grbJntFsm = new();
+    St_NoOp jntSt_NoGrb;
+    HandJntDriven_JntSt_SglGrb jntSt_SglGrb;
+    HandJntDriven_JntSt_DblGrb jntSt_DblGrb;
     List<HandJntDriven_Grb> grbs = new(2);
     HandJntDriven_Grbs gnrGrbs;
 
@@ -30,6 +25,7 @@ public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblG
         //jntSt_DblGrb_GrbLineAligned = new(this, this);
         jntSt_NoGrb = new();
         jntSt_SglGrb = new(this);
+        jntSt_DblGrb = new(this);
         gnrGrbs = new(grbs);
     }
     void Start() {
@@ -68,7 +64,7 @@ public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblG
         // NOTE C: based on the grabbable so I think it's best to set them here.
         physHand.grbJnt.connectedBody = rb;
         // NOTE: Connected anchor is relative to connected rigidbody.
-        physHand.grbJnt.connectedAnchor = rb.transform.InverseTransformPoint(physHand.grblSearchPos.position);
+        physHand.grbJnt.connectedAnchor = MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position);
         PhysUtils.SetJntMotCstrsToLocked(physHand.grbJnt);
         grbs.Add(
             new HandJntDriven_Grb(
@@ -78,28 +74,15 @@ public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblG
                     MathUtils.InvrsTrfPtUnscaled(transform, physHand.transform.position),
                     MathUtils.InvrsTrfRot(transform, physHand.transform.rotation),
                     // NOTE: Same as above, we use as the sphere cast postition as the grab joint connected anchor.
-                    physHand.grblSearchPos.position
+                    Vector3.zero
                 )
             )
         );
-        // Setup hand proxy visual.
-        if (physHand.handSide == Side.Left)
-            ObjUtils.ActivateNSetPose(
-                lHandVisProxy,
-                physHand.transform.position,
-                physHand.transform.rotation
-            );
-        else
-            ObjUtils.ActivateNSetPose(
-                rHandVisProxy,
-                physHand.transform.position,
-                physHand.transform.rotation
-            );
         SwitchJntStBasedOnGrbCount();
     }
 
     public void ReleaseGrb(HandJntDriven_PhysHand physHand) {
-        GrblUtils.LRGrb_ReleaseGrb(this, physHand, lHandVisProxy, rHandVisProxy);
+        GrblUtils.HandJntDriven_LRGrb_ReleaseGrb(this, physHand);
         SwitchJntStBasedOnGrbCount();
     }
 
@@ -108,8 +91,8 @@ public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblG
     // -----------------------------------------
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
-        //SwitchJntStBasedOnGrbCount();
+        GrblUtils.HandJntDriven_ReleaseAllGrbs(this);
+        SwitchJntStBasedOnGrbCount();
     }
 
     void SwitchJntStBasedOnGrbCount() {
@@ -119,12 +102,11 @@ public class HandJntDriven_BasicGrbl : MonoBehaviour, IHandJntDriven_Grbl, IDblG
     }
 
     private IFsmSt FindJntStBasedOnGrbCount() {
-        IFsmSt nextState = grbs.Count switch {
+        return grbs.Count switch {
             0 => jntSt_NoGrb,
             1 => jntSt_SglGrb,
-            //2 => jntSt_DblGrb_GrbLineAligned,
+            2 => jntSt_DblGrb,
             _ => throw new System.ArgumentOutOfRangeException(nameof(grbs.Count))
         };
-        return nextState;
     }
 }

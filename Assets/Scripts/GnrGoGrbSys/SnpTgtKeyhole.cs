@@ -332,7 +332,14 @@ public class SnpTgtKeyhole : MonoBehaviour, ISnpTgt {
         }
     }
 
+    /// <summary>
+    /// Opens the padlock shackle, i.e. moves it up.<br/>
+    /// </summary>
+    // TODO: There is no separate kinematic rb for the shackle currently so instead of moving it
+    // TODO C: correctly with rb.Move, it is moved by changing its transform. Create a kinematic
+    // TODO C: rb for it and move that instead.
     IEnumerator UnlockShackleAnim() {
+        // TODO: You could cache these...
         Vector3 startPos = shackle.transform.localPosition;
         Vector3 endPos = startPos + Vector3.up * 0.05f;
         float duration = 0.1f;

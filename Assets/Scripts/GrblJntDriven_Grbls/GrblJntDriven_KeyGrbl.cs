@@ -93,7 +93,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
 
     public void OnInitGrb(GrblJntDriven_PhysHand physHand) {
         // Only one grabber can grab this at a time. Thus release any previous grab.
-        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         var newGrb = new GrblJntDriven_Grb(
             physHand,
             new GnrGrbData(
@@ -122,7 +122,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     }
 
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {
-        GrblUtils.LRGrb_ReleaseGrb(this, physHand, lHandVisProxy, rHandVisProxy);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseGrbNHideProxyHand(this, physHand, lHandVisProxy, rHandVisProxy);
         SwitchJntStBasedOnGrbCount();
     }
 
@@ -131,7 +131,7 @@ public class GrblJntDriven_KeyGrbl : MonoBehaviour, IGnrGrbl, IGrblJntDriven_Grb
     // -----------------------------------------
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         SwitchJntStBasedOnGrbCount();
     }
 

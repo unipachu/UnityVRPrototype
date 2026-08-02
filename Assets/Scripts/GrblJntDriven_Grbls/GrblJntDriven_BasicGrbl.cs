@@ -114,7 +114,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     }
 
     public void ReleaseGrb(GrblJntDriven_PhysHand physHand) {
-        GrblUtils.LRGrb_ReleaseGrb(this, physHand, lHandVisProxy, rHandVisProxy);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseGrbNHideProxyHand(this, physHand, lHandVisProxy, rHandVisProxy);
         SwitchJntStBasedOnGrbCount();
     }
 
@@ -123,7 +123,7 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     // -----------------------------------------
 
     void ReleaseAllGrbs() {
-        GrblUtils.LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
+        GrblUtils.GrblJntDriven_LRGrb_ReleaseAllGrbs(this, lHandVisProxy, rHandVisProxy);
         SwitchJntStBasedOnGrbCount();
     }
     
