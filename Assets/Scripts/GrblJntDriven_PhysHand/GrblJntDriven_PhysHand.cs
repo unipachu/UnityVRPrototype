@@ -29,7 +29,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     public Transform grblSearchPos;
     [Tooltip("Used to move the phys hand (and follow the corresponding VR controller).\n" +
     "NOTE: Joint's connected body should be null, since the hand should be connected to the 'world'.")]
-    public ConfigurableJoint worldJnt;
+    public ConfigurableJoint wldJnt;
     [Tooltip("Game object containing hand visuals.")]
     public GameObject vis;
     public Collider[] cols;
@@ -41,6 +41,8 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     public Transform FollowTgtTrf => followTgtTrf;
     public Side HandSide => handSide;
     public Transform Trf => transform;
+
+    public ConfigurableJoint WldJnt => wldJnt;
 
 
     // -----------------------------------------
@@ -58,25 +60,36 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
         // When swap bodies is set to true, joint target pose is interpreted relative to the connected body's anchor's space
         // instead of this rb's anchor's space. In this case it makes the target position equivalent to world space pose.
         //worldJnt.swapBodies = true;
-        PhysUtils.TeleportWldJntCtrldRb(transform, rb, followTgtTrf, worldJnt, wldJntData);
+        PhysUtils.TeleportWldJntCtrldRb(transform, rb, followTgtTrf, wldJnt, wldJntData);
     }
 
     void FixedUpdate() {
         // Set joint target pose to controller pose.
-        worldJnt.targetPosition = followTgtTrf.position;
-        worldJnt.targetRotation = followTgtTrf.rotation;
+        wldJnt.targetPosition = followTgtTrf.position;
+        wldJnt.targetRotation = followTgtTrf.rotation;
     }
 
-    private void Update() {
+    void Update() {
+        // The different types of physics hands could share some states so you should probably use generic fsm.
         switch (physHandSt) {
             case PhysHandState.NotGrabbing:
                 if (
                     handSide == Side.Left && plrCtrl.TryConsumeLGrabPressed() ||
                     handSide == Side.Right && plrCtrl.TryConsumeRGrabPressed()
                 )
-                    if (PhysHandUtils.TryGrabbing<IGrblJntDriven_Grbl, GrblJntDriven_PhysHand>(this, grblSearchPos.position, grbrData)) 
+                    if (
+                        PhysHandUtils.TryGrabbing<IGrblJntDriven_Grbl, GrblJntDriven_PhysHand>(
+                            this,
+                            grblSearchPos.position, grbrData
+                        )
+                    ) 
                         break;
-                PhysHandUtils.UpdateTgtGhostShader(handGhostShaderCtrl, transform.position, followTgtTrf.position, ghostShdrData);
+                PhysHandUtils.UpdateTgtGhostShader(
+                    handGhostShaderCtrl,
+                    transform.position,
+                    followTgtTrf.position,
+                    ghostShdrData
+                );
                 break;
             case PhysHandState.Grabbing:
                 if (
@@ -140,7 +153,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
     /// <summary>
     /// Called by <see cref="IGrblJntDriven_Grbl"/> when grab by THIS hand is released.
     /// </summary>
-    public void OnGrabReleased(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
+    public void OnReleaseGrb(Vector3 grabReleaseWorldPos, Quaternion grabReleaseWorldRot) {
         grabbedGrbl = null;
         vis.SetActive(true);
         rb.isKinematic = false;
@@ -149,10 +162,7 @@ public class GrblJntDriven_PhysHand : MonoBehaviour, IGnrPhysHand<IGrblJntDriven
         // NOTE C: interpolated) and setting only transform pose in some cases seems to teleport the object where 
         // NOTE C: the grab was first initialized - likely because the rb pose is frozen where the grab started and 
         // NOTE C: rb pose overrides the transform pose. So you need to set BOTH transform and rb pose.
-        transform.position = grabReleaseWorldPos;
-        transform.rotation = grabReleaseWorldRot;
-        rb.position = grabReleaseWorldPos;
-        rb.rotation = grabReleaseWorldRot;
+        PhysUtils.TeleportWldJntCtrldRb(transform, rb, grabReleaseWorldPos, grabReleaseWorldRot, wldJnt, wldJntData);
         // TODO: Set velocity to VR controller follow target velocity.
         foreach (Collider col in cols)
             col.enabled = true;

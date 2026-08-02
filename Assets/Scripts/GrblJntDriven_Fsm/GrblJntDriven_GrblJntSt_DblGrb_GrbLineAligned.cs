@@ -4,6 +4,7 @@ using UnityEngine;
 /// Orients grabbable according to a line between the positions two grabbing hands and then uses
 /// hands' rotation to determine twist along the grab line.
 /// </summary>
+// TODO: Rename ALL grab joint states from GrblJntSt to GrbJntSt!
 public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
     IGrblJntDriven_Grbl grbl;
     IDblGrb_GrbLineAlignable dblGrb_GrbLineAligned;

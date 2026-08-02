@@ -238,7 +238,7 @@ MonoBehaviour:
   plrCtrl: {fileID: 0}
   rb: {fileID: 7228727955965025210}
   grblSearchPos: {fileID: 3793855725444168109}
-  worldJnt: {fileID: 3455627583413797499}
+  wldJnt: {fileID: 3455627583413797499}
   vis: {fileID: 1233136622387315819}
   cols:
   - {fileID: 1761344489441458896}

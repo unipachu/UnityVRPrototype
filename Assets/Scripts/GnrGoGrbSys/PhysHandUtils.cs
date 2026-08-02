@@ -1,8 +1,21 @@
 using System;
 using UnityEngine;
 
-public static class PhysHandUtils
-{
+public static class PhysHandUtils {
+    /// <summary>
+    /// Sets the world joint to follow target pose, i.e.: tries to use joint drives
+    /// to move the physics hand to the player's actual hand position and rotation.
+    /// </summary>
+    public static void SetWldJntTgtToFolTgt(IGnrPhysHand physHand){
+        physHand.WldJnt.targetPosition = physHand.FollowTgtTrf.position;
+        physHand.WldJnt.targetRotation = physHand.FollowTgtTrf.rotation;
+    }
+
+    public static void SetWldJntTgt(IGnrPhysHand physHand, Vector3 targetPos, Quaternion targetRot) {
+        physHand.WldJnt.targetPosition = targetPos;
+        physHand.WldJnt.targetRotation = targetRot;
+    }
+
     /// <summary>
     /// Tries to find a grabbable component implementing <typeparamref name="TGrbl"/>
     /// on the collider's attached Rigidbody. Returns <see langword="null"/> if no

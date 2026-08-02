@@ -26,4 +26,19 @@ public static class ObjUtils{
         );
         Gizmos.DrawWireSphere(worldAnchorPos, 0.01f);
     }
+
+    /// <summary>
+    /// Draws small sphere where the joint anchor is.<br/>
+    /// NOTE: Call this in OnDrawGizmos!
+    /// </summary>
+    public static void OnDrawGizmos_DrawJntConnectedAnch(ConfigurableJoint jnt) {
+        if (jnt != null && jnt.connectedBody != null) {
+            Gizmos.color = Color.darkOrange;
+            Vector3 worldAnchorPos = MathUtils.TrfPtUnscaled(
+                jnt.connectedBody.transform,
+                jnt.connectedAnchor
+            );
+            Gizmos.DrawWireSphere(worldAnchorPos, 0.01f);
+        } 
+    }
 }

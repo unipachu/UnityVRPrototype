@@ -93,7 +93,7 @@ public static class GrblUtils {
     {
         for (int i = 0; i < grbl.GnrGrbs.GrbCount; i++) {
             IGnrGrbData grb = grbl.GnrGrbs.GetGrb(i);
-            grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
+            grb.GnrGrbData.gnrPhysHand.OnReleaseGrb(
                 MathUtils.TrfPtUnscaled(grbl.Rb.transform, grb.GnrGrbData.initPhysHandPosInGrblSpc),
                 MathUtils.TrfRot(grbl.Rb.transform, grb.GnrGrbData.initRotFromGrblToPhysHand)
             );
@@ -119,7 +119,7 @@ public static class GrblUtils {
             physHandToRelease.HandSide == Side.Left
                 ? lHandVisProxy
                 : rHandVisProxy;
-        grb.GnrGrbData.gnrPhysHand.OnGrabReleased(
+        grb.GnrGrbData.gnrPhysHand.OnReleaseGrb(
             correspondingProxyHand.transform.position,
             correspondingProxyHand.transform.rotation
         );
@@ -133,9 +133,7 @@ public static class GrblUtils {
     public static int SidedGrbCount<TGrb, TPhysHand>(
         List<TGrb> grbs,
         Side handSide
-    )
-    where TGrb : IGnrGrbData
-    {
+    ) where TGrb : IGnrGrbData {
         int counter = 0;
         foreach (TGrb grb in grbs) {
             if (grb.GnrGrbData.gnrPhysHand.HandSide == handSide)

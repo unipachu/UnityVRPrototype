@@ -1,5 +1,5 @@
 /// <summary>
-/// Represent a grabbable joint driven grab - one physics hand grabbing a grabbable.
+/// Represent a grabbable-joint-driven grab - one physics hand grabbing a grabbable.
 /// </summary>
 public sealed class GrblJntDriven_Grb : IGnrGrbData {
     /// <summary>

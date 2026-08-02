@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// TODO: Could you combine this state to the hand joint driven no grab?
 public class GrblJntDriven_GrblJntSt_NoGrb : IFsmSt {
     IGrblJntDriven_Grbl grbl;
 

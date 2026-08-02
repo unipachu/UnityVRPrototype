@@ -17,12 +17,12 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     [SerializeField] ConfigurableJoint grbJnt;
     [SerializeField] Rigidbody rb;
 
-    [HideInInspector] public Fsm grbJntFsm = new();
-    [HideInInspector] public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned jntSt_DblGrb_GrbLineAligned;
-    [HideInInspector] public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv jntSt_MultiGrb_SimpleAnchAtPiv;
-    [HideInInspector] public GrblJntDriven_GrblJntSt_NoGrb jntSt_NoGrb;
-    [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos jntSt_SglGrb_SimpleAnchAtPhysHandPos;
-    [HideInInspector] public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
+    public Fsm grbJntFsm = new();
+    public GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned jntSt_DblGrb_GrbLineAligned;
+    public GrblJntDriven_GrblJntSt_MultiGrb_SimpleAnchAtPiv jntSt_MultiGrb_SimpleAnchAtPiv;
+    public GrblJntDriven_GrblJntSt_NoGrb jntSt_NoGrb;
+    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPhysHandPos jntSt_SglGrb_SimpleAnchAtPhysHandPos;
+    public GrblJntDriven_GrblJntSt_SglGrb_SimpleAnchAtPiv jntSt_SglGrb_SimpleAnchAtPiv;
 
     readonly List<GrblJntDriven_Grb> grbs = new(2);
     GrblJntDriven_Grbs gnrGrbs;
@@ -32,7 +32,6 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
     public List<GrblJntDriven_Grb> Grbs => grbs;
     public Rigidbody Rb => rb;
     public Transform Trf => transform;
-
 
     // -----------------------------------------
     // UNITY CALLBACKS
@@ -78,13 +77,8 @@ public class GrblJntDriven_BasicGrbl : MonoBehaviour, IGrblJntDriven_Grbl, IDblG
 
     public bool CanBeReleased(GrblJntDriven_PhysHand physHand) => true;
 
-    public void ClearGrbsList() {
-        grbs.Clear();
-    }
-
-    public float GetDistToGrbPt(Vector3 physHandWldGrbPt) {
-        return Vector3.Distance(transform.position, physHandWldGrbPt);
-    }
+    public float GetDistToGrbPt(Vector3 physHandWldGrbPt)
+        => Vector3.Distance(transform.position, physHandWldGrbPt);
 
     public float GetRotHand0Wt() => 0.5f;
 
