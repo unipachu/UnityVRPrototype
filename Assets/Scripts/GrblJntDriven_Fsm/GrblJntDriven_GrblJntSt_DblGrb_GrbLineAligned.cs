@@ -81,8 +81,8 @@ public class GrblJntDriven_GrblJntSt_DblGrb_GrbLineAligned : IFsmSt {
         // TODO: How does this handle 180 rotations?
         Quaternion lineAlignRot = Quaternion.FromToRotation(initLine, tgtWldLine);
         // Rotation from grab on the grabble to the corresponding follow target.
-        Quaternion desiredRot0 = MathUtils.DeltaRot(grb0.gnrGrb.initRotFromGrblToPhysHand, followTgt0.rotation);
-        Quaternion desiredRot1 = MathUtils.DeltaRot(grb1.gnrGrb.initRotFromGrblToPhysHand, followTgt1.rotation);
+        Quaternion desiredRot0 = MathUtils.DRot(grb0.gnrGrb.initRotFromGrblToPhysHand, followTgt0.rotation);
+        Quaternion desiredRot1 = MathUtils.DRot(grb1.gnrGrb.initRotFromGrblToPhysHand, followTgt1.rotation);
         float twistAngle1 = MathUtils.ExtractSignedTwistAng(lineAlignRot, desiredRot0, tgtWldLine);
         float twistAngle2 = MathUtils.ExtractSignedTwistAng(lineAlignRot, desiredRot1, tgtWldLine);
         // Twist on the unit circle.

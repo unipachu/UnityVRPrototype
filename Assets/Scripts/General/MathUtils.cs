@@ -51,6 +51,20 @@ public static class MathUtils {
     }
 
     /// <summary>
+    /// Calculates the world pose that aligns a local pose with the target world pose.
+    /// </summary>
+    public static (Vector3, Quaternion) AlignLclPoseToTgtPose(
+        Vector3 lclPos,
+        Quaternion lclRot,
+        Vector3 tgtWldPos,
+        Quaternion tgtWldRot
+    ) {
+        Quaternion desiredRot = AlignLclRotToWldRot(tgtWldRot, lclRot);
+        Vector3 desiredPos = AlignLclPtToWldPt(tgtWldPos, desiredRot, lclPos);
+        return (desiredPos, desiredRot);
+    }
+
+    /// <summary>
     /// Returns the transform origin whose local space point is at the given world space position.
     /// Basically, this finds a position for parent where its child (localPoint) is aligned with the worldPoint. 
     /// </summary>
@@ -61,10 +75,28 @@ public static class MathUtils {
     /// <summary>
     /// Returns the transform rotation whose local-space rotation matches the given world-space rotation.
     /// Basically, this finds a rotation for the parent where its child (localRot) is aligned with the worldRot.
-    /// NOTE: This is equivalent to <see cref="DeltaRot"/>.
+    /// NOTE: This is equivalent to <see cref="DRot"/>.
     /// </summary>
     public static Quaternion AlignLclRotToWldRot(Quaternion worldRot, Quaternion localRot) {
         return worldRot * Quaternion.Inverse(localRot);
+    }
+
+    /// <summary>
+    /// Calculates angular velocity from the change between two rotations.
+    /// </summary>
+    public static Vector3 AngVel(
+        Quaternion prevRot,
+        Quaternion currRot,
+        float dt
+    ) {
+        Quaternion dRot = DRot(prevRot, currRot);
+        dRot.ToAngleAxis(out float angleDeg, out Vector3 axis);
+        if (angleDeg > 180f)
+            angleDeg -= 360f;
+        // Angle axis can apparently return small numerical noise values so:
+        if (Mathf.Abs(angleDeg) < 0.0001f)
+            return Vector3.zero;
+        return axis * (angleDeg * Mathf.Deg2Rad / dt);
     }
 
     /// <summary>
@@ -95,28 +127,6 @@ public static class MathUtils {
         return Quaternion.AngleAxis(twistDeg, axis) * fromRot;
     }
 
-    /// <summary>
-    /// Compute the relative rotation between two world space orientations.<br/>
-    /// NOTE: This is equivalent to <see cref="AlignLclRotToWldRot"/>.
-    /// </summary>
-    public static Quaternion DeltaRot(Quaternion fromRot, Quaternion toRot) {
-        return toRot * Quaternion.Inverse(fromRot);
-    }
-
-    /// <summary>
-    /// Calculates the world pose that aligns a local pose with the target world pose.
-    /// </summary>
-    public static (Vector3, Quaternion) AlignLclPoseToTgtPose(
-        Vector3 lclPos,
-        Quaternion lclRot,
-        Vector3 tgtWldPos,
-        Quaternion tgtWldRot
-    ) {
-        Quaternion desiredRot = AlignLclRotToWldRot(tgtWldRot, lclRot);
-        Vector3 desiredPos = AlignLclPtToWldPt(tgtWldPos, desiredRot, lclPos);
-        return (desiredPos, desiredRot);
-    }
-
     // TODO: Perhaps expand this so that parameter takes in the axis and pivot pos and rot instead of
     // TODO C: the transform. Or actually create a separate method that doesn't take in pivot transform
     // TODO C: but instead uses only pivot wld pos and direction of the axis to rotate around.
@@ -143,6 +153,14 @@ public static class MathUtils {
     }
 
     /// <summary>
+    /// Compute the relative rotation between two world space orientations.<br/>
+    /// NOTE: This is equivalent to <see cref="AlignLclRotToWldRot"/>.
+    /// </summary>
+    public static Quaternion DRot(Quaternion fromRot, Quaternion toRot) {
+        return toRot * Quaternion.Inverse(fromRot);
+    }
+
+    /// <summary>
     /// Returns signed angle around an axis (in radians).<br/>
     /// Can be used to e.g. see how a follow target hand rotation affects the rotation of an (axis-locked)
     /// key in a key hole.
@@ -153,12 +171,7 @@ public static class MathUtils {
         // Ensure equivalent quaternions are represented consistently. This prevents discontinuities where
         // the same rotation can appear as two different quaternions.
         if (rot.w < 0f)
-            rot = new Quaternion(
-                -rot.x,
-                -rot.y,
-                -rot.z,
-                -rot.w
-            );
+            rot = new Quaternion(-rot.x, -rot.y, -rot.z, -rot.w);
         // Quaternion is projected onto the axis vector to only keep the part of the rotation
         // around the axis.
         Vector3 projected = Vector3.Project(new Vector3(rot.x, rot.y, rot.z), axis);
@@ -185,13 +198,18 @@ public static class MathUtils {
     /// reach (e.g. based on the follow target hand rotation). The axis would be
     /// the direction into the keyhole.
     /// </summary>
-    public static float ExtractSignedTwistAng(
-        Quaternion fromRot,
-        Quaternion toRot,
-        Vector3 axis
-    ) {
-        Quaternion twistResidual = DeltaRot(fromRot, toRot);
+    public static float ExtractSignedTwistAng(Quaternion fromRot, Quaternion toRot, Vector3 axis) {
+        Quaternion twistResidual = DRot(fromRot, toRot);
         return ExtractSignedTwistAng(twistResidual, axis);
+    }
+
+    /// <summary>
+    /// Integrates rotation using angular velocity over a time step.
+    /// </summary>
+    public static Quaternion IntegrateRot(Quaternion rot, Vector3 angVel, float dt) {
+        if (IsNearlyZero(angVel))
+            return rot;
+        return Quaternion.AngleAxis(angVel.magnitude * Mathf.Rad2Deg * dt, angVel.normalized) * rot;
     }
 
     /// <summary>
@@ -301,6 +319,36 @@ public static class MathUtils {
     }
 
     /// <summary>
+    /// Calculates angular acceleration using a spring-damper model between rotations.
+    /// </summary>
+    /// <param name="currRot">Current rotation.</param>
+    /// <param name="tgtRot">Target rotation.</param>
+    /// <param name="relAngVel">Relative angular velocity between the spring object and target.</param>
+    /// <param name="angVel">Spring object's angular velocity.</param>
+    /// <param name="spring">Angular spring strength.</param>
+    /// <param name="velMatchDamper">Damper strength for matching target angular velocity.</param>
+    /// <param name="dragDamper">Damper strength for reducing spring object's angular velocity.</param>
+    public static Vector3 SpringAngAcc(
+        Quaternion currRot,
+        Quaternion tgtRot,
+        Vector3 relAngVel,
+        Vector3 angVel,
+        float spring,
+        float velMatchDamper,
+        float dragDamper
+    ) {
+        Quaternion dRot = DRot(currRot, tgtRot);
+        dRot.ToAngleAxis(out float angleDeg, out Vector3 axis);
+        if (angleDeg > 180f)
+            angleDeg -= 360f;
+        if (IsNearlyZero(axis))
+            return -relAngVel * velMatchDamper - angVel * dragDamper;
+        return axis.normalized * (angleDeg * Mathf.Deg2Rad * spring)
+               - relAngVel * velMatchDamper
+               - angVel * dragDamper;
+    }
+
+    /// <summary>
     /// Returns a transformed point from local space to world space using the specified
     /// origin and rotation.
     /// </summary>
@@ -343,5 +391,76 @@ public static class MathUtils {
     /// </summary>
     public static Quaternion TrfRot(Rigidbody rb, Quaternion rotInRbSpace) {
         return TrfRot(rb.rotation, rotInRbSpace);
+    }
+
+    /// <summary>
+    /// Updates spring object position and rotation using spring-like movement towards a moving target.<br/>
+    /// NOTE: Velocity match damper acceleration is calculated using the relative velocity
+    /// between the spring object and the target.<br/>
+    /// NOTE #2: Drag damper acceleration is calculated using only the spring object's velocity.<br/>
+    /// NOTE #3: Max accelerations clamp the combined spring and damper acceleration.
+    /// NOTE #4: Large damper can cause large accelerations that overshoot and reverse velocity direction!
+    /// </summary>
+    /// <param name="springObjPos">Position of the spring object to update.</param>
+    /// <param name="springObjRot">Rotation of the spring object to update.</param>
+    /// <param name="springObjMotSt">Motion state of the spring object.</param>
+    /// <param name="tgtMotSt">Motion state of the target.</param>
+    /// <param name="tgtPos">Target position.</param>
+    /// <param name="tgtRot">Target rotation.</param>
+    /// <param name="dt">Time step duration.</param>
+    /// <param name="linSpring">Linear spring strength.</param>
+    /// <param name="linVelMatchDamper">Linear damper strength for matching target velocity.</param>
+    /// <param name="linDragDamper">Linear damper strength for reducing the spring object's velocity.</param>
+    /// <param name="angSpring">Angular spring strength.</param>
+    /// <param name="angVelMatchDamper">Angular damper strength for matching target angular velocity.</param>
+    /// <param name="angDragDamper">
+    /// Angular damper strength for reducing the spring object's angular velocity.
+    /// </param>
+    /// <param name="maxLinAcc">Maximum linear acceleration.</param>
+    /// <param name="maxAngAcc">Maximum angular acceleration.</param>
+    public static void UpdateSpringTrf(
+        ref Vector3 springObjPos,
+        ref Quaternion springObjRot,
+        ref MotSt springObjMotSt,
+        in MotSt tgtMotSt,
+        Vector3 tgtPos,
+        Quaternion tgtRot,
+        float dt,
+        float linSpring,
+        float linVelMatchDamper,
+        float linDragDamper,
+        float angSpring,
+        float angVelMatchDamper,
+        float angDragDamper,
+        float maxLinAcc,
+        float maxAngAcc
+    ) {
+        // Linear
+        Vector3 relLinVel = springObjMotSt.linVel - tgtMotSt.linVel;
+        Vector3 linAcc =
+            (tgtPos - springObjPos) * linSpring
+            - relLinVel * linVelMatchDamper
+            - springObjMotSt.linVel * linDragDamper;
+        linAcc = Vector3.ClampMagnitude(linAcc, maxLinAcc);
+        springObjMotSt.linVel += linAcc * dt;
+        springObjPos += springObjMotSt.linVel * dt;
+        // Angular
+        Vector3 relAngVel = springObjMotSt.angVel - tgtMotSt.angVel;
+        Vector3 angAcc = SpringAngAcc(
+            springObjRot,
+            tgtRot,
+            relAngVel,
+            springObjMotSt.angVel,
+            angSpring,
+            angVelMatchDamper,
+            angDragDamper
+        );
+        angAcc = Vector3.ClampMagnitude(angAcc, maxAngAcc);
+        springObjMotSt.angVel += angAcc * dt;
+        springObjRot = IntegrateRot(
+            springObjRot,
+            springObjMotSt.angVel,
+            dt
+        );
     }
 }

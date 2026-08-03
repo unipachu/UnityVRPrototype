@@ -182,6 +182,7 @@ public class FwdDirFol : MonoBehaviour {
         return tgtDist;
     }
 
+    // TODO: static math util?
     Vector3 GetHalfExtents(float sclFactor) {
         return new Vector3(
             ChkBoxSz.x * initScl.x * sclFactor * 0.5f,
