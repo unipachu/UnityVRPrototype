@@ -2,6 +2,8 @@
 
 ## Overview
 
+![Screenshot](Screenshots/UnityVrPrototype.png)
+
 **VRPrototype** is a work-in-progress Unity project used to experiment with and evaluate different approaches for physics-based interactions in virtual reality (for fun and for later use in other projects).
 
 ## Requirements
