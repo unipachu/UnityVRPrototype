@@ -2238,21 +2238,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1087814791871867956, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 2993238006742940225, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: m_Name
       value: PhysHand_R
       objectReference: {fileID: 0}
     - target: {fileID: 5628006465164392676, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.03921
+      value: 0.172
       objectReference: {fileID: 0}
     - target: {fileID: 5628006465164392676, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.174
       objectReference: {fileID: 0}
     - target: {fileID: 5628006465164392676, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.96172
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5628006465164392676, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2282,6 +2286,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7326558648800126737, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7326558648800126737, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7326558648800126737, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -2291,25 +2307,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6246790631621771708}
     - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
-      propertyPath: followTgtTrf
-      value: 
-      objectReference: {fileID: 6246790631621771708}
-    - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: ctrlHapticImpPlr
       value: 
       objectReference: {fileID: 1525248857}
     - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
       propertyPath: handGhostShdrCtrl
       value: 
-      objectReference: {fileID: 6246790631621771715}
-    - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
-      propertyPath: handGhostShaderCtrl
-      value: 
-      objectReference: {fileID: 6246790631621771715}
-    - target: {fileID: 8240751767776342644, guid: 86cfd9d3feaeafa4a8ebd207e12afeb9, type: 3}
-      propertyPath: controllerHapticImpulsePlayer
-      value: 
-      objectReference: {fileID: 1525248857}
+      objectReference: {fileID: 6246790631621771714}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2586,7 +2590,7 @@ MonoBehaviour:
   maxAngAcc: 99999
   startAtTgt: 1
   rb: {fileID: 1302768375}
-  tgt: {fileID: 1766387574}
+  tgt: {fileID: 0}
 --- !u!54 &1302768375
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3743,11 +3747,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
---- !u!4 &1766387574 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1804113834662196362, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1860794396
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4226,17 +4225,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1943804978 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1588858269393374867, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1001 &1955284301
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4634,6 +4622,22 @@ PrefabInstance:
       value: 1.074
       objectReference: {fileID: 0}
     - target: {fileID: 4834116091902307744, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4834116091902307744, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4834116091902307744, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4834116091902307744, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4834116091902307744, guid: aaaa1e2770fd0544b9eb9a3c9a469f1c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
@@ -4844,11 +4848,7 @@ PrefabInstance:
     - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: folTgtTrf
       value: 
-      objectReference: {fileID: 1766387574}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: followTgtTrf
-      value: 
-      objectReference: {fileID: 1766387574}
+      objectReference: {fileID: 6246790631621771710}
     - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: ctrlHapticImpPlr
       value: 
@@ -4856,38 +4856,18 @@ PrefabInstance:
     - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: handGhostShdrCtrl
       value: 
-      objectReference: {fileID: 1943804978}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: handGhostShaderCtrl
-      value: 
-      objectReference: {fileID: 1943804978}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: <plrCtrl>k__BackingField
-      value: 
-      objectReference: {fileID: 1738754824}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: <followTgtTrf>k__BackingField
-      value: 
-      objectReference: {fileID: 1766387574}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: controllerHapticImpulsePlayer
-      value: 
-      objectReference: {fileID: 2034991329}
-    - target: {fileID: 1668586537245752111, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: <handGhostShaderCtrl>k__BackingField
-      value: 
-      objectReference: {fileID: 1943804978}
+      objectReference: {fileID: 6246790631621771711}
     - target: {fileID: 3129923130106753471, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.167
+      value: -0.121
       objectReference: {fileID: 0}
     - target: {fileID: 3129923130106753471, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.017
+      value: 0.151
       objectReference: {fileID: 0}
     - target: {fileID: 3129923130106753471, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.967
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3129923130106753471, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4917,22 +4897,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5486863834371886251, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: <plrCtrl>k__BackingField
-      value: 
-      objectReference: {fileID: 1738754824}
-    - target: {fileID: 5486863834371886251, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: <followTgtTrf>k__BackingField
-      value: 
-      objectReference: {fileID: 1766387574}
-    - target: {fileID: 5486863834371886251, guid: 0376958f6ad49634b8248d369491db72, type: 3}
-      propertyPath: controllerHapticImpulsePlayer
-      value: 
-      objectReference: {fileID: 2034991329}
     - target: {fileID: 5548175894078518042, guid: 0376958f6ad49634b8248d369491db72, type: 3}
       propertyPath: m_Name
       value: PhysHand_L
       objectReference: {fileID: 0}
+    - target: {fileID: 7668991645895042415, guid: 0376958f6ad49634b8248d369491db72, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5019,6 +4991,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 678355545676750517, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 2824438271685459689, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5059,6 +5035,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5927732003499379915, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 8135029144999847084, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
       propertyPath: m_Name
       value: XrOrigin
@@ -5075,12 +5055,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6246790631621771708 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5571587240678687667, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4969670785701690780, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
   m_PrefabInstance: {fileID: 6246790631621771706}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6246790631621771715 stripped
+--- !u!4 &6246790631621771710 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1926477559577905015, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6246790631621771711 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6463728872490317006, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7210022235306892571, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
+--- !u!114 &6246790631621771714 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2150194412461756171, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
   m_PrefabInstance: {fileID: 6246790631621771706}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

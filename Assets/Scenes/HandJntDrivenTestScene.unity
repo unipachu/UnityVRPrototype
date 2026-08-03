@@ -345,6 +345,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &94748717 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1926477559577905015, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &94748719 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7210022235306892571, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
+--- !u!4 &106179855 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4969670785701690780, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &106179857 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2150194412461756171, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1 &160304669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1312,22 +1344,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &610874591 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5571587240678687667, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &610874594 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6463728872490317006, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1001 &641395621
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2275,6 +2291,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4058931438547168741, guid: e1956284f4fb3d3418b9ddfe53092ecc, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 8721555459881572607, guid: e1956284f4fb3d3418b9ddfe53092ecc, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -2282,7 +2302,7 @@ PrefabInstance:
     - target: {fileID: 8721555459881572607, guid: e1956284f4fb3d3418b9ddfe53092ecc, type: 3}
       propertyPath: followTgtTrf
       value: 
-      objectReference: {fileID: 610874591}
+      objectReference: {fileID: 106179855}
     - target: {fileID: 8721555459881572607, guid: e1956284f4fb3d3418b9ddfe53092ecc, type: 3}
       propertyPath: ctrlHapticImpPlr
       value: 
@@ -2290,7 +2310,7 @@ PrefabInstance:
     - target: {fileID: 8721555459881572607, guid: e1956284f4fb3d3418b9ddfe53092ecc, type: 3}
       propertyPath: handGhostShaderCtrl
       value: 
-      objectReference: {fileID: 610874594}
+      objectReference: {fileID: 106179857}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3292,22 +3312,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9d79b345dee3d54e8039056ff2afe63, type: 3}
---- !u!4 &1838277723 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1804113834662196362, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1838277726 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1588858269393374867, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf420831abde3ed4fbb336ff5587bc43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GhostShaderController
 --- !u!1 &1868920674
 GameObject:
   m_ObjectHideFlags: 0
@@ -4470,6 +4474,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2765713018872602858, guid: 775f6d2e6ecc5394db3daf363ffc25cd, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 7439033501645264368, guid: 775f6d2e6ecc5394db3daf363ffc25cd, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -4477,7 +4485,7 @@ PrefabInstance:
     - target: {fileID: 7439033501645264368, guid: 775f6d2e6ecc5394db3daf363ffc25cd, type: 3}
       propertyPath: followTgtTrf
       value: 
-      objectReference: {fileID: 1838277723}
+      objectReference: {fileID: 94748717}
     - target: {fileID: 7439033501645264368, guid: 775f6d2e6ecc5394db3daf363ffc25cd, type: 3}
       propertyPath: ctrlHapticImpPlr
       value: 
@@ -4485,7 +4493,7 @@ PrefabInstance:
     - target: {fileID: 7439033501645264368, guid: 775f6d2e6ecc5394db3daf363ffc25cd, type: 3}
       propertyPath: handGhostShaderCtrl
       value: 
-      objectReference: {fileID: 1838277726}
+      objectReference: {fileID: 94748719}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4499,6 +4507,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 678355545676750517, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 2824438271685459689, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4539,6 +4551,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5927732003499379915, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+      propertyPath: plrCtrl
+      value: 
+      objectReference: {fileID: 1738754824}
     - target: {fileID: 8135029144999847084, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
       propertyPath: m_Name
       value: XrOrigin

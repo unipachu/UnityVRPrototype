@@ -4,11 +4,10 @@ using UnityEngine;
 /// Controls ghost shader's dithering amount.
 /// </summary>
 public class GhostShdrCtlr : MonoBehaviour {
-    private Renderer tgtRenderer;
+    [SerializeField] private Renderer tgtRenderer;
     //private MaterialPropertyBlock propertyBlock;
 
     private void Awake() {
-        tgtRenderer = GetComponent<Renderer>();
         //propertyBlock = new MaterialPropertyBlock();
     }
 
