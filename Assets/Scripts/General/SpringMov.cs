@@ -4,16 +4,27 @@ using UnityEngine;
 /// Applies spring movement to the Rigidbody or the Transform of this game object.
 /// </summary>
 public class SpringMov : MonoBehaviour{
-    [Header("Settings")]
-    public bool startAtTgt = true;
-    public float linSpring = 10;
+    [Header("Linear Movement Settings")]
+    public float linSpring = 5;
+    [Tooltip("Damps linear velocity based on relative linear velocity between the spring " +
+        "object and the target.")]
     public float linVelMatchDamper = 5;
+    [Tooltip("Damps linear velocity based on spring object linear world velocity.")]
     public float linDragDamper = 1;
     public float maxLinAcc = 99999;
-    public float angSpring = 1;
-    public float angVelMatchDamper = 1;
+
+    [Header("Angular Movement Settings")]
+    public float angSpring = 5;
+    [Tooltip("Damps anuglar velocity based on relative angular velocity between the spring " +
+        "object and the target.")]
+    public float angVelMatchDamper = 5;
+    [Tooltip("Damps angular velocity based on spring object angular world velocity.")]
     public float angDragDamper = 1;
     public float maxAngAcc = 99999;
+
+    [Header("Other Settings")]
+    [Tooltip("Should move the spring object to target when game starts?")]
+    public bool startAtTgt = true;
 
     [Header("Refs")]
     [Tooltip("Rigidbody to be moved with Rigidbody.Move. " +
@@ -33,6 +44,10 @@ public class SpringMov : MonoBehaviour{
         if (startAtTgt) {
             transform.position = tgt.position;
             transform.rotation = tgt.rotation;
+            if(rb != null) {
+                rb.position = tgt.position;
+                rb.rotation = tgt.rotation;
+            }
         }
     }
 
