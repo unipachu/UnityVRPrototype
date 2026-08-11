@@ -868,7 +868,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 575700796}
-  - component: {fileID: 575700798}
   - component: {fileID: 575700793}
   - component: {fileID: 575700797}
   m_Layer: 0
@@ -942,18 +941,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &575700798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 575700792}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f51ddee63d87246944772643a51b2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntBodyAuthoring
 --- !u!1 &650004211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1204,7 +1191,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 889762451}
-  - component: {fileID: 889762450}
   - component: {fileID: 889762453}
   - component: {fileID: 889762449}
   - component: {fileID: 889762452}
@@ -1237,23 +1223,11 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 0
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &889762450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 889762448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f51ddee63d87246944772643a51b2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntBodyAuthoring
 --- !u!4 &889762451
 Transform:
   m_ObjectHideFlags: 0
@@ -1305,17 +1279,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
   springEnabled: 1
-  localAnchor: {x: 0, y: -0.01, z: -0.02}
   target: {fileID: 1289019059}
   enableLinear: 1
   linearSpring: 500
   linearDamper: 1
   maxForce: 99999
-  enableAngular: 0
-  angularSpring: 33.14
-  angularDamper: 10
-  maxTorque: 1
-  connectedBody: {fileID: 889762448}
+  enableAngular: 1
+  angularSpring: 0.1
+  angularDamper: 1
+  maxTorque: 0.6
 --- !u!1 &1289019058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1782,7 +1754,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1671640049}
-  - component: {fileID: 1671640048}
   - component: {fileID: 1671640051}
   - component: {fileID: 1671640047}
   - component: {fileID: 1671640050}
@@ -1815,23 +1786,11 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 0
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1671640048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1671640046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f51ddee63d87246944772643a51b2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntBodyAuthoring
 --- !u!4 &1671640049
 Transform:
   m_ObjectHideFlags: 0
@@ -1883,7 +1842,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EcsPhysSpringAuthoring
   springEnabled: 1
-  localAnchor: {x: 0, y: -0.01, z: -0.02}
   target: {fileID: 1554520713}
   enableLinear: 1
   linearSpring: 100
@@ -1893,7 +1851,6 @@ MonoBehaviour:
   angularSpring: 0
   angularDamper: 0
   maxTorque: 0
-  connectedBody: {fileID: 1671640046}
 --- !u!1 &1748969697
 GameObject:
   m_ObjectHideFlags: 0

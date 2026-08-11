@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using Unity.Physics;
 using Unity.Transforms;
 
 /// <summary>
@@ -72,8 +71,8 @@ public static class EcsMathNPhysUtils {
         // NOTE: lengthsq < deadzone * deadzone is more performant than
         // NOTE C: length < deadzone because it does not calculate squareroot.
         if (
-            math.lengthsq(displacement) < posDeadzone * posDeadzone &&
-            math.lengthsq(relativeVel) < velDeadzone * velDeadzone
+            math.lengthsq(displacement) < posDeadzone * posDeadzone
+            && math.lengthsq(relativeVel) < velDeadzone * velDeadzone
         )
             return float3.zero;
         float3 springForce = displacement * springStiffness;

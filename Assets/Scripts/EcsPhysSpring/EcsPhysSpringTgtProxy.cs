@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
-/// Holds data for ECS synchronization.
+/// Passes game object spring target data to the ECS subscene.
 /// </summary>
 public class EcsPhysSpringTgtProxy : MonoBehaviour {
     [Header("Target")]
@@ -33,7 +33,6 @@ public class EcsPhysSpringTgtProxy : MonoBehaviour {
     public quaternion TgtRot => tgtTrf.rotation;
     public float3 TgtLinVel => linVel;
     public float3 TgtAngVel => angVel;
-
 
     private void FixedUpdate() {
         linVel = MathUtils.LinVel(prevPos, transform.position, Time.fixedDeltaTime);
