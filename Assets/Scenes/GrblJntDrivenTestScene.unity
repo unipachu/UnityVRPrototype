@@ -2551,7 +2551,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1302768373
 Transform:
   m_ObjectHideFlags: 0
@@ -2581,16 +2581,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrfSpringMov
   linSpring: 5
+  maxLinSpringAcc: 99999
   linVelMatchDamper: 5
+  maxLinVelMatchDamperAcc: 99999
   linDragDamper: 1
-  maxLinAcc: 99999
+  maxLinDragDamperAcc: 99999
+  maxTotalLinAcc: 99999
   angSpring: 5
+  maxAngSpringAcc: 99999
   angVelMatchDamper: 5
+  maxAngVelMatchDamperAcc: 99999
   angDragDamper: 1
-  maxAngAcc: 99999
+  maxAngDragDamperAcc: 99999
+  maxTotalAngAcc: 99999
   startAtTgt: 1
   rb: {fileID: 1302768375}
-  tgt: {fileID: 0}
+  tgt: {fileID: 6246790631621771710}
 --- !u!54 &1302768375
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -3,34 +3,42 @@ using UnityEngine;
 /// <summary>
 /// Applies spring movement to the Rigidbody or the Transform of this game object.
 /// </summary>
-// TODO: Create separate max acceleration fields for vel match damper AND drag damper AND spring.
 public class SpringMov : MonoBehaviour{
     [Header("Linear Movement Settings")]
     public float linSpring = 5;
+    public float maxLinSpringAcc = 99999;
     [Tooltip("Damps linear velocity based on relative linear velocity between the spring " +
         "object and the target.")]
     public float linVelMatchDamper = 5;
+    public float maxLinVelMatchDamperAcc = 99999;
     [Tooltip("Damps linear velocity based on spring object linear world velocity.")]
     public float linDragDamper = 1;
-    public float maxLinAcc = 99999;
+    public float maxLinDragDamperAcc = 99999;
+    [Tooltip("Clamps total linear acceleration caused by spring, velocity match damper, and drag damper.")]
+    public float maxTotalLinAcc = 99999;
 
     [Header("Angular Movement Settings")]
     public float angSpring = 5;
+    public float maxAngSpringAcc = 99999;
     [Tooltip("Damps anuglar velocity based on relative angular velocity between the spring " +
         "object and the target.")]
     public float angVelMatchDamper = 5;
+    public float maxAngVelMatchDamperAcc = 99999;
     [Tooltip("Damps angular velocity based on spring object angular world velocity.")]
     public float angDragDamper = 1;
-    public float maxAngAcc = 99999;
+    public float maxAngDragDamperAcc = 99999;
+    [Tooltip("Clamps total angular acceleration caused by spring, velocity match damper, and drag damper.")]
+    public float maxTotalAngAcc = 99999;
 
     [Header("Other Settings")]
     [Tooltip("Should move the spring object to target when game starts?")]
     public bool startAtTgt = true;
 
     [Header("Refs")]
-    [Tooltip("Rigidbody to be moved with Rigidbody.Move. " +
+    [Tooltip("(Recommended but optional) Rigidbody to be moved with Rigidbody.Move in FixedUpdate." +
         "Should be KINEMATIC for stable spring calculations and interpolation. " +
-        "If empty, the Transform is moved directly.")]
+        "If empty, moves Transform directly in Update which can cause unstable movement " +
+        "calculations if framerate is not stable!")]
     [SerializeField] Rigidbody rb;
     [Tooltip("Target for the spring.")]
     public Transform tgt;
@@ -56,26 +64,32 @@ public class SpringMov : MonoBehaviour{
         if (rb != null)
             return;
         UpdateTgtMotSt(Time.deltaTime);
-        Vector3 rbPos = transform.position;
-        Quaternion rbRot = transform.rotation;
+        Vector3 trfPos = transform.position;
+        Quaternion trfRot = transform.rotation;
         MathUtils.UpdateSpringTrf(
-            ref rbPos,
-            ref rbRot,
+            ref trfPos,
+            ref trfRot,
             ref motSt,
             in tgtMotSt,
             tgt.position,
             tgt.rotation,
             Time.deltaTime,
             linSpring,
+            maxLinSpringAcc,
             linVelMatchDamper,
+            maxLinVelMatchDamperAcc,
             linDragDamper,
+            maxLinDragDamperAcc,
+            maxTotalLinAcc,
             angSpring,
+            maxAngSpringAcc,
             angVelMatchDamper,
+            maxAngVelMatchDamperAcc,
             angDragDamper,
-            maxLinAcc,
-            maxAngAcc
+            maxAngDragDamperAcc,
+            maxTotalAngAcc
         );
-        transform.SetPositionAndRotation(rbPos, rbRot);
+        transform.SetPositionAndRotation(trfPos, trfRot);
         // Update tgt prev pose.
         tgtPrevPose = new(tgt.position, tgt.rotation);
     }
@@ -95,13 +109,19 @@ public class SpringMov : MonoBehaviour{
             tgt.rotation,
             Time.fixedDeltaTime,
             linSpring,
+            maxLinSpringAcc,
             linVelMatchDamper,
+            maxLinVelMatchDamperAcc,
             linDragDamper,
+            maxLinDragDamperAcc,
+            maxTotalLinAcc,
             angSpring,
+            maxAngSpringAcc,
             angVelMatchDamper,
+            maxAngVelMatchDamperAcc,
             angDragDamper,
-            maxLinAcc,
-            maxAngAcc
+            maxAngDragDamperAcc,
+            maxTotalAngAcc
         );
         rb.Move(rbPos, rbRot);
         // Update tgt prev pose.

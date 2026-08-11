@@ -327,32 +327,45 @@ public static class MathUtils {
 
     /// <summary>
     /// Calculates angular acceleration using a spring-damper model between rotations.
+    /// Each spring and damper acceleration is clamped independently.
     /// </summary>
     /// <param name="currRot">Current rotation.</param>
     /// <param name="tgtRot">Target rotation.</param>
     /// <param name="relAngVel">Relative angular velocity between the spring object and target.</param>
     /// <param name="angVel">Spring object's angular velocity.</param>
     /// <param name="spring">Angular spring strength.</param>
+    /// <param name="maxSpringAcc">Maximum angular spring acceleration.</param>
     /// <param name="velMatchDamper">Damper strength for matching target angular velocity.</param>
-    /// <param name="dragDamper">Damper strength for reducing spring object's angular velocity.</param>
+    /// <param name="maxVelMatchDamperAcc">Maximum angular velocity-match damper acceleration.</param>
+    /// <param name="dragDamper">Damper strength for reducing the spring object's angular velocity.</param>
+    /// <param name="maxDragDamperAcc">Maximum angular drag damper acceleration.</param>
     public static Vector3 SpringAngAcc(
         Quaternion currRot,
         Quaternion tgtRot,
         Vector3 relAngVel,
         Vector3 angVel,
         float spring,
+        float maxSpringAcc,
         float velMatchDamper,
-        float dragDamper
+        float maxVelMatchDamperAcc,
+        float dragDamper,
+        float maxDragDamperAcc
     ) {
+        // Angular spring
         Quaternion dRot = DRot(currRot, tgtRot);
         dRot.ToAngleAxis(out float angleDeg, out Vector3 axis);
-        if (angleDeg > 180f)
-            angleDeg -= 360f;
-        if (IsNearlyZero(axis))
-            return -relAngVel * velMatchDamper - angVel * dragDamper;
-        return axis.normalized * (angleDeg * Mathf.Deg2Rad * spring)
-               - relAngVel * velMatchDamper
-               - angVel * dragDamper;
+        Vector3 springAcc = Vector3.zero;
+        if (!IsNearlyZero(axis)) {
+            if (angleDeg > 180f)
+                angleDeg -= 360f;
+            springAcc = axis.normalized * (angleDeg * Mathf.Deg2Rad * spring);
+        }
+        springAcc = Vector3.ClampMagnitude(springAcc, maxSpringAcc);
+        // Angular velocity match damper
+        Vector3 velMatchDamperAcc = Vector3.ClampMagnitude(-relAngVel * velMatchDamper, maxVelMatchDamperAcc);
+        // Angular drag damper
+        Vector3 dragDamperAcc = Vector3.ClampMagnitude(-angVel * dragDamper, maxDragDamperAcc);
+        return springAcc + velMatchDamperAcc + dragDamperAcc;
     }
 
     /// <summary>
@@ -405,8 +418,9 @@ public static class MathUtils {
     /// NOTE: Velocity match damper acceleration is calculated using the relative velocity
     /// between the spring object and the target.<br/>
     /// NOTE #2: Drag damper acceleration is calculated using only the spring object's velocity.<br/>
-    /// NOTE #3: Max accelerations clamp the combined spring and damper acceleration.
-    /// NOTE #4: Large damper can cause large accelerations that overshoot and reverse velocity direction!
+    /// NOTE #3: Each spring and damper acceleration is clamped independently before they are combined.<br/>
+    /// NOTE #4: The combined acceleration is clamped by the total acceleration limit.<br/>
+    /// NOTE #5: Large damper values can cause large accelerations that overshoot and reverse velocity direction!
     /// </summary>
     /// <param name="springObjPos">Position of the spring object to update.</param>
     /// <param name="springObjRot">Rotation of the spring object to update.</param>
@@ -416,15 +430,19 @@ public static class MathUtils {
     /// <param name="tgtRot">Target rotation.</param>
     /// <param name="dt">Time step duration.</param>
     /// <param name="linSpring">Linear spring strength.</param>
+    /// <param name="maxLinSpringAcc">Maximum linear spring acceleration.</param>
     /// <param name="linVelMatchDamper">Linear damper strength for matching target velocity.</param>
+    /// <param name="maxLinVelMatchDamperAcc">Maximum linear velocity-match damper acceleration.</param>
     /// <param name="linDragDamper">Linear damper strength for reducing the spring object's velocity.</param>
+    /// <param name="maxLinDragDamperAcc">Maximum linear drag damper acceleration.</param>
+    /// <param name="maxTotalLinAcc">Maximum total linear acceleration.</param>
     /// <param name="angSpring">Angular spring strength.</param>
+    /// <param name="maxAngSpringAcc">Maximum angular spring acceleration.</param>
     /// <param name="angVelMatchDamper">Angular damper strength for matching target angular velocity.</param>
-    /// <param name="angDragDamper">
-    /// Angular damper strength for reducing the spring object's angular velocity.
-    /// </param>
-    /// <param name="maxLinAcc">Maximum linear acceleration.</param>
-    /// <param name="maxAngAcc">Maximum angular acceleration.</param>
+    /// <param name="maxAngVelMatchDamperAcc">Maximum angular velocity-match damper acceleration.</param>
+    /// <param name="angDragDamper">Angular damper strength for reducing the spring object's angular velocity.</param>
+    /// <param name="maxAngDragDamperAcc">Maximum angular drag damper acceleration.</param>
+    /// <param name="maxTotalAngAcc">Maximum total angular acceleration.</param>
     public static void UpdateSpringTrf(
         ref Vector3 springObjPos,
         ref Quaternion springObjRot,
@@ -434,22 +452,30 @@ public static class MathUtils {
         Quaternion tgtRot,
         float dt,
         float linSpring,
+        float maxLinSpringAcc,
         float linVelMatchDamper,
+        float maxLinVelMatchDamperAcc,
         float linDragDamper,
+        float maxLinDragDamperAcc,
+        float maxTotalLinAcc,
         float angSpring,
+        float maxAngSpringAcc,
         float angVelMatchDamper,
+        float maxAngVelMatchDamperAcc,
         float angDragDamper,
-        float maxLinAcc,
-        float maxAngAcc
+        float maxAngDragDamperAcc,
+        float maxTotalAngAcc
     ) {
         // Linear
         Vector3 relLinVel = springObjMotSt.linVel - tgtMotSt.linVel;
-        Vector3 linAcc =
-            (tgtPos - springObjPos) * linSpring
-            - relLinVel * linVelMatchDamper
-            - springObjMotSt.linVel * linDragDamper;
-        linAcc = Vector3.ClampMagnitude(linAcc, maxLinAcc);
-        springObjMotSt.linVel += linAcc * dt;
+        Vector3 linSpringAcc = Vector3.ClampMagnitude((tgtPos - springObjPos) * linSpring, maxLinSpringAcc);
+        Vector3 linVelMatchDamperAcc = Vector3.ClampMagnitude(
+            -relLinVel * linVelMatchDamper,
+            maxLinVelMatchDamperAcc
+        );
+        Vector3 linDragDamperAcc = Vector3.ClampMagnitude(-springObjMotSt.linVel * linDragDamper, maxLinDragDamperAcc);
+        Vector3 totalLinAcc = Vector3.ClampMagnitude(linSpringAcc + linSpringAcc + linVelMatchDamperAcc, maxTotalLinAcc);
+        springObjMotSt.linVel += totalLinAcc * dt;
         springObjPos += springObjMotSt.linVel * dt;
         // Angular
         Vector3 relAngVel = springObjMotSt.angVel - tgtMotSt.angVel;
@@ -459,10 +485,13 @@ public static class MathUtils {
             relAngVel,
             springObjMotSt.angVel,
             angSpring,
+            maxAngSpringAcc,
             angVelMatchDamper,
-            angDragDamper
+            maxAngVelMatchDamperAcc,
+            angDragDamper,
+            maxAngDragDamperAcc
         );
-        angAcc = Vector3.ClampMagnitude(angAcc, maxAngAcc);
+        angAcc = Vector3.ClampMagnitude(angAcc, maxTotalAngAcc);
         springObjMotSt.angVel += angAcc * dt;
         springObjRot = IntegrateRot(
             springObjRot,
