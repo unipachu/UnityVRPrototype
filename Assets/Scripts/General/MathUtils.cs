@@ -82,7 +82,7 @@ public static class MathUtils {
     }
 
     /// <summary>
-    /// Calculates angular velocity from the change between two rotations.
+    /// Calculates angular velocity from the change between two rotations. Small velocities are rounded to 0.
     /// </summary>
     public static Vector3 AngVel(
         Quaternion prevRot,
@@ -205,6 +205,7 @@ public static class MathUtils {
 
     /// <summary>
     /// Integrates rotation using angular velocity over a time step.
+    /// Basically returns new rotation that is rot rotated by the angVel for dt seconds.
     /// </summary>
     public static Quaternion IntegrateRot(Quaternion rot, Vector3 angVel, float dt) {
         if (IsNearlyZero(angVel))
@@ -308,6 +309,12 @@ public static class MathUtils {
     public static bool IsNearlyZero(Vector3 vec, float magThld = 1e-8f) {
         return vec.sqrMagnitude < magThld;
     }
+
+    /// <summary>
+    /// Calculates linear velocity from a previous and current position over a time step.
+    /// </summary>
+    public static Vector3 LinVel(Vector3 prevPos, Vector3 currPos, float dt)
+        => (currPos - prevPos) / dt;
 
     /// <summary>
     /// Normalizes angle to 0-360 degrees.

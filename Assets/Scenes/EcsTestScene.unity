@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &352609210 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5584139607940015623, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &404934484
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,6 +238,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &454988664 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4969670785701690780, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &575700792
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,6 +327,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &926370085
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 926370087}
+  - component: {fileID: 926370086}
+  m_Layer: 0
+  m_Name: EcsJntTgtProxy_RHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &926370086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926370085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
+  tgtTrf: {fileID: 454988664}
+  tgtId: 1
+--- !u!4 &926370087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926370085}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1322820885
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,30 +414,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1377500273}
   - component: {fileID: 1377500272}
-  - component: {fileID: 1377500271}
-  - component: {fileID: 1377500275}
-  - component: {fileID: 1377500274}
   m_Layer: 0
-  m_Name: EcsJntTgtProxies
+  m_Name: EcsJntTgtProxy_LHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1377500271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377500270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
-  springId: 1
-  tgtTrf: {fileID: 2074549159}
 --- !u!114 &1377500272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,8 +433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
-  springId: 0
-  tgtTrf: {fileID: 352609210}
+  tgtTrf: {fileID: 1698778723}
+  tgtId: 0
 --- !u!4 &1377500273
 Transform:
   m_ObjectHideFlags: 0
@@ -421,34 +450,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1377500274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377500270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
-  springId: 3
-  tgtTrf: {fileID: 2074549159}
---- !u!114 &1377500275
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377500270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20ee79def77ead842a5ca30451ebf354, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
-  springId: 2
-  tgtTrf: {fileID: 352609210}
 --- !u!1 &1485484989
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,6 +639,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1698778723 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1926477559577905015, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
+  m_PrefabInstance: {fileID: 6246790631621771706}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1933308048
 GameObject:
   m_ObjectHideFlags: 0
@@ -881,11 +887,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &2074549159 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2096109495544349428, guid: 66c59c2a6da8c9b40a2033273518d551, type: 3}
-  m_PrefabInstance: {fileID: 6246790631621771706}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2770057963128997500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1021,6 +1022,7 @@ SceneRoots:
   - {fileID: 404934487}
   - {fileID: 2011143228}
   - {fileID: 1377500273}
+  - {fileID: 926370087}
   - {fileID: 1485484990}
   - {fileID: 1559253668}
   - {fileID: 433143716}

@@ -5,25 +5,18 @@ using Unity.Mathematics;
 /// <summary>
 /// DOTS NOTE: Authoring scripts allow for changing ECS component values through inspector.
 /// </summary>
-public class EcsPhysSpringAuthoring : MonoBehaviour
-{
+public class EcsPhysSpringAuthoring : MonoBehaviour {
     [Header("General")]
     [Tooltip("Completely disables forces applied by the spring.")]
     public bool springEnabled = true;
-
-    [Header("Identification")]
-    [Tooltip("Unique identifier used by GameObject proxies.")]
-    public int springId;
 
     [Header("Anchor")]
     [Tooltip("Spring anchor attached to the entity, in entiy local space.")]
     public Vector3 localAnchor;
 
-    [Header("Target")]
-    [Tooltip("Desired world position.")]
-    public Vector3 targetPosition;
-    [Tooltip("Desired world rotation.")]
-    public Quaternion targetRotation = Quaternion.identity;
+    [Header("Spring Target")]
+    [Tooltip("Entity that contains EcsPhysSpringTgt.")]
+    public EcsPhysSpringTgtAuthoring target;
 
     [Header("Linear Drive")]
     [Tooltip("Whether the linear target is active.")]
@@ -50,12 +43,13 @@ public class EcsPhysSpringAuthoring : MonoBehaviour
             // DOTS NOTE: TransformUsageFlags let's us optimize the entity's world space behavior - choose the most restrictive flag you need!
             Entity entity = GetEntity(TransformUsageFlags.None);
             Entity bodyEntity = GetEntity(authoring.connectedBody, TransformUsageFlags.Dynamic);
-
+            Entity targetEntity = GetEntity(authoring.target, TransformUsageFlags.None);
             AddComponent(
                 entity,
                 new EcsPhysSpring {
                     enabled = authoring.springEnabled,
-                    localAnchor = authoring.localAnchor,
+                    lclAnch = authoring.localAnchor,
+                    tgt = targetEntity,
                     linSpring = authoring.linearSpring,
                     linDamper = authoring.linearDamper,
                     maxForce = authoring.maxForce,
@@ -66,26 +60,6 @@ public class EcsPhysSpringAuthoring : MonoBehaviour
                     enableAng = authoring.enableAngular
                 }
             );
-            quaternion rot = new quaternion(
-                authoring.targetRotation.x,
-                authoring.targetRotation.y,
-                authoring.targetRotation.z,
-                authoring.targetRotation.w
-            );
-            AddComponent(
-                entity,
-                new EcsPhysSpringTgt {
-                    pos = authoring.targetPosition,
-                    rot = rot
-                }
-            );
-            AddComponent(
-                entity,
-                new EcsPhysSpringTgtVel {
-                    linVel = float3.zero,
-                    angVel = float3.zero
-                }
-            );
             AddComponent(
                 entity,
                 new EcsPhysSpringBody {
@@ -93,22 +67,8 @@ public class EcsPhysSpringAuthoring : MonoBehaviour
                 }
             );
             AddComponent<EcsPhysSpringControlled>(entity);
-            AddComponent(
-                entity,
-                new EcsPhysSpringId {
-                    value = authoring.springId
-                }
-            );
         }
     }
-}
-
-/// <summary>
-/// The world-space target of a custom physics spring.
-/// </summary>
-public struct EcsPhysSpringTgt : IComponentData {
-    public float3 pos;
-    public quaternion rot;
 }
 
 /// <summary>
@@ -117,7 +77,12 @@ public struct EcsPhysSpringTgt : IComponentData {
 /// </summary>
 public struct EcsPhysSpring : IComponentData {
     public bool enabled;
-    public float3 localAnchor;
+    public float3 lclAnch;
+    // DOTS NOTE: This is not a pointer, but a struct with entity index. In a system you can then:
+        // [ReadOnly]
+        // public ComponentLookup<EcsPhysSpringTgt> tgtLookup;
+        // EcsPhysSpringTgt tgt = tgtLookup[spring.target];
+    public Entity tgt;
     // Linear drive
     public float linSpring;
     public float linDamper;
@@ -129,7 +94,6 @@ public struct EcsPhysSpring : IComponentData {
     // Enable flags
     public bool enableLin;
     public bool enableAng;
-
 }
 
 /// <summary>
@@ -140,25 +104,7 @@ public struct EcsPhysSpringBody : IComponentData {
 }
 
 /// <summary>
-/// Runtime velocity of the custom physics spring target.
-/// Used for moving targets. Allows the spring to compensate
-/// for target motion instead of treating it as teleportation.
-/// </summary>
-public struct EcsPhysSpringTgtVel : IComponentData {
-    public float3 linVel;
-    public float3 angVel;
-}
-
-/// <summary>
 /// Identifies a custom physics spring that can be controlled externally.
 /// </summary>
 public struct EcsPhysSpringControlled : IComponentData {
-}
-
-/// <summary>
-/// Uniquely identifies a custom physics spring.
-/// Used by GameObject proxies to locate the correct spring entity.
-/// </summary>
-public struct EcsPhysSpringId : IComponentData {
-    public int value;
 }

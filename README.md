@@ -64,3 +64,9 @@ To distinguish between similar systems, names for the system features became qui
 |`trf`|transform|
 |`vis`|visual|
 |`wld`|world|
+
+## NOTES
+
+After compilation, the project will display the following warning several times. This is a known Unity issue:
+
+[Unity Issue Tracker – ImporterNativeFormatImporter generated inconsistent result warnings](https://issuetracker.unity.com/issues/22603/importernativeformatimporter-generated-inconsistent-result-warnings-are-shown-for-openxrpackagesettingsasset-after-reopening-a-vr-template-project)
