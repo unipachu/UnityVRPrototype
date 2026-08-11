@@ -35,51 +35,40 @@ public partial struct EcsPhysSpringSys : ISystem {
         // NOTE: We wait for the job to complete since we will use its newly written data next.
         handle.Complete();
         // Apply accumulated impulses.
-        foreach (var (physVel, physMass, trf, impAccum)
+        foreach (var (physVel, physMass, trf, impAccum, spring)
             in SystemAPI.Query<
                 RefRW<PhysicsVelocity>,
                 RefRO<PhysicsMass>,
                 RefRO<LocalTransform>,
-                RefRW<CustomPhysImpulseAccum>>()
+                RefRW<CustomPhysImpulseAccum>,
+                RefRO<EcsPhysSpring>>()
         ) {
             float3 linImp = impAccum.ValueRO.linImp;
             float3 angImp = impAccum.ValueRO.angImp;
-            //Debug.Log("angular impulse: " + angImp);
+            //ComponentLookup<EcsPhysSpringTgt> tgtLookup = SystemAPI.GetComponentLookup<EcsPhysSpringTgt>(true);
+            //EcsPhysSpringTgt springTgt = tgtLookup[spring.ValueRO.tgt];
+            //float3 angVelWorldBefore = physVel.ValueRO.GetAngularVelocityWorldSpace(physMass.ValueRO, trf.ValueRO.Rotation);
+            //Debug.Log(
+            //    $"SPRING ANGULAR\n" +
+            //    $"  current rot:       {trf.ValueRO.Rotation.value}\n" +
+            //    $"  target rot:        {springTgt.rot.value}\n" +
+            //    $"  world ang vel:     {angVelWorldBefore}\n" +
+            //    $"  target ang vel:    {springTgt.angVel}\n" +
+            //    $"  angular impulse:   {angImp}\n" +
+            //    $"  impulse magnitude: {math.length(angImp)}\n" +
+            //    $"  inverse inertia:   {physMass.ValueRO.InverseInertia}\n" +
+            //    $"  mass transform:    {physMass.ValueRO.Transform.rot.value}"
+            //);
             physVel.ValueRW.ApplyLinearImpulse(physMass.ValueRO, linImp);
-            // ApplyAngularImpulse is actually in local space 
-            quaternion worldFromMotionRot =
-                math.mul(trf.ValueRO.Rotation, physMass.ValueRO.Transform.rot);
-
-            float3 angImpMotion =
-                math.rotate(
-                    math.inverse(worldFromMotionRot),
-                    angImp
-                );
-            //{
-            //    float3 angVelWorldBefore =
-            //        physVel.ValueRO.GetAngularVelocityWorldSpace(
-            //            physMass.ValueRO,
-            //            trf.ValueRO.Rotation
-            //        );
-            //    ComponentLookup<EcsPhysSpringTgt> tgtLookup = SystemAPI.GetComponentLookup<EcsPhysSpringTgt>(true);
-            //    ComponentLookup<EcsPhysSpring> springLookup = SystemAPI.GetComponentLookup<EcsPhysSpring>(true);
-            //    Debug.Log(
-            //        $"SPRING ANGULAR\n" +
-            //        $"  current rot:      {trf.ValueRO.Rotation.value}\n" +
-            //        $"  target rot:       {tgtLookup.rot.value}\n" +
-            //        $"  world ang vel:    {angVelWorldBefore}\n" +
-            //        $"  target ang vel:   {tgtLookup.angVel}\n" +
-            //        $"  angular impulse:  {angImp}\n" +
-            //        $"  impulse magnitude:{math.length(angImp)}\n" +
-            //        $"  inverse inertia:  {physMass.ValueRO.InverseInertia}\n" +
-            //        $"  mass transform:   {physMass.ValueRO.Transform.rot.value}"
-            //    );
-            //}
-            physVel.ValueRW.ApplyAngularImpulse(
-                physMass.ValueRO,
-                angImpMotion
+            quaternion worldFromMotionRot = EcsMathNPhysUtils.TrfRot(
+                trf.ValueRO.Rotation,
+                physMass.ValueRO.Transform.rot
             );
-            // Clear the accumulator for the next physics step.
+            float3 angImpMotion = EcsMathNPhysUtils.InvrsTrfDir(
+                worldFromMotionRot,
+                angImp
+            );
+            physVel.ValueRW.ApplyAngularImpulse(physMass.ValueRO, angImpMotion);
             impAccum.ValueRW = new CustomPhysImpulseAccum();
         }
     }
@@ -121,6 +110,7 @@ public partial struct EcsPhysSpringSys : ISystem {
             accum.angImp += angImp;
         }
 
+        // TODO: Make separate relative velocity damper and world velocity damper and give each their own max force/torque values.
         public static void CalculateSpringImpulse(
             in EcsPhysSpring spring,
             in EcsPhysSpringTgt springTgt,
@@ -133,16 +123,16 @@ public partial struct EcsPhysSpringSys : ISystem {
         ) {
             // The spring always acts at the rigidbody's center of mass.
             // TODO: Use math util.
-            float3 worldCenterOfMass = trf.Position + math.rotate(trf.Rotation, physMass.CenterOfMass);
+            float3 wldCom = trf.Position + math.rotate(trf.Rotation, physMass.CenterOfMass);
             // Linear spring.
             if (spring.enableLin) {
                 // Since the spring acts at the COM, the point velocity
                 // is simply the body's linear velocity.
-                float3 relativeVelocity = physVel.Linear - springTgt.linVel;
+                float3 relVel = physVel.Linear - springTgt.linVel;
                 float3 force = EcsMathNPhysUtils.CalculateSpringLinForce(
                     springTgt.pos,
-                    worldCenterOfMass,
-                    relativeVelocity,
+                    wldCom,
+                    relVel,
                     spring.linSpring,
                     spring.linDamper,
                     spring.maxForce
@@ -151,12 +141,12 @@ public partial struct EcsPhysSpringSys : ISystem {
             }
             // Angular spring.
             if (spring.enableAng) {
-                float3 worldAngVel = physVel.GetAngularVelocityWorldSpace(physMass, trf.Rotation);
-                float3 relativeAngVel = worldAngVel - springTgt.angVel;
+                float3 wldAngVel = physVel.GetAngularVelocityWorldSpace(physMass, trf.Rotation);
+                float3 relAngVel = wldAngVel - springTgt.angVel;
                 float3 tq = EcsMathNPhysUtils.CalculateSpringAngTq(
                     trf.Rotation,
                     springTgt.rot,
-                    relativeAngVel,
+                    relAngVel,
                     spring.angSpring,
                     spring.angDamper,
                     spring.maxTq

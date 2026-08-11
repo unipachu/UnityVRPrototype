@@ -8,7 +8,11 @@ using UnityEngine;
 /// </summary>
 public class EcsPhysSpringTgtProxy : MonoBehaviour {
     [Header("Target")]
+    [Tooltip("Transform you want to use as a target for the ECS spring "
+        + "(e.g. XR Origin's hand transform for physics hand).")]
     [SerializeField] Transform tgtTrf;
+    [Tooltip("Target position offset, e.g. when physics hand center of mass does not align with the XR Origin hand.")]
+    [SerializeField] Vector3 tgtLclPosOffset;
 
     [Header("Id")]
     public int tgtId;
@@ -16,36 +20,33 @@ public class EcsPhysSpringTgtProxy : MonoBehaviour {
     EntityManager entityManager;
     Entity tgtEntity;
     bool tgtFound;
-
-
     Vector3 prevPos = Vector3.zero;
     Quaternion prevRot = Quaternion.identity;
     Vector3 linVel = Vector3.zero;
     Vector3 angVel = Vector3.zero;
 
     private void Start() {
-        prevPos = transform.position;
-        prevRot = transform.rotation;
+        prevPos = MathUtils.TrfPtUnscaled(tgtTrf, tgtLclPosOffset);
+        prevRot = tgtTrf.rotation;
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
-    public float3 TgtPos => tgtTrf.position;
+    public float3 TgtPos => MathUtils.TrfPtUnscaled(tgtTrf, tgtLclPosOffset);
     public quaternion TgtRot => tgtTrf.rotation;
     public float3 TgtLinVel => linVel;
     public float3 TgtAngVel => angVel;
 
     private void FixedUpdate() {
-        linVel = MathUtils.LinVel(prevPos, transform.position, Time.fixedDeltaTime);
-        angVel = MathUtils.AngVel(prevRot, transform.rotation, Time.fixedDeltaTime);
-        prevPos = transform.position;
-        prevRot = transform.rotation;
-
+        Vector3 offsetPos = MathUtils.TrfPtUnscaled(tgtTrf, tgtLclPosOffset);
+        linVel = MathUtils.LinVel(prevPos, offsetPos, Time.fixedDeltaTime);
+        angVel = MathUtils.AngVel(prevRot, tgtTrf.rotation, Time.fixedDeltaTime);
+        prevPos = offsetPos;
+        prevRot = tgtTrf.rotation;
         if (!tgtFound) {
             FindSpringTgtComponent();
             if (!tgtFound)
                 return;
         }
-
         entityManager.SetComponentData(
             tgtEntity,
             new EcsPhysSpringTgt {

@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Applies spring movement to the Rigidbody or the Transform of this game object.
 /// </summary>
+// TODO: Create separate max acceleration fields for vel match damper AND drag damper AND spring.
 public class SpringMov : MonoBehaviour{
     [Header("Linear Movement Settings")]
     public float linSpring = 5;

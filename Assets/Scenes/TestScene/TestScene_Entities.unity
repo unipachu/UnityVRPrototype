@@ -876,7 +876,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &575700793
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -884,7 +884,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 575700792}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 3d5527c6850f71c49a7e73b56170f48f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -940,7 +940,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &650004211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,8 +1210,8 @@ Rigidbody:
   m_GameObject: {fileID: 889762448}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0
+  m_LinearDamping: 10
+  m_AngularDamping: 10
   m_CenterOfMass: {x: 0, y: -0.01, z: -0.02}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1227,7 +1227,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!4 &889762451
 Transform:
   m_ObjectHideFlags: 0
@@ -1237,7 +1237,7 @@ Transform:
   m_GameObject: {fileID: 889762448}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.007, z: -0.000000013038516}
+  m_LocalPosition: {x: -0.243, y: 1.599, z: -0.000000013038516}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1252,7 +1252,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 889762448}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5006a76395c8a114cad00d2d8392c6ca, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1282,12 +1282,12 @@ MonoBehaviour:
   target: {fileID: 1289019059}
   enableLinear: 1
   linearSpring: 500
-  linearDamper: 1
+  linearDamper: 0
   maxForce: 99999
   enableAngular: 1
-  angularSpring: 0.1
-  angularDamper: 1
-  maxTorque: 0.6
+  angularSpring: 0.5
+  angularDamper: 0
+  maxTorque: 99999
 --- !u!1 &1289019058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1604,7 +1604,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1554520713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1763,7 +1763,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!54 &1671640047
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1773,8 +1773,8 @@ Rigidbody:
   m_GameObject: {fileID: 1671640046}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0
+  m_LinearDamping: 10
+  m_AngularDamping: 10
   m_CenterOfMass: {x: 0, y: -0.01, z: -0.02}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1790,7 +1790,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!4 &1671640049
 Transform:
   m_ObjectHideFlags: 0
@@ -1800,7 +1800,7 @@ Transform:
   m_GameObject: {fileID: 1671640046}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.007, z: -0.0000000055879354}
+  m_LocalPosition: {x: 0.154, y: 1.568, z: -0.0000000055879354}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1815,7 +1815,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1671640046}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 5006a76395c8a114cad00d2d8392c6ca, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1844,13 +1844,13 @@ MonoBehaviour:
   springEnabled: 1
   target: {fileID: 1554520713}
   enableLinear: 1
-  linearSpring: 100
-  linearDamper: 1
+  linearSpring: 500
+  linearDamper: 0
   maxForce: 99999
-  enableAngular: 0
-  angularSpring: 0
+  enableAngular: 1
+  angularSpring: 0.5
   angularDamper: 0
-  maxTorque: 0
+  maxTorque: 99999
 --- !u!1 &1748969697
 GameObject:
   m_ObjectHideFlags: 0
