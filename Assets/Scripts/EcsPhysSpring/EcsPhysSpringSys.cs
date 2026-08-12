@@ -7,19 +7,19 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 using Unity.Physics.Extensions;
-using UnityEngine;
 
 /// <summary>
 /// Computes and applies impulses for custom physics springs.
 /// </summary>
-[BurstCompile]
 [UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateBefore(typeof(PhysicsSimulationGroup))]
 public partial struct EcsPhysSpringSys : ISystem {
+    [BurstCompile]
     public void OnCreate(ref SystemState state) {
         state.RequireForUpdate<EcsPhysSpring>();
     }
 
+    [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         float dt = SystemAPI.Time.DeltaTime;
         // NOTE: We require completion immediately after, but we can still calculate the spring
@@ -45,6 +45,8 @@ public partial struct EcsPhysSpringSys : ISystem {
         ) {
             float3 linImp = impAccum.ValueRO.linImp;
             float3 angImp = impAccum.ValueRO.angImp;
+            // NOTE: Compilation should fail if you try to burst compile Debug.Log call, since
+            // NOTE C: it uses managed objects, so remove burst compile attribute before using this!
             //ComponentLookup<EcsPhysSpringTgt> tgtLookup = SystemAPI.GetComponentLookup<EcsPhysSpringTgt>(true);
             //EcsPhysSpringTgt springTgt = tgtLookup[spring.ValueRO.tgt];
             //float3 angVelWorldBefore = physVel.ValueRO.GetAngularVelocityWorldSpace(physMass.ValueRO, trf.ValueRO.Rotation);

@@ -889,6 +889,99 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2127024918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2127024920}
+  - component: {fileID: 2127024919}
+  m_Layer: 0
+  m_Name: EcsPlrCtrlBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2127024919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127024918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306b8e49266eccd4ab172ec1d235ef95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EcsPlrCtrlBridge
+  tgtEcsPlrCtrlId: 0
+  lGrbInputAct:
+    m_UseReference: 1
+    m_Action:
+      m_Name: L Grb Input Act
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 3e647e13-0845-4c64-be1e-f62f07e3bdef
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  rGrbInputAct:
+    m_UseReference: 1
+    m_Action:
+      m_Name: R Grb Input Act
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 51daaee6-3baf-4953-968e-f85ec785249b
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  lTriggerInputAct:
+    m_UseReference: 1
+    m_Action:
+      m_Name: L Trigger Input Act
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: c1ccbb33-650a-4cb5-8c97-410c006e0eab
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  rTriggerInputAct:
+    m_UseReference: 1
+    m_Action:
+      m_Name: R Trigger Input Act
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 8982a205-7572-40da-a745-8d4e48854339
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 7904272356298805229, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+--- !u!4 &2127024920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127024918}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2770057963128997500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1023,6 +1116,7 @@ SceneRoots:
   - {fileID: 1602661510}
   - {fileID: 404934487}
   - {fileID: 2011143228}
+  - {fileID: 2127024920}
   - {fileID: 1377500273}
   - {fileID: 926370087}
   - {fileID: 1485484990}

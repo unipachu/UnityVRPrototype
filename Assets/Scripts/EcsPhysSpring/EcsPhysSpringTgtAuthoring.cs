@@ -6,6 +6,7 @@ using UnityEngine;
 /// Represents a target for springs.
 /// </summary>
 public class EcsPhysSpringTgtAuthoring : MonoBehaviour {
+    [Tooltip("Unique id for one spring target. Used to pass data from game object scene to ECS subscene.")]
     public int id;
 
     public class Baker : Baker<EcsPhysSpringTgtAuthoring> {

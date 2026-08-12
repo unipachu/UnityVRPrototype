@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 207658588}
   - component: {fileID: 207658590}
   - component: {fileID: 207658589}
+  - component: {fileID: 207658591}
   m_Layer: 0
   m_Name: Vis
   m_TagString: Untagged
@@ -433,6 +434,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207658587}
   m_Mesh: {fileID: -4299625302041532480, guid: bf7151579c38e2a44be94ba8773876c1, type: 3}
+--- !u!114 &207658591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207658587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b6467bcd530cd4d809fae70ea0ca9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Entities.Graphics::Unity.Rendering.URPMaterialPropertyBaseColorAuthoring
+  color: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 0.003921569}
 --- !u!1 &239984801
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,6 +794,7 @@ GameObject:
   - component: {fileID: 549616452}
   - component: {fileID: 549616454}
   - component: {fileID: 549616453}
+  - component: {fileID: 549616455}
   m_Layer: 0
   m_Name: Vis
   m_TagString: Untagged
@@ -859,6 +874,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549616451}
   m_Mesh: {fileID: -4179581466302418777, guid: 56186ccf27ad7864681108ed88349071, type: 3}
+--- !u!114 &549616455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549616451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b6467bcd530cd4d809fae70ea0ca9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Entities.Graphics::Unity.Rendering.URPMaterialPropertyBaseColorAuthoring
+  color: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 0.003921569}
 --- !u!1 &575700792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,6 +1219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 889762451}
+  - component: {fileID: 889762454}
   - component: {fileID: 889762453}
   - component: {fileID: 889762449}
   - component: {fileID: 889762452}
@@ -1296,6 +1325,21 @@ MonoBehaviour:
   angDragDamper: 0.005
   maxAngDragDamperTq: 99999
   maxTotalTq: 99999
+--- !u!114 &889762454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889762448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3fe7b2341d9a241b809655c3bf4aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EcsPhysHandAuthoring
+  plrCtrl: {fileID: 2127024919}
+  meshRenderer: {fileID: 207658589}
+  handSide: 0
 --- !u!1 &1289019058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,6 +1806,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1671640049}
+  - component: {fileID: 1671640052}
   - component: {fileID: 1671640051}
   - component: {fileID: 1671640047}
   - component: {fileID: 1671640050}
@@ -1867,6 +1912,21 @@ MonoBehaviour:
   angDragDamper: 0.005
   maxAngDragDamperTq: 99999
   maxTotalTq: 99999
+--- !u!114 &1671640052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671640046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3fe7b2341d9a241b809655c3bf4aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EcsPhysHandAuthoring
+  plrCtrl: {fileID: 2127024919}
+  meshRenderer: {fileID: 549616453}
+  handSide: 1
 --- !u!1 &1748969697
 GameObject:
   m_ObjectHideFlags: 0
@@ -2504,6 +2564,51 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125110424}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2127024918
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2127024920}
+  - component: {fileID: 2127024919}
+  m_Layer: 0
+  m_Name: PlrCtrl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2127024919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127024918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a15309bd3ba9c4aa1678864357078f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EcsPlrCtrlAuthoring
+  plrId: 0
+--- !u!4 &2127024920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127024918}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2132112595
 GameObject:
   m_ObjectHideFlags: 0
@@ -2621,6 +2726,9 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1946721765}
+  - {fileID: 2127024920}
+  - {fileID: 1289019060}
+  - {fileID: 1554520714}
   - {fileID: 1497946175}
   - {fileID: 87041702}
   - {fileID: 1755702166}
@@ -2637,8 +2745,6 @@ SceneRoots:
   - {fileID: 800615330}
   - {fileID: 1916574461}
   - {fileID: 716074864}
-  - {fileID: 1289019060}
-  - {fileID: 1554520714}
   - {fileID: 575700796}
   - {fileID: 889762451}
   - {fileID: 1671640049}
