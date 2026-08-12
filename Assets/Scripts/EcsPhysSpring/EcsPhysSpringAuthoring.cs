@@ -19,17 +19,25 @@ public class EcsPhysSpringAuthoring : MonoBehaviour {
 
     [Header("Linear Drive")]
     [Tooltip("Whether the linear target is active.")]
-    public bool enableLinear = true;
-    public float linearSpring = 20;
-    public float linearDamper = 1;
-    public float maxForce = 99999;
+    public bool enableLinSpring = true;
+    public float linSpring = 400;
+    public float maxLinSpringForce = 99999;
+    public float linVelMatchDamper = 20;
+    public float maxLinVelMatchDamperForce = 99999;
+    public float linDragDamper = 1;
+    public float maxLinDragDamperForce = 99999;
+    public float maxLinTotalForce = 99999;
 
     [Header("Angular Drive")]
     [Tooltip("Whether the angular target is active.")]
-    public bool enableAngular = true;
-    public float angularSpring = 10;
-    public float angularDamper = 1;
-    public float maxTorque = 99999;
+    public bool enableAngSpring = true;
+    public float angSpring = 0.5f;
+    public float maxAngSpringTq = 99999;
+    public float angVelMatchDamper = 0.05f;
+    public float maxAngVelMatchDamperTq = 99999;
+    public float angDragDamper = 0.005f;
+    public float maxAngDragDamperTq = 99999;
+    public float maxTotalTq = 99999;
 
     /// <summary>
     /// DOTS NOTE: Baker class adds components to the entity based on the authoring MonoBehaviour.
@@ -45,14 +53,22 @@ public class EcsPhysSpringAuthoring : MonoBehaviour {
                 new EcsPhysSpring {
                     enabled = authoring.springEnabled,
                     tgt = targetEntity,
-                    linSpring = authoring.linearSpring,
-                    linDamper = authoring.linearDamper,
-                    maxForce = authoring.maxForce,
-                    angSpring = authoring.angularSpring,
-                    angDamper = authoring.angularDamper,
-                    maxTq = authoring.maxTorque,
-                    enableLin = authoring.enableLinear,
-                    enableAng = authoring.enableAngular
+                    enableLin = authoring.enableLinSpring,
+                    linSpring = authoring.linSpring,
+                    maxLinSpringForce = authoring.maxLinSpringForce,
+                    linVelMatchDamper = authoring.linVelMatchDamper,
+                    maxLinVelMatchDamperForce = authoring.maxLinVelMatchDamperForce,
+                    linDragDamper = authoring.linDragDamper,
+                    maxLinDragDamperForce = authoring.maxLinDragDamperForce,
+                    maxLinTotalForce = authoring.maxLinTotalForce,
+                    enableAng = authoring.enableAngSpring,
+                    angSpring = authoring.angSpring,
+                    maxAngSpringTq = authoring.maxAngSpringTq,
+                    angVelMatchDamper = authoring.angVelMatchDamper,
+                    maxAngVelMatchDamperTq = authoring.maxAngVelMatchDamperTq,
+                    angDragDamper = authoring.angDragDamper,
+                    maxAngDragDamperTq = authoring.maxAngDragDamperTq,
+                    maxTotalTq = authoring.maxTotalTq,
                 }
             );
         }
@@ -71,16 +87,23 @@ public struct EcsPhysSpring : IComponentData {
         // EcsPhysSpringTgt tgt = tgtLookup[spring.target];
     public Entity tgt;
     // Linear drive
-    public float linSpring;
-    public float linDamper;
-    public float maxForce;
-    // Angular drive
-    public float angSpring;
-    public float angDamper;
-    public float maxTq;
-    // Enable flags
     public bool enableLin;
+    public float linSpring;
+    public float maxLinSpringForce;
+    public float linVelMatchDamper;
+    public float maxLinVelMatchDamperForce;
+    public float linDragDamper;
+    public float maxLinDragDamperForce;
+    public float maxLinTotalForce;
+    // Angular drive
     public bool enableAng;
+    public float angSpring;
+    public float maxAngSpringTq;
+    public float angVelMatchDamper;
+    public float maxAngVelMatchDamperTq;
+    public float angDragDamper;
+    public float maxAngDragDamperTq;
+    public float maxTotalTq;
 }
 
 /// <summary>

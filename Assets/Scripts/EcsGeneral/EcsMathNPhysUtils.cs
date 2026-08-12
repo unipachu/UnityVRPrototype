@@ -26,44 +26,65 @@ public static class EcsMathNPhysUtils {
     }
 
     /// <summary>
-    /// Computes Torque = springStiffness * rotErr - relativeAngVel * damper.
+    /// Computes torque from a spring, velocity-match damper, and drag damper.
+    /// Each component is individually clamped before the total torque is clamped.
     /// </summary>
     public static float3 CalculateSpringAngTq(
         quaternion curRot,
         quaternion tgtRot,
         float3 relAngVel,
+        float3 curAngVel,
         float springStiffness,
-        float damper,
-        float maxTq,
+        float maxSpringTq,
+        float velMatchDamper,
+        float maxVelMatchDamperTq,
+        float dragDamper,
+        float maxDragDamperTq,
+        float maxTotalTq,
         float rotDeadzone = 0.001f,
         float velDeadzone = 0.001f
     ) {
         float3 rotError = GetRotErr(curRot, tgtRot);
         if (
             math.lengthsq(rotError) < rotDeadzone * rotDeadzone &&
-            math.lengthsq(relAngVel) < velDeadzone * velDeadzone
+            math.lengthsq(relAngVel) < velDeadzone * velDeadzone &&
+            math.lengthsq(curAngVel) < velDeadzone * velDeadzone
         )
             return float3.zero;
         float3 springTq = rotError * springStiffness;
-        float3 dampingTq = -relAngVel * damper;
-        float3 tq = springTq + dampingTq;
+        float3 velMatchDamperTq = -relAngVel * velMatchDamper;
+        float velMatchMag = math.length(velMatchDamperTq);
+        if (velMatchMag > maxVelMatchDamperTq)
+            velMatchDamperTq *= maxVelMatchDamperTq / velMatchMag;
+        float3 dragDamperTq = -curAngVel * dragDamper;
+        float dragMag = math.length(dragDamperTq);
+        if (dragMag > maxDragDamperTq)
+            dragDamperTq *= maxDragDamperTq / dragMag;
+        float3 tq = springTq + velMatchDamperTq + dragDamperTq;
         float mag = math.length(tq);
-        if (mag > maxTq)
-            tq *= maxTq / mag;
+        if (mag > maxTotalTq)
+            tq *= maxTotalTq / mag;
         return tq;
     }
 
     /// <summary>
-    /// Computes F = springStiffness * distToTgt - relativeVel * damper.<br/>
+    /// Computes force from a spring, velocity-match damper, and drag damper.<br/>
+    /// Each component is individually clamped before the total force is clamped.
     /// </summary>
-    /// <param name="relVel">This pos vel in tgt pos space.</param>
+    /// <param name="relVel">Current position velocity relative to the target position velocity.</param>
+    /// <param name="curVel">Current position velocity.</param>
     public static float3 CalculateSpringLinForce(
         float3 tgtPos,
         float3 curPos,
         float3 relVel,
+        float3 curVel,
         float springStiffness,
-        float damper,
-        float maxForce,
+        float maxSpringForce,
+        float velMatchDamper,
+        float maxVelMatchDamperForce,
+        float dragDamper,
+        float maxDragDamperForce,
+        float maxTotalForce,
         float posDeadzone = 0.001f,
         float velDeadzone = 0.001f
     ) {
@@ -71,16 +92,24 @@ public static class EcsMathNPhysUtils {
         // NOTE: lengthsq < deadzone * deadzone is more performant than
         // NOTE C: length < deadzone because it does not calculate squareroot.
         if (
-            math.lengthsq(displacement) < posDeadzone * posDeadzone
-            && math.lengthsq(relVel) < velDeadzone * velDeadzone
+            math.lengthsq(displacement) < posDeadzone * posDeadzone &&
+            math.lengthsq(relVel) < velDeadzone * velDeadzone &&
+            math.lengthsq(curVel) < velDeadzone * velDeadzone
         )
             return float3.zero;
         float3 springForce = displacement * springStiffness;
-        float3 dampingForce = -relVel * damper;
-        float3 force = springForce + dampingForce;
+        float3 velMatchDamperForce = -relVel * velMatchDamper;
+        float velMatchMag = math.length(velMatchDamperForce);
+        if (velMatchMag > maxVelMatchDamperForce)
+            velMatchDamperForce *= maxVelMatchDamperForce / velMatchMag;
+        float3 dragDamperForce = -curVel * dragDamper;
+        float dragMag = math.length(dragDamperForce);
+        if (dragMag > maxDragDamperForce)
+            dragDamperForce *= maxDragDamperForce / dragMag;
+        float3 force = springForce + velMatchDamperForce + dragDamperForce;
         float mag = math.length(force);
-        if (mag > maxForce)
-            force *= maxForce / mag;
+        if (mag > maxTotalForce)
+            force *= maxTotalForce / mag;
         return force;
     }
 
@@ -129,6 +158,14 @@ public static class EcsMathNPhysUtils {
     /// </summary>
     public static float3 InvrsTrfDir(quaternion wldFromLcl, float3 wldVec) {
         return math.rotate(math.inverse(wldFromLcl), wldVec);
+    }
+
+    /// <summary>
+    /// Returns the local space location of a world space point in transform space.
+    /// NOTE: The local point is assumed to be in the transform's unscaled local space.
+    /// </summary>
+    public static float3 InvrsTrfPtUnscaled(in LocalTransform trf, float3 wldPt) {
+        return math.rotate(math.inverse(trf.Rotation), wldPt - trf.Position);
     }
 
     /// <summary>

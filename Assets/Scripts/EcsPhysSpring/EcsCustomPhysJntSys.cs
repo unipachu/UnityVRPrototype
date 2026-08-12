@@ -64,11 +64,9 @@ public partial struct EcsPhysSpringSys : ISystem {
                 trf.ValueRO.Rotation,
                 physMass.ValueRO.Transform.rot
             );
-            float3 angImpMotion = EcsMathNPhysUtils.InvrsTrfDir(
-                worldFromMotionRot,
-                angImp
-            );
-            physVel.ValueRW.ApplyAngularImpulse(physMass.ValueRO, angImpMotion);
+            // NOTE: ApplyAngularImpulse uses local space.
+            float3 angImpLclSpc = EcsMathNPhysUtils.InvrsTrfDir(worldFromMotionRot, angImp);
+            physVel.ValueRW.ApplyAngularImpulse(physMass.ValueRO, angImpLclSpc);
             impAccum.ValueRW = new CustomPhysImpulseAccum();
         }
     }
@@ -110,7 +108,6 @@ public partial struct EcsPhysSpringSys : ISystem {
             accum.angImp += angImp;
         }
 
-        // TODO: Make separate relative velocity damper and world velocity damper and give each their own max force/torque values.
         public static void CalculateSpringImpulse(
             in EcsPhysSpring spring,
             in EcsPhysSpringTgt springTgt,
@@ -122,20 +119,25 @@ public partial struct EcsPhysSpringSys : ISystem {
             ref float3 angImp
         ) {
             // The spring always acts at the rigidbody's center of mass.
-            // TODO: Use math util.
-            float3 wldCom = trf.Position + math.rotate(trf.Rotation, physMass.CenterOfMass);
+            float3 comWldSpc = EcsMathNPhysUtils.TrfPtUnscaled(trf, physMass.CenterOfMass);
             // Linear spring.
             if (spring.enableLin) {
                 // Since the spring acts at the COM, the point velocity
                 // is simply the body's linear velocity.
-                float3 relVel = physVel.Linear - springTgt.linVel;
+                float3 curLinVel = physVel.Linear;
+                float3 relLinVel = curLinVel - springTgt.linVel;
                 float3 force = EcsMathNPhysUtils.CalculateSpringLinForce(
                     springTgt.pos,
-                    wldCom,
-                    relVel,
+                    comWldSpc,
+                    relLinVel,
+                    curLinVel,
                     spring.linSpring,
-                    spring.linDamper,
-                    spring.maxForce
+                    spring.maxLinSpringForce,
+                    spring.linVelMatchDamper,
+                    spring.maxLinVelMatchDamperForce,
+                    spring.linDragDamper,
+                    spring.maxLinDragDamperForce,
+                    spring.maxLinTotalForce
                 );
                 linImp = force * dt;
             }
@@ -147,9 +149,14 @@ public partial struct EcsPhysSpringSys : ISystem {
                     trf.Rotation,
                     springTgt.rot,
                     relAngVel,
+                    wldAngVel,
                     spring.angSpring,
-                    spring.angDamper,
-                    spring.maxTq
+                    spring.maxAngSpringTq,
+                    spring.angVelMatchDamper,
+                    spring.maxAngVelMatchDamperTq,
+                    spring.angDragDamper,
+                    spring.maxAngDragDamperTq,
+                    spring.maxTotalTq
                 );
                 angImp = tq * dt;
             }

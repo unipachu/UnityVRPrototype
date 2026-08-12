@@ -1210,8 +1210,8 @@ Rigidbody:
   m_GameObject: {fileID: 889762448}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 10
-  m_AngularDamping: 10
+  m_LinearDamping: 0
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: -0.01, z: -0.02}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1280,14 +1280,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntAuthoring
   springEnabled: 1
   target: {fileID: 1289019059}
-  enableLinear: 1
-  linearSpring: 500
-  linearDamper: 0
-  maxForce: 99999
-  enableAngular: 1
-  angularSpring: 0.5
-  angularDamper: 0
-  maxTorque: 99999
+  enableLinSpring: 1
+  linSpring: 400
+  maxLinSpringForce: 99999
+  linVelMatchDamper: 20
+  maxLinVelMatchDamperForce: 99999
+  linDragDamper: 1
+  maxLinDragDamperForce: 99999
+  maxLinTotalForce: 99999
+  enableAngSpring: 1
+  angSpring: 0.5
+  maxAngSpringTq: 99999
+  angVelMatchDamper: 0.05
+  maxAngVelMatchDamperTq: 99999
+  angDragDamper: 0.005
+  maxAngDragDamperTq: 99999
+  maxTotalTq: 99999
 --- !u!1 &1289019058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1773,8 +1781,8 @@ Rigidbody:
   m_GameObject: {fileID: 1671640046}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 10
-  m_AngularDamping: 10
+  m_LinearDamping: 0
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: -0.01, z: -0.02}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1843,14 +1851,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EcsPhysSpringAuthoring
   springEnabled: 1
   target: {fileID: 1554520713}
-  enableLinear: 1
-  linearSpring: 500
-  linearDamper: 0
-  maxForce: 99999
-  enableAngular: 1
-  angularSpring: 0.5
-  angularDamper: 0
-  maxTorque: 99999
+  enableLinSpring: 1
+  linSpring: 400
+  maxLinSpringForce: 99999
+  linVelMatchDamper: 20
+  maxLinVelMatchDamperForce: 99999
+  linDragDamper: 1
+  maxLinDragDamperForce: 99999
+  maxLinTotalForce: 99999
+  enableAngSpring: 1
+  angSpring: 0.5
+  maxAngSpringTq: 99999
+  angVelMatchDamper: 0.05
+  maxAngVelMatchDamperTq: 99999
+  angDragDamper: 0.005
+  maxAngDragDamperTq: 99999
+  maxTotalTq: 99999
 --- !u!1 &1748969697
 GameObject:
   m_ObjectHideFlags: 0
