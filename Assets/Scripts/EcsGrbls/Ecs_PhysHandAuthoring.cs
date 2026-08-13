@@ -1,9 +1,11 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
 /// Marks an entity as a physics hand.
 /// </summary>
+[Obsolete("Use new grab system instead!")]
 public class Ecs_PhysHandAuthoring : MonoBehaviour {
     public class Baker : Baker<Ecs_PhysHandAuthoring> {
         public override void Bake(Ecs_PhysHandAuthoring authoring) {

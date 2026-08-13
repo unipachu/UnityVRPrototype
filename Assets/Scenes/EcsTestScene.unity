@@ -358,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
   tgtTrf: {fileID: 454988664}
   tgtLclPosOffset: {x: 0, y: -0.01, z: -0.02}
-  tgtId: 1
+  tgtId: 101
 --- !u!4 &926370087
 Transform:
   m_ObjectHideFlags: 0
@@ -436,7 +436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CustomPhysJntTgtProxy
   tgtTrf: {fileID: 1698778723}
   tgtLclPosOffset: {x: 0, y: -0.01, z: -0.02}
-  tgtId: 0
+  tgtId: 100
 --- !u!4 &1377500273
 Transform:
   m_ObjectHideFlags: 0

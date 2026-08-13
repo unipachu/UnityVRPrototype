@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ using UnityEngine;
 /// Defines one grab slot on a grabbable object.
 /// Each slot controls one CustomPhysJnt.
 /// </summary>
+[Obsolete("Use new grab system instead!")]
 public class Ecs_GrabSlotAuthoring : MonoBehaviour {
     [Tooltip("The GameObject containing the EcsPhysSpringAuthoring.")]
     public GameObject spring;

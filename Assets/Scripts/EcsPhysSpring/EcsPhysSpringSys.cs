@@ -7,6 +7,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 using Unity.Physics.Extensions;
+using UnityEngine;
 
 /// <summary>
 /// Computes and applies impulses for custom physics springs.
@@ -47,20 +48,27 @@ public partial struct EcsPhysSpringSys : ISystem {
             float3 angImp = impAccum.ValueRO.angImp;
             // NOTE: Compilation should fail if you try to burst compile Debug.Log call, since
             // NOTE C: it uses managed objects, so remove burst compile attribute before using this!
-            //ComponentLookup<EcsPhysSpringTgt> tgtLookup = SystemAPI.GetComponentLookup<EcsPhysSpringTgt>(true);
-            //EcsPhysSpringTgt springTgt = tgtLookup[spring.ValueRO.tgt];
-            //float3 angVelWorldBefore = physVel.ValueRO.GetAngularVelocityWorldSpace(physMass.ValueRO, trf.ValueRO.Rotation);
-            //Debug.Log(
-            //    $"SPRING ANGULAR\n" +
-            //    $"  current rot:       {trf.ValueRO.Rotation.value}\n" +
-            //    $"  target rot:        {springTgt.rot.value}\n" +
-            //    $"  world ang vel:     {angVelWorldBefore}\n" +
-            //    $"  target ang vel:    {springTgt.angVel}\n" +
-            //    $"  angular impulse:   {angImp}\n" +
-            //    $"  impulse magnitude: {math.length(angImp)}\n" +
-            //    $"  inverse inertia:   {physMass.ValueRO.InverseInertia}\n" +
-            //    $"  mass transform:    {physMass.ValueRO.Transform.rot.value}"
-            //);
+            // NOTE C: Actually I was wrong, Debug.Log DOES work with Burst methods - some
+            // NOTE C: comilation magic happens there.
+            //{
+            //    FixedString128Bytes linImpMsg = $"lin imp: {linImp}";
+            //    Debug.Log(linImpMsg);
+            //    ComponentLookup<EcsPhysSpringTgt> tgtLookup = SystemAPI.GetComponentLookup<EcsPhysSpringTgt>(true);
+            //    EcsPhysSpringTgt springTgt = tgtLookup[spring.ValueRO.tgt];
+            //    float3 angVelWorldBefore = physVel.ValueRO.GetAngularVelocityWorldSpace(physMass.ValueRO, trf.ValueRO.Rotation);
+            //    Debug.Log($"target pos: {springTgt.pos}");
+            //    Debug.Log(
+            //        $"SPRING ANGULAR\n" +
+            //        $"  current rot:       {trf.ValueRO.Rotation.value}\n" +
+            //        $"  target rot:        {springTgt.rot.value}\n" +
+            //        $"  world ang vel:     {angVelWorldBefore}\n" +
+            //        $"  target ang vel:    {springTgt.angVel}\n" +
+            //        $"  angular impulse:   {angImp}\n" +
+            //        $"  impulse magnitude: {math.length(angImp)}\n" +
+            //        $"  inverse inertia:   {physMass.ValueRO.InverseInertia}\n" +
+            //        $"  mass transform:    {physMass.ValueRO.Transform.rot.value}"
+            //    );
+            //}
             physVel.ValueRW.ApplyLinearImpulse(physMass.ValueRO, linImp);
             quaternion worldFromMotionRot = EcsMathNPhysUtils.TrfRot(
                 trf.ValueRO.Rotation,

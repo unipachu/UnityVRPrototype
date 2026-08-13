@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Used to pass player input to ECS subscene.
 /// </summary>
+// TODO: Make this run as early as possible so that ECS gets input as early as possible.
 public class EcsPlrCtrlBridge : MonoBehaviour {
     [Header("Settings")]
     [Tooltip("Unique player id of the EcsPlrInput.")]

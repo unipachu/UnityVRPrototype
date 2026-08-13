@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ using UnityEngine;
 /// Allows a PhysHand to request a grab from a Grabbable.
 /// The component is disabled by default.
 /// </summary>
+[Obsolete("Use new grab system instead!")]
 public class Ecs_GrabRequestAuthoring : MonoBehaviour {
     public class Baker : Baker<Ecs_GrabRequestAuthoring> {
         public override void Bake(Ecs_GrabRequestAuthoring authoring) {

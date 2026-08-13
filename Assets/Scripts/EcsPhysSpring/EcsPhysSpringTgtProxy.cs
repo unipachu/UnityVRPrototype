@@ -47,6 +47,7 @@ public class EcsPhysSpringTgtProxy : MonoBehaviour {
             if (!tgtFound)
                 return;
         }
+        //Debug.Log("id " + tgtId + "Tgt pos: " + TgtPos, this);
         entityManager.SetComponentData(
             tgtEntity,
             new EcsPhysSpringTgt {

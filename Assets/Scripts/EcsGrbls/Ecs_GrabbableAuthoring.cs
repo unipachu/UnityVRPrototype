@@ -1,9 +1,11 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
 /// Marks an entity as grabbable.
 /// </summary>
+[Obsolete("Use new grab system instead!")]
 public class Ecs_GrabbableAuthoring : MonoBehaviour {
     public class Baker : Baker<Ecs_GrabbableAuthoring> {
         public override void Bake(Ecs_GrabbableAuthoring authoring) {

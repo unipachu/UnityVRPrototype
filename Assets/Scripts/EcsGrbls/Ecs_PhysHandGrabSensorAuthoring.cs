@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ using UnityEngine;
 /// Marks an entity as a physics hand grab sensor.
 /// The entity should have a trigger collider.
 /// </summary>
+[Obsolete("Use new grab system instead!")]
 public class Ecs_PhysHandGrabSensorAuthoring : MonoBehaviour {
     [Tooltip("The PhysHand entity this sensor belongs to.")]
     public GameObject hand;
