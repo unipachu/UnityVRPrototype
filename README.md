@@ -15,7 +15,7 @@
 
 Because this project is intended for experimentation, it intentionally contains multiple physics grab systems with overlapping functionality. This is so that different approaches could be compared with each other. These physics grab systems are categorized in high level categories:
 
-* **ECS:** DOTS ECS-based grab system where physics hand and grabbables are moved using custom spring forces (very much WIP).
+* **ECS:** DOTS ECS-based grab system where physics hand and grabbables are moved using custom spring forces.
 * **Grabbable Joint Driven (GrblJntDriven):** GameObject-based system where grabbables are driven directly by ConfigurableJoints connected to the world. During a grab, the physics hand is temporarily disabled and replaced by a **visual-only proxy hand** attached to the grabbable.
 * **Hand Joint Driven (HandJntDriven):** GameObject-based system where grabbables are attached to physics hands via ConfigurableJoints. The physics hands are then driven by separate ConfigurableJoints connected to the world. This grab system can be less stable than the Grabbable Joint Driven system because it uses more physics constraints, but its joint setup more closely resembles how a hand grips an object in the real world.
 
