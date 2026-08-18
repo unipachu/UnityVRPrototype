@@ -474,7 +474,7 @@ public static class MathUtils {
             maxLinVelMatchDamperAcc
         );
         Vector3 linDragDamperAcc = Vector3.ClampMagnitude(-springObjMotSt.linVel * linDragDamper, maxLinDragDamperAcc);
-        Vector3 totalLinAcc = Vector3.ClampMagnitude(linSpringAcc + linSpringAcc + linVelMatchDamperAcc, maxTotalLinAcc);
+        Vector3 totalLinAcc = Vector3.ClampMagnitude(linSpringAcc + linVelMatchDamperAcc + linDragDamperAcc, maxTotalLinAcc);
         springObjMotSt.linVel += totalLinAcc * dt;
         springObjPos += springObjMotSt.linVel * dt;
         // Angular
